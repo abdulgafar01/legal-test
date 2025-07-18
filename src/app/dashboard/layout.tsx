@@ -3,7 +3,7 @@ import Sidebar from "@/components/Sidebar"
 import React, { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
 
-const layout = ({children}:{children:React.ReactNode}) => {
+const Layout = ({children}:{children:React.ReactNode}) => {
     const [expand, setExpand] = useState(true)
     const [isMobile, setIsMobile] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -41,7 +41,7 @@ const layout = ({children}:{children:React.ReactNode}) => {
     <div className="flex  max-h-screen">
    <Sidebar 
         expand={expand} 
-        setExpand={setExpand}
+        // setExpand={setExpand}
         isMobile={isMobile}
         showMobileMenu={showMobileMenu}
         toggleSidebar={toggleSidebar}
@@ -60,4 +60,4 @@ const layout = ({children}:{children:React.ReactNode}) => {
   )
 }
 
-export default layout
+export default Layout

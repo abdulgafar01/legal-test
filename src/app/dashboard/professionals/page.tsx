@@ -3,13 +3,14 @@
 import FilterModal from '@/components/FilterModal';
 import LawyerCard from '@/components/LawyerCard';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronDownSquare, Scale } from 'lucide-react';
+import { FilterValues } from '@/lib/types';
+import { ChevronDown,} from 'lucide-react';
 import React, { useState } from 'react'
 
-const page = () => {
+const Page = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentFilterType, setCurrentFilterType] = useState("pricing");
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<FilterValues>({
     expertise: [],
     location: "",
     pricing: { min: 5, max: 1000 },
@@ -148,4 +149,4 @@ const page = () => {
 
 }
 
-export default page
+export default Page

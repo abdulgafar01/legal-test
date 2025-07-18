@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation";
 // import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import Image from "next/image";
 
 const EditProfile = () => {
   const router = useRouter();
@@ -68,7 +69,7 @@ const EditProfile = () => {
                   <div className="relative">
                     {hasProfilePhoto ? (
                       <div className="w-32 h-32 rounded-xl bg-legal-gold-light overflow-hidden">
-                        <img 
+                        <Image 
                           src="/api/placeholder/128/128" 
                           alt="Profile" 
                           className="w-full h-full object-cover"

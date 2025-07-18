@@ -16,7 +16,7 @@ interface CertificationFormProps {
   onNext: () => void;
 }
 
-const CertificationForm: React.FC<CertificationFormProps> = ({ onBack, onNext }) => {
+const CertificationForm: React.FC<CertificationFormProps> = ({ onNext }) => {
   const [formData, setFormData] = useState({
     certificationType: 'Call to Bar Certificate',
     dateOfIncorporation: '10/10/2021',

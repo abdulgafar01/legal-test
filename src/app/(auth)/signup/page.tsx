@@ -186,7 +186,7 @@ const Page = () => {
 
           <div className="mt-6 flex items-center justify-center">
             <Button className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-400/30">
-              I'm a legal practitioner
+              I am a legal practitioner
             </Button>
           </div>
         </div>

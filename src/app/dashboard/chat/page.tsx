@@ -1,10 +1,8 @@
-"use client"
-
 import PromptBox from '@/components/PromptBox'
-import React, { useState } from 'react'
+// import React, { useState } from 'react'
 
 const page = () => {
-  const [messages, setMessages] = useState([])
+  const messages = ""
   return (
     <div className='flex-1 flex flex-col items-center justify-center
     px-4 pb-8 text-black  h-[80vh] overflow-hidden'>

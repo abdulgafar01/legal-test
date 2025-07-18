@@ -8,17 +8,25 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
+import { FilterValues } from "@/lib/types";
 
 
 
-
+// type FilterValues = {
+//   expertise: string[];
+//   location: string;
+//   pricing: { min: number; max: number };
+//   experience: { min: number; max: number };
+//   ratings: string;
+//   availability: string;
+// };
 
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: string | any; // Adjust type as needed
+  filters: FilterValues; // Adjust type as needed
   // Assuming filters is an object with properties like pricing, expertise, etc.
-  onFiltersChange: (filters: string) => void;
+  onFiltersChange:(filters: FilterValues) => void;
   filterType?: string;
 }
 
