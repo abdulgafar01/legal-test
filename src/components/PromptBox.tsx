@@ -1,6 +1,4 @@
-import { assets } from '@/assets/assets'
 import { Mic, Plus, Send } from 'lucide-react'
-import Image from 'next/image'
 import React, { useState } from 'react'
 
 const PromptBox = () => {

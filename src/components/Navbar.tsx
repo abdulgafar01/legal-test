@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Scale, Bell } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -16,16 +15,16 @@ interface NavbarProps {
 }
 
 const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [searchQuery, setSearchQuery] = useState('');
+  // const router = useRouter();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/chat?query=${encodeURIComponent(searchQuery)}`);
-    }
-  };
+  // const handleSearch = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (searchQuery.trim()) {
+  //     router.push(`/chat?query=${encodeURIComponent(searchQuery)}`);
+  //   }
+  // };
 
   return (
     <header className="w-full sticky top-0 z-20 bg-orange-50 border-b border-l border-gray-200 px-6 py-3">

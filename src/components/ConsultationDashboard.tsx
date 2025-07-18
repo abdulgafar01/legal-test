@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { Search, Bell, User, MoreHorizontal } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from './ui/badge';
 // import { Badge } from '@/components/ui/badge';

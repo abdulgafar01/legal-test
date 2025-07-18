@@ -9,11 +9,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
 
+
+
+
+
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  filters: any;
-  onFiltersChange: (filters: any) => void;
+  filters: string | any; // Adjust type as needed
+  // Assuming filters is an object with properties like pricing, expertise, etc.
+  onFiltersChange: (filters: string) => void;
   filterType?: string;
 }
 

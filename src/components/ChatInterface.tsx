@@ -3,7 +3,6 @@ import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText } 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface ChatInterfaceProps {

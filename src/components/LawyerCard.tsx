@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface LawyerCardProps {
   lawyer: {
@@ -20,7 +21,7 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
     <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-4">
-          <img 
+          <Image
             src={lawyer.image} 
             alt={lawyer.name}
             className="w-16 h-16 rounded-lg object-cover"
