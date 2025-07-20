@@ -1,7 +1,6 @@
 "use client";
-import { Button } from '@/components/ui/button';
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
-import { ArrowBigDown, ArrowDown, Scale, User } from 'lucide-react';
+import { ArrowDown, Scale, User } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Page() {
@@ -40,7 +39,7 @@ export default function Page() {
                   <Scale className="w-17 h-17 text-slate-400 mx-auto mb-4" />
                   <h3 className="text-2xl font-bold text-white mb-3">Professional</h3>
                   <p className="text-gray-400 text-sm mb-6 text-center">
-                    I'm a certified lawyer and want to offer my services.
+                    I&apos;m a certified lawyer and want to offer my services.
                   </p>
                 </div>
               </Link>

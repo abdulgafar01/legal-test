@@ -32,14 +32,16 @@ const Page = () => {
   };
 
   const handleContinue = () => {
-    if (emailValid) setShowPasswordField(true);
+    if (emailValid) {
+      setShowPasswordField(true);
+    }
   };
 
   const handleSignIn = async () => {
     if (!password) return;
     setLoading(true);
 
-    // Simulate authentication delay
+    // Simulate auth delay
     await new Promise((res) => setTimeout(res, 1500));
 
     console.log('Signing in with:', { email, password });
@@ -49,7 +51,11 @@ const Page = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    showPasswordField ? handleSignIn() : handleContinue();
+    if (showPasswordField) {
+      void handleSignIn(); // ESLint-safe way to call async function without awaiting
+    } else {
+      handleContinue();
+    }
   };
 
   return (
@@ -101,7 +107,9 @@ const Page = () => {
                   />
                 </div>
               ) : (
-                <p className="text-sm font-medium mb-1 text-gray-700">{email}</p>
+                <div>
+                  <p className="text-sm font-medium mb-1 text-gray-700">{email}</p>
+                </div>
               )}
 
               {showPasswordField && (
@@ -182,13 +190,6 @@ const Page = () => {
               </p>
             </form>
           </div>
-
-          {/* Legal Practitioner CTA */}
-          {/* <div className="mt-6 flex items-center justify-center">
-            <Button className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-400/30">
-              I'm a legal practitioner
-            </Button>
-          </div> */}
         </div>
       </div>
     </div>

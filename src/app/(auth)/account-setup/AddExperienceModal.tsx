@@ -26,7 +26,7 @@ interface AddExperienceModalProps {
 }
 
 const employmentTypes = ['Full time', 'Part time', 'Contract'] as const;
-type EmploymentType = typeof employmentTypes[number];
+// type EmploymentType = typeof employmentTypes[number];
 
 const AddExperienceModal: React.FC<AddExperienceModalProps> = ({ isOpen, onClose, onAdd }) => {
   const [formData, setFormData] = useState<ExperienceFormData>({

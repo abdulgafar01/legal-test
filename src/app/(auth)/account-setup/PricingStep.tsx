@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import Link from 'next/link';
-
-interface PricingStepProps {
-  onNext: (data: PricingFormData) => void;
-  initialData?: Partial<PricingFormData>;
-}
 
 interface PricingFormData {
   consultationRate: string;
@@ -21,10 +22,16 @@ interface PricingFormData {
   minConsultation: string;
   maxConsultation: string;
   unavailableDates: Date[];
-  [key: string]: any; // For any additional properties
+}
+
+interface PricingStepProps {
+  onNext: (data: PricingFormData) => void;
+  initialData?: Partial<PricingFormData>;
 }
 
 const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) => {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<PricingFormData>({
     consultationRate: initialData.consultationRate || '',
     consultationCurrency: initialData.consultationCurrency || 'USD',
@@ -33,40 +40,39 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
     minConsultation: initialData.minConsultation || '',
     maxConsultation: initialData.maxConsultation || '',
     unavailableDates: initialData.unavailableDates || [],
-    ...initialData
   });
 
   const [selectedDates, setSelectedDates] = useState<Date[]>(formData.unavailableDates);
 
-  const handleInputChange = (field: keyof PricingFormData, value: string) => {
+  const handleInputChange = <K extends keyof PricingFormData>(field: K, value: PricingFormData[K]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const isFormValid = Boolean(
-    formData.consultationRate && 
-    formData.hireRate && 
-    formData.minConsultation && 
-    formData.maxConsultation
-  );
+  const isFormValid =
+    formData.consultationRate &&
+    formData.hireRate &&
+    formData.minConsultation &&
+    formData.maxConsultation;
 
   const handleSubmit = () => {
     if (isFormValid) {
-      onNext({ 
-        ...formData, 
-        unavailableDates: selectedDates 
-      });
+      const payload = { ...formData, unavailableDates: selectedDates };
+      onNext(payload);
+      router.push('/onboarding/professionals');
     }
   };
 
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-semibold text-center mb-2">Setup your pricing</h2>
-      <p className="text-gray-600 text-center mb-8">This details will be displayed on your profile for service seekers to see.</p>
+      <p className="text-gray-600 text-center mb-8">
+        These details will be displayed on your profile for service seekers to see.
+      </p>
 
       <div className="space-y-6">
         {/* Consultation Rate */}
         <div>
-          <Label htmlFor="consultationRate" className="text-sm font-medium">Consultation rate</Label>
+          <Label htmlFor="consultationRate">Consultation rate</Label>
           <div className="flex mt-1">
             <div className="flex items-center bg-gray-50 px-3 rounded-l-md border border-r-0">
               <span className="text-gray-500">$</span>
@@ -78,9 +84,11 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="rounded-l-none flex-1"
               placeholder="1,000.00"
             />
-            <Select 
-              value={formData.consultationCurrency} 
-              onValueChange={(value: 'USD' | 'EUR' | 'GBP') => handleInputChange('consultationCurrency', value)}
+            <Select
+              value={formData.consultationCurrency}
+              onValueChange={(value) =>
+                handleInputChange('consultationCurrency', value as 'USD' | 'EUR' | 'GBP')
+              }
             >
               <SelectTrigger className="w-20 rounded-l-none border-l-0">
                 <SelectValue />
@@ -92,12 +100,14 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               </SelectContent>
             </Select>
           </div>
-          <p className="text-xs text-gray-500 mt-1">A fee of 10% will be deducted on each consultation.</p>
+          <p className="text-xs text-gray-500 mt-1">
+            A fee of 10% will be deducted on each consultation.
+          </p>
         </div>
 
         {/* Hire Rate */}
         <div>
-          <Label htmlFor="hireRate" className="text-sm font-medium">Hire rate</Label>
+          <Label htmlFor="hireRate">Hire rate</Label>
           <div className="flex mt-1">
             <div className="flex items-center bg-gray-50 px-3 rounded-l-md border border-r-0">
               <span className="text-gray-500">$</span>
@@ -109,9 +119,11 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="rounded-l-none flex-1"
               placeholder="1,000.00"
             />
-            <Select 
-              value={formData.hireCurrency} 
-              onValueChange={(value: 'USD' | 'EUR' | 'GBP') => handleInputChange('hireCurrency', value)}
+            <Select
+              value={formData.hireCurrency}
+              onValueChange={(value) =>
+                handleInputChange('hireCurrency', value as 'USD' | 'EUR' | 'GBP')
+              }
             >
               <SelectTrigger className="w-20 rounded-l-none border-l-0">
                 <SelectValue />
@@ -123,13 +135,15 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               </SelectContent>
             </Select>
           </div>
-          <p className="text-xs text-gray-500 mt-1">A fee of 10% will be deducted on each consultation.</p>
+          <p className="text-xs text-gray-500 mt-1">
+            A fee of 10% will be deducted on each hire.
+          </p>
         </div>
 
         {/* Min and Max Consultation */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="minConsultation" className="text-sm font-medium">Min Consultation</Label>
+            <Label htmlFor="minConsultation">Min Consultation</Label>
             <Input
               id="minConsultation"
               value={formData.minConsultation}
@@ -137,10 +151,10 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="mt-1"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500 mt-1">Min amount of consultation(s) at a time</p>
+            <p className="text-xs text-gray-500 mt-1">Minimum consultations at once</p>
           </div>
           <div>
-            <Label htmlFor="maxConsultation" className="text-sm font-medium">Max Consultation</Label>
+            <Label htmlFor="maxConsultation">Max Consultation</Label>
             <Input
               id="maxConsultation"
               value={formData.maxConsultation}
@@ -148,13 +162,13 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="mt-1"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500 mt-1">Max amount of consultation at a time (Not more than 30)</p>
+            <p className="text-xs text-gray-500 mt-1">Maximum consultations (up to 30)</p>
           </div>
         </div>
 
         {/* Calendar */}
         <div>
-          <Label className="text-sm font-medium">Select your available dates</Label>
+          <Label>Select your unavailable dates</Label>
           <div className="mt-2 bg-gray-50 p-4 rounded-lg">
             <Calendar
               mode="multiple"
@@ -166,17 +180,15 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
         </div>
       </div>
 
-
-      <Link href='/onboarding/professionals'>
-
       <Button
         onClick={handleSubmit}
         disabled={!isFormValid}
-        className={`w-full mt-8 ${isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'}`}
+        className={`w-full mt-8 ${
+          isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
+        }`}
       >
         Submit
       </Button>
-      </Link>
     </div>
   );
 };

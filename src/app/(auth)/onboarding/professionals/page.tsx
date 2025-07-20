@@ -1,10 +1,10 @@
 import React from 'react'
 import MultiStepForm from './MultiStepForm';
 
-const page = () => {
+const Page = () => {
   return (
     <MultiStepForm />
   )
 }
 
-export default page
+export default Page

@@ -1,10 +1,9 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import AddExperienceModal from './AddExperienceModal';
-
 
 interface Experience {
   id: string;
@@ -17,19 +16,28 @@ interface Experience {
   duties: string;
 }
 
-interface ExperienceStepProps {
-  onNext: (data: any) => void;
-  initialData?: any;
+interface FormData {
+  experiences: Experience[];
 }
 
-const ExperienceStep: React.FC<ExperienceStepProps> = ({ onNext, initialData = {} }) => {
-  const [experiences, setExperiences] = useState<Experience[]>(initialData.experiences || []);
+interface ExperienceStepProps {
+  onNext: (data: FormData) => void;
+  initialData?: FormData;
+}
+
+const ExperienceStep: React.FC<ExperienceStepProps> = ({
+  onNext,
+  initialData = { experiences: [] },
+}) => {
+  const [experiences, setExperiences] = useState<Experience[]>(
+    initialData.experiences || []
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddExperience = (experience: Omit<Experience, 'id'>) => {
-    const newExperience = {
+    const newExperience: Experience = {
       ...experience,
-      id: Date.now().toString()
+      id: Date.now().toString(),
     };
     setExperiences(prev => [...prev, newExperience]);
     setIsModalOpen(false);
@@ -42,7 +50,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({ onNext, initialData = {
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-semibold text-center mb-2">Setup your experience</h2>
-      <p className="text-gray-600 text-center mb-8">This details will be displayed on your profile for service seekers to see.</p>
+      <p className="text-gray-600 text-center mb-8">
+        This details will be displayed on your profile for service seekers to see.
+      </p>
 
       {experiences.length === 0 ? (
         <div className="text-center py-12">
@@ -51,7 +61,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({ onNext, initialData = {
           </div>
           <h3 className="text-lg font-medium mb-2">You are yet to add work experience</h3>
           <p className="text-gray-600 text-sm mb-6">Click on the button below to add experience.</p>
-          
+
           <Button
             onClick={() => setIsModalOpen(true)}
             className="bg-black hover:bg-gray-800 mb-6"
@@ -74,12 +84,14 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({ onNext, initialData = {
               Add experience
             </Button>
           </div>
-          
+
           {experiences.map((experience) => (
             <div key={experience.id} className="border border-gray-200 p-4 rounded-lg">
               <h4 className="font-medium">{experience.jobTitle}</h4>
               <p className="text-sm text-gray-600">{experience.company}</p>
-              <p className="text-sm text-gray-500">{experience.startDate} - {experience.endDate}</p>
+              <p className="text-sm text-gray-500">
+                {experience.startDate} - {experience.endDate}
+              </p>
               <span className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mt-2">
                 {experience.employmentType}
               </span>

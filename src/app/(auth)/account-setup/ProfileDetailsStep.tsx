@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-interface ProfileDetailsStepProps {
-  onNext: (data: ProfileFormData) => void;
-  initialData?: Partial<ProfileFormData>;
-}
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import Image from 'next/image';
 
 interface ProfileFormData {
   fullName: string;
@@ -18,10 +20,17 @@ interface ProfileFormData {
   state: string;
   city: string;
   profilePhoto: string | null;
-  [key: string]: any; // For any additional properties
 }
 
-const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initialData = {} }) => {
+interface ProfileDetailsStepProps {
+  onNext: (data: ProfileFormData) => void;
+  initialData?: Partial<ProfileFormData>;
+}
+
+const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
+  onNext,
+  initialData = {},
+}) => {
   const [formData, setFormData] = useState<ProfileFormData>({
     fullName: initialData.fullName || '',
     phoneNumber: initialData.phoneNumber || '',
@@ -29,20 +38,22 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
     state: initialData.state || '',
     city: initialData.city || '',
     profilePhoto: initialData.profilePhoto || null,
-    ...initialData
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFormValid = Boolean(
-    formData.fullName && 
-    formData.phoneNumber && 
-    formData.address && 
-    formData.state && 
+    formData.fullName &&
+    formData.phoneNumber &&
+    formData.address &&
+    formData.state &&
     formData.city
   );
 
-  const handleInputChange = (field: keyof ProfileFormData, value: string) => {
+  const handleInputChange = <K extends keyof ProfileFormData>(
+    field: K,
+    value: ProfileFormData[K]
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -51,9 +62,9 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData(prev => ({ 
-          ...prev, 
-          profilePhoto: e.target?.result as string 
+        setFormData(prev => ({
+          ...prev,
+          profilePhoto: e.target?.result as string,
         }));
       };
       reader.readAsDataURL(file);
@@ -73,17 +84,19 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
   return (
     <div className="max-w-md mx-auto">
       <h2 className="text-2xl font-semibold text-center mb-2">Setup your profile details</h2>
-      <p className="text-gray-600 text-center mb-8">This details will be displayed on your profile for service seekers to see.</p>
+      <p className="text-gray-600 text-center mb-8">
+        These details will be displayed on your profile for service seekers to see.
+      </p>
 
       <div className="space-y-6">
         {/* Profile Photo */}
         <div className="flex items-center space-x-4">
           <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
             {formData.profilePhoto ? (
-              <img 
-                src={formData.profilePhoto} 
-                alt="Profile" 
-                className="w-full h-full object-cover rounded-lg" 
+              <Image
+                src={formData.profilePhoto}
+                alt="Profile"
+                className="w-full h-full object-cover rounded-lg"
               />
             ) : (
               <div className="text-gray-400 text-2xl">👤</div>
@@ -91,7 +104,7 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
           </div>
           <div>
             <Label className="text-sm font-medium">Profile photo</Label>
-            <p 
+            <p
               className="text-sm text-orange-500 cursor-pointer hover:underline"
               onClick={handlePhotoClick}
             >
@@ -125,7 +138,7 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
           <div className="flex mt-1">
             <Select defaultValue="US">
               <SelectTrigger className="w-20">
-                <SelectValue />
+                <SelectValue placeholder="Code" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="US">US</SelectItem>
@@ -183,7 +196,9 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({ onNext, initial
       <Button
         onClick={handleContinue}
         disabled={!isFormValid}
-        className={`w-full mt-8 ${isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'}`}
+        className={`w-full mt-8 ${
+          isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
+        }`}
       >
         Continue
       </Button>
