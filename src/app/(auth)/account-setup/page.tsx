@@ -10,7 +10,7 @@ import SuccessModal from './SuccessModal';
 import { Scale } from 'lucide-react';
 
 // Step-specific types
-interface ProfileDetails extends ProfileFormData {}
+// interface ProfileDetails extends ProfileFormData {}
 
 interface PricingFormData {
   consultationRate: string;
@@ -23,7 +23,7 @@ interface PricingFormData {
 }
 
 interface FormData {
-  profileDetails: ProfileDetails;
+  profileDetails: ProfileFormData;
   specializations: string[];
   experiences: Experience[];
   pricing: PricingFormData;
@@ -82,7 +82,7 @@ const Page: React.FC = () => {
       case 1:
         return (
           <ProfileDetailsStep
-            onNext={(data: ProfileDetails) => handleStepComplete(data, 'profileDetails')}
+            onNext={(data: ProfileFormData) => handleStepComplete(data, 'profileDetails')}
             initialData={formData.profileDetails}
           />
         );
