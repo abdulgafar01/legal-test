@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import AddExperienceModal from './AddExperienceModal';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-interface Experience {
+export interface Experience {
   id: string;
   jobTitle: string;
   employmentType: string;
@@ -16,102 +16,164 @@ interface Experience {
   duties: string;
 }
 
-interface FormData {
-  experiences: Experience[];
-}
-
 interface ExperienceStepProps {
-  onNext: (data: FormData) => void;
-  initialData?: FormData;
+  onNext: (data: Experience[]) => void;
+  initialData?: Experience[];
 }
 
 const ExperienceStep: React.FC<ExperienceStepProps> = ({
   onNext,
-  initialData = { experiences: [] },
+  initialData = [],
 }) => {
-  const [experiences, setExperiences] = useState<Experience[]>(
-    initialData.experiences || []
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [experiences, setExperiences] = useState<Experience[]>(initialData);
 
-  const handleAddExperience = (experience: Omit<Experience, 'id'>) => {
-    const newExperience: Experience = {
-      ...experience,
-      id: Date.now().toString(),
-    };
-    setExperiences(prev => [...prev, newExperience]);
-    setIsModalOpen(false);
+  const handleAddExperience = () => {
+    setExperiences(prev => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        jobTitle: '',
+        employmentType: '',
+        industry: '',
+        company: '',
+        startDate: '',
+        endDate: '',
+        duties: '',
+      },
+    ]);
   };
 
-  const handleContinue = () => {
-    onNext({ experiences });
+  const handleChange = <K extends keyof Experience>(
+    index: number,
+    field: K,
+    value: Experience[K]
+  ) => {
+    setExperiences(prev =>
+      prev.map((exp, i) =>
+        i === index ? { ...exp, [field]: value } : exp
+      )
+    );
+  };
+
+  const handleRemove = (index: number) => {
+    setExperiences(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = () => {
+    const valid = experiences.every(
+      (exp) =>
+        exp.jobTitle &&
+        exp.company &&
+        exp.startDate &&
+        exp.endDate &&
+        exp.duties
+    );
+
+    if (!valid) return;
+
+    onNext(experiences);
   };
 
   return (
-    <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-semibold text-center mb-2">Setup your experience</h2>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h2 className="text-2xl font-semibold text-center mb-2">Add Work Experience</h2>
       <p className="text-gray-600 text-center mb-8">
-        This details will be displayed on your profile for service seekers to see.
+        Highlight your relevant legal experience.
       </p>
 
-      {experiences.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-20 h-20 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-            <div className="text-gray-400 text-2xl">📄</div>
+      {experiences.map((exp, index) => (
+        <div key={exp.id} className="border rounded-lg p-4 space-y-4 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Job Title</Label>
+              <Input
+                value={exp.jobTitle}
+                onChange={(e) =>
+                  handleChange(index, 'jobTitle', e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <Label>Employment Type</Label>
+              <Input
+                value={exp.employmentType}
+                onChange={(e) =>
+                  handleChange(index, 'employmentType', e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <Label>Industry</Label>
+              <Input
+                value={exp.industry}
+                onChange={(e) =>
+                  handleChange(index, 'industry', e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <Label>Company</Label>
+              <Input
+                value={exp.company}
+                onChange={(e) =>
+                  handleChange(index, 'company', e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <Label>Start Date</Label>
+              <Input
+                type="date"
+                value={exp.startDate}
+                onChange={(e) =>
+                  handleChange(index, 'startDate', e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={exp.endDate}
+                onChange={(e) =>
+                  handleChange(index, 'endDate', e.target.value)
+                }
+              />
+            </div>
+            <div className="col-span-full">
+              <Label>Duties</Label>
+              <Input
+                value={exp.duties}
+                onChange={(e) =>
+                  handleChange(index, 'duties', e.target.value)
+                }
+              />
+            </div>
           </div>
-          <h3 className="text-lg font-medium mb-2">You are yet to add work experience</h3>
-          <p className="text-gray-600 text-sm mb-6">Click on the button below to add experience.</p>
-
           <Button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-black hover:bg-gray-800 mb-6"
+            variant="destructive"
+            className="absolute top-2 right-2"
+            onClick={() => handleRemove(index)}
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Add experience
+            Remove
           </Button>
         </div>
-      ) : (
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium">Work Experience</h3>
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              variant="outline"
-              size="sm"
-              className="border-dashed border-2 border-gray-300 text-gray-600 hover:border-gray-400"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add experience
-            </Button>
-          </div>
+      ))}
 
-          {experiences.map((experience) => (
-            <div key={experience.id} className="border border-gray-200 p-4 rounded-lg">
-              <h4 className="font-medium">{experience.jobTitle}</h4>
-              <p className="text-sm text-gray-600">{experience.company}</p>
-              <p className="text-sm text-gray-500">
-                {experience.startDate} - {experience.endDate}
-              </p>
-              <span className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mt-2">
-                {experience.employmentType}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <Button
-        onClick={handleContinue}
-        className="w-full bg-black hover:bg-gray-800"
-      >
-        Continue
-      </Button>
-
-      <AddExperienceModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onAdd={handleAddExperience}
-      />
+      <div className="flex justify-between">
+        <Button onClick={handleAddExperience} variant="outline">
+          Add Experience
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          disabled={experiences.length === 0}
+          className={`${
+            experiences.length ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
+          }`}
+        >
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };

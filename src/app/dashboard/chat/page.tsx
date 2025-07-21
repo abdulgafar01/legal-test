@@ -1,7 +1,7 @@
 import PromptBox from '@/components/PromptBox'
 // import React, { useState } from 'react'
 
-const page = () => {
+const Page = () => {
   const messages = ""
   return (
     <div className='flex-1 flex flex-col items-center justify-center
@@ -31,4 +31,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

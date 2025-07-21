@@ -2,50 +2,78 @@
 
 import React, { useState } from 'react';
 import StepIndicator from './StepIndicator';
-import ProfileDetailsStep from './ProfileDetailsStep';
+import ProfileDetailsStep, { ProfileFormData } from './ProfileDetailsStep';
 import SpecializationStep from './SpecializationStep';
-import ExperienceStep from './ExperienceStep';
+import ExperienceStep, { Experience } from './ExperienceStep';
 import PricingStep from './PricingStep';
 import SuccessModal from './SuccessModal';
 import { Scale } from 'lucide-react';
 
-interface FormData {
-  profileDetails: Record<string, any>;
-  specializations: string[];
-  experiences: any[];
-  pricing: Record<string, any>;
+// Step-specific types
+interface ProfileDetails extends ProfileFormData {}
+
+interface PricingFormData {
+  consultationRate: string;
+  consultationCurrency: 'USD' | 'EUR' | 'GBP';
+  hireRate: string;
+  hireCurrency: 'USD' | 'EUR' | 'GBP';
+  minConsultation: string;
+  maxConsultation: string;
+  unavailableDates: Date[];
 }
 
-const Page = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [showSuccess, setShowSuccess] = useState(false);
+interface FormData {
+  profileDetails: ProfileDetails;
+  specializations: string[];
+  experiences: Experience[];
+  pricing: PricingFormData;
+}
+
+const totalSteps = 4;
+
+const Page: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<FormData>({
-    profileDetails: {},
+    profileDetails: {
+      fullName: '',
+      phoneNumber: "",
+      address: "",
+      state: "",
+      city: "",
+      profilePhoto: "",
+    },
     specializations: [],
     experiences: [],
-    pricing: {},
+    pricing: {
+      consultationRate: '',
+      consultationCurrency: 'USD',
+      hireRate: '',
+      hireCurrency: 'USD',
+      minConsultation: '',
+      maxConsultation: '',
+      unavailableDates: [],
+    },
   });
 
-  const totalSteps = 4;
-
-  const handleStepComplete = (stepData: any, stepName: keyof FormData) => {
-    setFormData(prev => ({
-      ...prev,
+  const handleStepComplete = <K extends keyof FormData>(
+    stepData: FormData[K],
+    stepName: K
+  ) => {
+    const updated = {
+      ...formData,
       [stepName]: stepData,
-    }));
+    };
+
+    setFormData(updated);
 
     if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
-      // Final step - show success
-      console.log('Form completed:', { ...formData, [stepName]: stepData });
+      console.log('Form completed:', updated);
       setShowSuccess(true);
-
-      // Hide modal after 5 seconds
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 5000);
+      setTimeout(() => setShowSuccess(false), 5000);
     }
   };
 
@@ -54,28 +82,29 @@ const Page = () => {
       case 1:
         return (
           <ProfileDetailsStep
-            onNext={data => handleStepComplete(data, 'profileDetails')}
+            onNext={(data: ProfileDetails) => handleStepComplete(data, 'profileDetails')}
             initialData={formData.profileDetails}
           />
         );
       case 2:
         return (
           <SpecializationStep
-            onNext={data => handleStepComplete(data, 'specializations')}
-            initialData={{ specializations: formData.specializations }}
+            onNext={(data: string[]) => handleStepComplete(data, 'specializations')}
+            initialData={formData.specializations}
           />
         );
       case 3:
         return (
-        <ExperienceStep
-          onNext={data => handleStepComplete(data.experiences, 'experiences')}
-          initialData={{ experiences: formData.experiences }}
-        />
+         <ExperienceStep
+         onNext={(data:Experience[]) => handleStepComplete(data, 'experiences')}
+         initialData={formData.experiences}
+       />
+
         );
       case 4:
         return (
           <PricingStep
-            onNext={data => handleStepComplete(data, 'pricing')}
+            onNext={(data: PricingFormData) => handleStepComplete(data, 'pricing')}
             initialData={formData.pricing}
           />
         );

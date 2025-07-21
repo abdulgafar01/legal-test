@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import Image from 'next/image';
 
-interface ProfileFormData {
+export interface ProfileFormData {
   fullName: string;
   phoneNumber: string;
   address: string;

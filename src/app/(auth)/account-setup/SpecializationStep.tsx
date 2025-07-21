@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -6,11 +6,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 
 interface SpecializationStepProps {
-  onNext: (data: { specializations: string[] }) => void;
-  initialData?: { specializations?: string[] };
+  onNext: (data: string[]) => void;
+  initialData?: string[];
 }
 
-const specializationsList = [
+const SPECIALIZATIONS = [
   'Criminal Law',
   'Civil Law',
   'Constitutional Law',
@@ -25,25 +25,24 @@ const specializationsList = [
   'Environmental Law',
   'Intellectual Property Law',
   'Human Rights Law',
-  'Immigration Law'
+  'Immigration Law',
 ];
 
-const SpecializationStep: React.FC<SpecializationStepProps> = ({ onNext, initialData = {} }) => {
-  const [selectedSpecializations, setSelectedSpecializations] = useState<string[]>(
-    initialData.specializations || []
-  );
+const SpecializationStep: React.FC<SpecializationStepProps> = ({
+  onNext,
+  initialData = [],
+}) => {
+  const [selected, setSelected] = useState<string[]>(initialData);
 
-  const toggleSpecialization = (specialization: string) => {
-    setSelectedSpecializations(prev =>
-      prev.includes(specialization)
-        ? prev.filter(s => s !== specialization)
-        : [...prev, specialization]
+  const toggle = (item: string) => {
+    setSelected(prev =>
+      prev.includes(item) ? prev.filter(s => s !== item) : [...prev, item]
     );
   };
 
   const handleContinue = () => {
-    if (selectedSpecializations.length > 0) {
-      onNext({ specializations: selectedSpecializations });
+    if (selected.length > 0) {
+      onNext(selected);
     }
   };
 
@@ -57,24 +56,24 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({ onNext, initial
       <div className="space-y-4 mb-8">
         <Label className="text-sm font-medium">Select your specialization(s)</Label>
         <div className="flex flex-wrap gap-3">
-          {specializationsList.map((specialization) => {
-            const isSelected = selectedSpecializations.includes(specialization);
+          {SPECIALIZATIONS.map(specialization => {
+            const checked = selected.includes(specialization);
             return (
-              <button
+              <div
                 key={specialization}
-                type="button"
-                onClick={() => toggleSpecialization(specialization)}
-                aria-pressed={isSelected}
+          
+                onClick={() => toggle(specialization)}
+                aria-pressed={checked}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-full border transition-colors ${
-                  isSelected
+                  checked
                     ? 'bg-black text-white border-black'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
                 <Checkbox
                   id={specialization}
-                  checked={isSelected}
-                  onCheckedChange={() => toggleSpecialization(specialization)}
+                  checked={checked}
+                  onCheckedChange={() => toggle(specialization)}
                   className="data-[state=checked]:bg-white data-[state=checked]:border-white data-[state=checked]:text-black"
                 />
                 <label
@@ -83,7 +82,7 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({ onNext, initial
                 >
                   {specialization}
                 </label>
-              </button>
+              </div>
             );
           })}
         </div>
@@ -91,7 +90,7 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({ onNext, initial
 
       <Button
         onClick={handleContinue}
-        disabled={selectedSpecializations.length === 0}
+        disabled={selected.length === 0}
         className="w-full disabled:bg-gray-300 disabled:cursor-not-allowed bg-black hover:bg-gray-800"
       >
         Continue
