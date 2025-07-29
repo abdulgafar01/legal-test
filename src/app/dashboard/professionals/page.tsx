@@ -28,7 +28,7 @@ const Page = () => {
     {
       id: 1,
       name: "Wade Warren",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      image: "/placeholderImage.png",
       rating: 4,
       expertise: ["Criminal Law", "Family Law"],
       qualification: "Undergraduate Law",
@@ -39,7 +39,7 @@ const Page = () => {
     {
       id: 2,
       name: "Wade Warren",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
+      image: "/placeholderImage.png",
       rating: 4,
       expertise: ["Criminal Law", "Family Law"],
       qualification: "Undergraduate Law",
@@ -50,7 +50,7 @@ const Page = () => {
     {
       id: 3,
       name: "Wade Warren",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
+      image: "/placeholderImage.png",
       rating: 4,
       expertise: ["Criminal Law", "Family Law"],
       qualification: "Undergraduate Law",
@@ -61,7 +61,7 @@ const Page = () => {
     {
       id: 4,
       name: "Wade Warren",
-      image: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop&crop=face",
+      image: "/placeholderImage.png",
       rating: 4,
       expertise: ["Criminal Law", "Family Law"],
       qualification: "Undergraduate Law",

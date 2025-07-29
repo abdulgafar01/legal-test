@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 export interface Experience {
   id: string;
@@ -75,17 +76,17 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h2 className="text-2xl font-semibold text-center mb-2">Add Work Experience</h2>
-      <p className="text-gray-600 text-center mb-8">
-        Highlight your relevant legal experience.
+    <div className="max-w-md mx-auto space-y-3 px-1.5">
+      <h2 className="text-3xl font-semibold text-center mb-1">Setup your experience</h2>
+      <p className="text-gray-600 text-sm text-center mb-2">
+       This details will be displayed on your profile for service seekers to see.
       </p>
 
       {experiences.map((exp, index) => (
         <div key={exp.id} className="border rounded-lg p-4 space-y-4 relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
             <div>
-              <Label>Job Title</Label>
+              <Label className='mb-1'>Job Title/position held</Label>
               <Input
                 value={exp.jobTitle}
                 onChange={(e) =>
@@ -94,7 +95,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label>Employment Type</Label>
+              <Label className='mb-1'>Employment Type</Label>
               <Input
                 value={exp.employmentType}
                 onChange={(e) =>
@@ -103,7 +104,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label>Industry</Label>
+              <Label className='mb-1'>Industry</Label>
               <Input
                 value={exp.industry}
                 onChange={(e) =>
@@ -112,7 +113,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label>Company</Label>
+              <Label className='mb-1'>Company</Label>
               <Input
                 value={exp.company}
                 onChange={(e) =>
@@ -121,7 +122,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label>Start Date</Label>
+              <Label className='mb-1'>Start Date</Label>
               <Input
                 type="date"
                 value={exp.startDate}
@@ -131,7 +132,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label>End Date</Label>
+              <Label className='mb-1'>End Date</Label>
               <Input
                 type="date"
                 value={exp.endDate}
@@ -141,8 +142,8 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div className="col-span-full">
-              <Label>Duties</Label>
-              <Input
+              <Label className='mb-1'>List Key Duties Performed</Label>
+              <Textarea
                 value={exp.duties}
                 onChange={(e) =>
                   handleChange(index, 'duties', e.target.value)
@@ -150,9 +151,10 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
           </div>
+
           <Button
             variant="destructive"
-            className="absolute top-2 right-2"
+            className="absolute top-1 right-1 rounded-lg"
             onClick={() => handleRemove(index)}
           >
             Remove

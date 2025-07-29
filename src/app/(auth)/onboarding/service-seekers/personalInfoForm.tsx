@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+'use client';
+
+import React, { useCallback, useMemo, useState } from 'react';
+import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { countries, Country } from '@/data/countries';
+// import { countries, Country } from '@/data/countries';
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
@@ -16,12 +18,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { countries, Country } from '@/data/countries1';
 
 interface PersonalInfoFormProps {
   onNext: () => void;
 }
 
-const qualificationOptions = ['Bachelor of Laws', 'Master of Laws (LL.M)', 'Doctor of Philosophy in Law (PhD in Law)'];
+const qualificationOptions = [
+  'Bachelor of Laws',
+  'Master of Laws (LL.M)',
+  'Doctor of Philosophy in Law (PhD in Law)',
+];
+
+const InputField = ({
+  label,
+  name,
+  placeholder,
+  value,
+  onChange,
+  required = false,
+}: {
+  label: string;
+  name: string;
+  placeholder?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+}) => (
+  <div className="mb-3">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
+    <input
+      type="text"
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+      required={required}
+    />
+  </div>
+);
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
   const [formData, setFormData] = useState({
@@ -29,100 +67,94 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
     lastName: '',
     middleName: '',
     qualification: '',
-    phoneNumber:""
+  });
+
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
+  const [selectedCountry, setSelectedCountry] = useState<Country>({
+    name: "Nigeria",
+    code: "NG",
+    flag: "🇳🇬"
   });
   
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>();
-  const [selectedCountry, setSelectedCountry] = useState<Country>({ 
-    name: "Nigeria", 
-    code: "NG", 
-    flag: "🇳🇬" 
-  });
   const [countrySearch, setCountrySearch] = useState('');
-  const filteredCountries = countries.filter(country =>
 
-    country.name.toLowerCase().includes(countrySearch.toLowerCase())
+  const filteredCountries = useMemo(() => {
+    return countries.filter(country =>
+      country.name.toLowerCase().includes(countrySearch.toLowerCase())
+    );
+  }, [countrySearch]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    },
+    []
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Personal Info:', { 
-      ...formData, 
-      dateOfBirth: dateOfBirth ? format(dateOfBirth, 'dd/MM/yyyy') : '',
-      country: selectedCountry 
-    });
-    onNext();
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      console.log('Personal Info:', {
+        ...formData,
+        dateOfBirth: dateOfBirth ? format(dateOfBirth, 'dd/MM/yyyy') : '',
+        country: selectedCountry,
+      });
+      onNext();
+    },
+    [formData, dateOfBirth, selectedCountry, onNext]
+  );
+  
+const isFormValid = formData.firstName.trim() &&
+                    formData.lastName.trim() &&
+                    formData.middleName.trim() &&
+                    formData.qualification.trim() &&
+                    dateOfBirth;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className='mb-3'>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          First name
-        </label>
-        <input
-          type="text"
-          name="fullName"
-          placeholder='e.g john'
-          value={formData.firstName}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-200 rounded-lg transition-all"
-          required
-        />
-      </div>
-      <div className='mb-3'>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Last name
-        </label>
-        <input
-          type="text"
-          name="fullName"
-          placeholder='e.g doe'
-          value={formData.lastName}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-200 rounded-lg transition-all"
-          required
-        />
-      </div>
-      <div className='mb-3'>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Middle Name(optional)
-        </label>
-        <input
-          type="text"
-          name="fullName"
-          placeholder='e.g sam'
-          value={formData.middleName}
-          onChange={handleInputChange}
-          className="w-full p-2 border border-gray-200 rounded-md transition-all"
-          required
-        />
-      </div>
+      <InputField
+        label="First Name"
+        name="firstName"
+        placeholder="e.g. John"
+        value={formData.firstName}
+        onChange={handleInputChange}
+        required
+      />
+      <InputField
+        label="Last Name"
+        name="lastName"
+        placeholder="e.g. Doe"
+        value={formData.lastName}
+        onChange={handleInputChange}
+        required
+      />
+      <InputField
+        label="Middle Name (optional)"
+        name="middleName"
+        placeholder="e.g. Sam"
+        value={formData.middleName}
+        onChange={handleInputChange}
+      />
 
-      <div className='mb-3'>
+      {/* Date of Birth */}
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Date of birth
+          Date of Birth
         </label>
         <Popover>
           <PopoverTrigger asChild>
             <button
               type="button"
               className={cn(
-                "w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-left flex items-center justify-between bg-white hover:bg-gray-50",
+                "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
                 !dateOfBirth && "text-gray-400"
               )}
             >
               <span>
                 {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "DD/MM/YYYY"}
               </span>
-              <Calendar size={20} className="text-gray-400" />
+              <CalendarIcon size={20} className="text-gray-400" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -130,91 +162,87 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
               mode="single"
               selected={dateOfBirth}
               onSelect={setDateOfBirth}
-              disabled={(date) =>
+              disabled={date =>
                 date > new Date() || date < new Date("1900-01-01")
               }
               initialFocus
-              className={cn("p-3 pointer-events-auto")}
+              className="p-3"
             />
           </PopoverContent>
         </Popover>
       </div>
 
+      {/* Qualification */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Qualification
         </label>
-        <Select value={formData.qualification} onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}>
-          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-            <SelectValue />
+        <Select
+          value={formData.qualification}
+          onValueChange={(value) => setFormData(prev => ({ ...prev, qualification: value }))}
+        >
+          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
+            <SelectValue placeholder="Select qualification" />
           </SelectTrigger>
-          <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-            {qualificationOptions.map((qualification) => (
-              <SelectItem key={qualification} value={qualification} className="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                {qualification}
+          <SelectContent>
+            {qualificationOptions.map(option => (
+              <SelectItem key={option} value={option}>
+                {option}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
+      {/* Country */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Country
-        </label>
-        <Select value={selectedCountry.name} onValueChange={(value) => {
-          const country = countries.find(c => c.name === value);
-          if (country) setSelectedCountry(country);
-        }}>
-          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-            <div className="flex items-center">
-              <span className="text-xl mr-3">{selectedCountry.flag}</span>
-              <SelectValue />
-            </div>
-          </SelectTrigger>
-          <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60">
-            <div className="p-2 border-b">
-              <input
-                type="text"
-                placeholder="Search countries..."
-                value={countrySearch}
-                onChange={(e) => setCountrySearch(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            {filteredCountries.map((country) => (
-              <SelectItem key={country.code} value={country.name} className="px-4 py-2 hover:bg-gray-50 cursor-pointer">
-                <div className="flex items-center">
-                  <span className="text-xl mr-3">{country.flag}</span>
-                  <span>{country.name}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Country of Residence
+          </label>
+          <Select
+            value={selectedCountry.name}
+            onValueChange={(value) => {
+              const country = countries.find(c => c.name === value);
+              if (country) setSelectedCountry(country);
+            }}
+          >
+        <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
+          <SelectValue placeholder="Select country" />
+        </SelectTrigger>
+        <SelectContent className="max-h-60 overflow-auto">
+          <div className="p-2 border-b">
+            <input
+              type="text"
+              placeholder="Search countries..."
+              value={countrySearch}
+              onChange={(e) => setCountrySearch(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          {filteredCountries.map(country => (
+            <SelectItem key={country.code} value={country.name}>
+              {country.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
 
-     
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Phone number
-        </label>
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          onChange={handleInputChange}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          required
-        />
-      </div>
 
-      <button
-        type="submit"
-        className="w-full bg-black text-white py-4 rounded-full font-semibold hover:bg-gray-800 transition-colors text-lg"
-      >
-        Next
-      </button>
+      {/* Submit */}
+     <button
+          type="submit"
+          disabled={!isFormValid}
+          className={cn(
+            "w-full py-2 px-4 rounded-full font-semibold transition-colors text-sm",
+            isFormValid
+              ? "bg-black text-white hover:bg-gray-800"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          )}
+        >
+          Next
+        </button>
+
     </form>
   );
 };

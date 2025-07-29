@@ -58,7 +58,7 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
     if (isFormValid) {
       const payload = { ...formData, unavailableDates: selectedDates };
       onNext(payload);
-      router.push('/onboarding/professionals');
+      router.push('/dashboard');
     }
   };
 

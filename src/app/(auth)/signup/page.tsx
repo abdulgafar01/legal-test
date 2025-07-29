@@ -6,48 +6,149 @@ import { Apple, Eye, EyeOff, Facebook, Scale } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import { registerUser } from '@/lib/api/auth';
+import { toast } from 'sonner'; // optional for user feedback
+import axios from 'axios';
+
+type FormValues = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 const Page = () => {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
-  const [emailValid, setEmailValid] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    trigger,
+    setError,
+    formState: { errors },
+  } = useForm<FormValues>({ mode: 'onChange' });
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    setEmailTouched(true);
-    setEmailValid(validateEmail(value));
-    if (!validateEmail(value)) {
-      setShowPasswordField(false);
-      setPassword('');
+  const email = watch('email');
+  const password = watch('password');
+  // const confirm_password = watch('confirmPassword');
+
+  // Mutation for user registration
+  // Using react-query for better state management and error handling
+
+      const mutation = useMutation({
+        mutationFn: async (formData: FormValues) => {
+          
+          const payload = {
+            email: formData.email,
+            password: formData.password,
+            confirm_password: formData.confirmPassword,
+            // Add any other required fields the API expects
+          };
+          return registerUser(payload);
+        },
+        onSuccess: (data, variables) => {
+          toast.success('Account created successfully!',data.message);
+          //  to store the token if the API returns one
+          if (data.token) {
+            localStorage.setItem('authToken', data.token);
+          }
+
+             if (variables.email) {
+              localStorage.setItem('userEmail', variables.email);
+            }
+          router.push('/verifyEmail');
+          console.log('Registration successful:', data);
+        },
+        
+      onError: (err: unknown) => {
+  if (!axios.isAxiosError(err)) {
+    toast.error('Unexpected error occurred. Please try again.');
+    return;
+  }
+
+  const responseData = err.response?.data;
+  const apiError = responseData?.error;
+   const details = apiError?.details || {};
+
+  // Handle network errors
+  if (err.message === 'Network Error') {
+    toast.error('Network error - please check your internet connection');
+    return;
+  }
+
+  // Show specific toast message from backend if available
+      if (details?.email) {
+        const msg = Array.isArray(details.email)
+          ? details.email.join(' ')
+          : details.email;
+
+        setError('email', {
+          type: 'server',
+          message: msg,
+        });
+
+        toast.error(msg);
+      }
+
+  //  Handle password and confirm password errors
+      if (details?.password) {
+          const msg = Array.isArray(details.password)
+            ? details.password.join(' ')
+            : details.password;
+
+          setError('password', {
+            type: 'server',
+            message: msg,
+          });
+
+          toast.error(msg);
+        }
+
+          if (details?.confirm_password) {
+        const msg = Array.isArray(details.confirm_password)
+          ? details.confirm_password.join(' ')
+          : details.confirm_password;
+
+        setError('confirmPassword', {
+          type: 'server',
+          message: msg,
+        });
+
+        toast.error(msg);
+      }
     }
-  };
+      ,
 
-  const handleSignUp = async () => {
-    if (!password) return;
-    setLoading(true);
-    await new Promise((res) => setTimeout(res, 1500));
-    console.log('Signing up with:', { email, password });
-    router.push('/verifyEmail');
-  };
+      });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (showPasswordField) {
-      handleSignUp();
-    } else if (emailValid) {
-      setShowPasswordField(true);
-    }
-  };
+
+// Function to handle form submission
+  // This will be called when the user clicks "Sign Up" after entering their email
+
+      const onSubmit = async (data: FormValues) => {
+        // If the email field is not valid, we don't proceed to show password fields
+        
+         const isEmailValid = await trigger('email');
+          if (!isEmailValid || errors.email) return;
+          
+        if (!showPasswordField) {
+          setShowPasswordField(true);
+          return;
+        }
+
+        try {
+          await mutation.mutateAsync(data);
+        } catch (error) {
+          // Error is already handled in the mutation's onError
+          console.error('Registration error:', error);
+        }
+      };
 
   return (
     <div
@@ -82,59 +183,100 @@ const Page = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Create an account</h2>
             <p className="text-gray-600 mb-4">Secure your access to legal support — anytime, anywhere.</p>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                   <Input
                     type="email"
-                    value={email}
-                    onChange={handleEmailChange}
-                    onBlur={() => setEmailTouched(true)}
-                    className={`w-full ${
-                      emailTouched
-                        ? emailValid
-                          ? 'border-yellow-400 focus:ring-yellow-400'
-                          : 'border-red-500 focus:ring-red-500'
-                        : ''
-                    }`}
                     placeholder="Enter your email"
-                    required
+                    {...register('email', {
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: 'Invalid email address',
+                      },
+                    })}
+                    onBlur={() => trigger('email')}
+                    className={`w-full ${errors.email ? 'border-red-500' : 'border-yellow-400'}`}
                   />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  )}
                 </div>
               ) : (
                 <p className="text-sm font-medium text-gray-700 mb-1">{email}</p>
               )}
 
               {showPasswordField && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pr-10"
-                      placeholder="Enter your password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    >
-                      {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                    </button>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        {...register('password', {
+                          required: 'Password is required',
+                          minLength: {
+                            value: 8,
+                            message: 'Password must be at least 8 characters',
+                          },
+                        })}
+                        className="w-full pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      >
+                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                      </button>
+                    </div>
+                    {errors.password && (
+                      <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                    )}
                   </div>
-                </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <div className="relative">
+                      <Input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Confirm your password"
+                        {...register('confirmPassword', {
+                          validate: (value) =>
+                            value === password || 'Passwords do not match',
+                        })}
+                        className="w-full pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      >
+                        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                      </button>
+                    </div>
+                    {errors.confirmPassword && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
 
               <Button
                 type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-4xl font-medium"
-                disabled={showPasswordField ? !password : !emailValid || loading}
+                disabled={mutation.isPending}
               >
-                {loading ? 'Loading...' : showPasswordField ? 'Sign Up' : 'Continue'}
+                {mutation.isPending
+                  ? 'Loading...'
+                  : showPasswordField
+                  ? 'Sign Up'
+                  : 'Continue'}
               </Button>
 
               <div className="text-center">

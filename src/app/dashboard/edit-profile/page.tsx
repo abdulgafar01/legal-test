@@ -1,15 +1,14 @@
 'use client'
 import { useState } from "react";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 // import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import Image from "next/image";
+// import Image from "next/image";
 
 const EditProfile = () => {
   const router = useRouter();
@@ -24,7 +23,7 @@ const EditProfile = () => {
     country: "US"
   });
 
-  const [hasProfilePhoto, setHasProfilePhoto] = useState(false);
+  //  const [hasProfilePhoto, setHasProfilePhoto] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -38,20 +37,20 @@ const EditProfile = () => {
     router.push("/profile"); // Using Next.js router
   };
 
-  const handlePhotoUpload = () => {
-    setHasProfilePhoto(true);
-    // toast({
-    //   title: "Photo uploaded",
-    //   description: "Your profile photo has been updated.",
-    // });
-    alert("Photo upload functionality is not implemented yet.");
-  };
+  // const handlePhotoUpload = () => {
+  //   setHasProfilePhoto(true);
+  //   // toast({
+  //   //   title: "Photo uploaded",
+  //   //   description: "Your profile photo has been updated.",
+  //   // });
+  //   alert("Photo upload functionality is not implemented yet.");
+  // };
 
   return (
     <div className="h-[calc(100vh-60px)] overflow-y-auto mb-3">
       <div className="max-w-4xl mx-auto p-6">
         {/* Header with Link for back navigation */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-3">
           <Link href="/dashboard/profile" passHref>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
@@ -60,43 +59,30 @@ const EditProfile = () => {
           <h1 className="text-2xl font-bold text-foreground">Edit Profile</h1>
         </div>
 
-        <Card className="shadow-card">
-          <CardContent className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="flex flex-col gap-4 p-3 max-w-lg">
               {/* Profile Photo Section */}
-              <div className="lg:col-span-1">
-                <div className="flex flex-col items-center">
-                  <div className="relative">
-                    {hasProfilePhoto ? (
-                      <div className="w-32 h-32 rounded-xl bg-legal-gold-light overflow-hidden">
-                        <Image 
-                          src="/api/placeholder/128/128" 
-                          alt="Profile" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-32 h-32 rounded-xl bg-legal-gold flex items-center justify-center text-legal-dark text-3xl font-bold">
-                        TA
-                      </div>
-                    )}
+               <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
+                    TA
                   </div>
-                  <div className="mt-4 text-center">
-                    <h3 className="font-medium text-foreground mb-2">Profile photo</h3>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={handlePhotoUpload}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {hasProfilePhoto ? "Change photo" : "Upload photo"}
-                    </Button>
+
+                  <div className=''>
+                  <h2 className="text-sm font-semibold text-foreground">Toluwanimi Adeyemo</h2>
+                  <p className="text-xs text-muted-foreground">Toluwanimi@gmail.com</p>
+                  <Link href="/dashboard/edit-profile" passHref>
+                     <button
+                              className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
+                              // onClick={handlePhotoUpload}
+                             
+                            >
+                             Edit photo
+                     </button>
+                  </Link>
                   </div>
                 </div>
-              </div>
 
               {/* Form Section (remaining code stays the same) */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="space-y-4 max-w-lg">
                 {/* ... all your existing form fields remain unchanged ... */}
                 <div>
                   <Label htmlFor="fullName" className="text-sm font-medium text-foreground mb-2 block">
@@ -190,7 +176,7 @@ const EditProfile = () => {
                   <Button 
                     variant="outline" 
                     size="lg" 
-                    className="w-full"
+                    className="w-full rounded-3xl"
                     onClick={handleSubmit}
                   >
                     Update
@@ -198,8 +184,8 @@ const EditProfile = () => {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+        
+        
       </div>
     </div>
   );

@@ -114,7 +114,7 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-orange-50">
+    <div className="min-h-screen bg-orange-50 mx-auto ">
       {/* Header */}
       <div className="text-center py-8">
         <div className="flex items-center justify-center mb-6">
@@ -123,16 +123,16 @@ const Page: React.FC = () => {
           </div>
           <h1 className="text-xl font-semibold ml-2">Legal AI</h1>
         </div>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-gray-600 max-w-md mx-auto text-xs">
           To make your profile visible as a professional, please complete your account setup.
         </p>
       </div>
 
-      {/* Step Indicator */}
-      <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
 
       {/* Step Content */}
-      <div className="pb-8 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto bg-white rounded-lg shadow-md mt-6">
+      <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto bg-white rounded-lg shadow-md">
+      {/* Step Indicator */}
+      <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
         {renderCurrentStep()}
       </div>
 

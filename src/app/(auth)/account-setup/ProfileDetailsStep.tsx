@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Image from 'next/image';
+import { UserCog } from 'lucide-react';
 
 export interface ProfileFormData {
   fullName: string;
@@ -91,21 +92,23 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
       <div className="space-y-6">
         {/* Profile Photo */}
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
             {formData.profilePhoto ? (
               <Image
                 src={formData.profilePhoto}
+                width={64}
+                height={64}
                 alt="Profile"
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (
-              <div className="text-gray-400 text-2xl">👤</div>
+              <div><UserCog/></div>
             )}
           </div>
           <div>
-            <Label className="text-sm font-medium">Profile photo</Label>
+            <Label className="text-sm font-medium mb-0.5">Profile photo</Label>
             <p
-              className="text-sm text-orange-500 cursor-pointer hover:underline"
+              className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
               onClick={handlePhotoClick}
             >
               {formData.profilePhoto ? 'Edit photo' : 'Upload photo'}

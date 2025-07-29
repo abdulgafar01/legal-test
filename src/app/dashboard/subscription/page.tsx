@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ArrowLeft, Crown, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+// import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -109,8 +109,9 @@ export default function Subscription() {
         </div>
 
         {/* Premium Section */}
-        <Card className="bg-black text-white mb-8 ">
-          <CardContent className="p-4">
+        <div className="bg-white text-white mb-8 p-0 max-w-xl ">
+          {/* first card */}
+          <div className="p-4 bg-black rounded-t-2xl m-0">
             <div className="text-center mb-8">
               <Crown className="w-12 h-12 mx-auto mb-4 text-legal-gold" />
               <h2 className="text-3xl font-bold mb-2">Go premium</h2>
@@ -143,35 +144,42 @@ export default function Subscription() {
                 ))}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+            
+            {/* second card */}
 
-        {/* Features */}
-        <div className="mb-8">
+          <div className="p-4 bg-[#F4F5F9] rounded-b-2xl m-0">
+                   {/* Features */}
+        <div className="mb-8 flex flex-col">
           <div className="space-y-4">
             {features.map((feature, index) => (
               <div key={index} className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-green-600" />
+                <div className="w-6 h-6 rounded-full flex items-center justify-center">
+                  <Check className="w-4 h-4 text-[#998100]" />
                 </div>
                 <span className="text-foreground">{feature}</span>
               </div>
             ))}
           </div>
-        </div>
 
         {/* Go Premium Button */}
-        <div className="text-center">
+       
           <Button 
-            variant="ghost" 
             size="sm" 
-            className="w-full max-w-md"
+            className="items-center bg-black text-white max-w-md  rounded-3xl mt-3"
             onClick={handleGoPremium}
           >
             Go premium
           </Button>
-        </div>
+     
       </div>
+          </div>
+        </div>
+
+       
+
+ </div>
+
 
       {/* Payment Summary Modal */}
       <Dialog open={showPaymentSummary} onOpenChange={setShowPaymentSummary}>

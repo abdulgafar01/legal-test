@@ -7,7 +7,7 @@ export default function Page() {
   const { setAccountType } = useAccountTypeStore();
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4 bg-slate-800"
+      className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
       style={{
         backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
@@ -66,7 +66,7 @@ export default function Page() {
         {/* Bottom Actions */}
         <div className="flex flex-col md:flex-row items-center  justify-between max-w-md mx-auto">
     
-          <Link href='/signup'
+          <Link href='/chat'
             className='text-gray-400' 
             onClick={() => setAccountType('guest')}      
             >

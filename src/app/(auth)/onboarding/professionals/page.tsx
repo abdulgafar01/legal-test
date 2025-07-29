@@ -1,5 +1,5 @@
 import React from 'react'
-import MultiStepForm from './MultiStepForm';
+import MultiStepForm from './MultiStepForm1';
 
 const Page = () => {
   return (
