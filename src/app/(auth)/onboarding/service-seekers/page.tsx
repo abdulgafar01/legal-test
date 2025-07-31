@@ -8,6 +8,7 @@ import SeekerInfo from './SeekerInfo'
 import { useCompleteProfile } from '@/hooks/useCompleteProfile'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import axios from 'axios'
 
 const Page = () => {
   const methods = useForm<seekerSchemaType>({
@@ -47,31 +48,42 @@ const Page = () => {
     onSuccess: () => {
       router.push("/dashboard")
     },
-    onError: (error: unknown) => {
-      const errors = error?.response?.data?.errors;
-      const errorData = error?.response?.data?.error;
+      onError: (error: unknown) => {
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data as {
+          error?: {
+            code?: string;
+            message?: string;
+          };
+          errors?: Record<string, string[] | string>;
+          message?: string;
+        };
 
+        const errors = data?.errors;
+        const errorData = data?.error;
 
-      if (errorData?.code === "USER_NOT_FOUND") {
-        toast.error(errorData.message || "User not found or email not verified");
-        router.push("/verifyEmail"); 
-        return;
-      }
-      
-      if (errors && typeof errors === "object") {
-        Object.entries(errors).forEach(([field, messages]) => {
-          setError(field as keyof seekerSchemaType, {
-            type: "manual",
-            message: Array.isArray(messages) ? messages[0] : String(messages),
-          })
-        })
-      }
-      else if (typeof error?.response?.data?.message === 'string') {
-        toast.error(error.response.data.message);
+        if (errorData?.code === "USER_NOT_FOUND") {
+          toast.error(errorData.message || "User not found or email not verified");
+          router.push("/verifyEmail");
+          return;
+        }
+
+        if (errors && typeof errors === "object") {
+          Object.entries(errors).forEach(([field, messages]) => {
+            setError(field as keyof seekerSchemaType, {
+              type: "manual",
+              message: Array.isArray(messages) ? messages[0] : String(messages),
+            });
+          });
+        } else if (typeof data?.message === "string") {
+          toast.error(data.message);
+        } else {
+          toast.error("Something went wrong. Please try again.");
+        }
       } else {
-        toast.error("Something went wrong. Please try again.");
+        toast.error("An unexpected error occurred.");
       }
-    },
+    }, 
   })
     console.log('Submitted Data:', payload)
     // Submit to API or backend handler here
