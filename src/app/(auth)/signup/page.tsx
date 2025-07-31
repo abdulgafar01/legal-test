@@ -43,13 +43,24 @@ const Page = () => {
 
       const mutation = useMutation({
         mutationFn: async (formData: FormValues) => {
-          
+
+          // const accountType = localStorage.getItem('accountType');
           const payload = {
             email: formData.email,
             password: formData.password,
             confirm_password: formData.confirmPassword,
             // Add any other required fields the API expects
+            // user_type:
+            //   accountType === 'service_seeker'
+            //     ? 'service_seeker'
+            //     : accountType === 'practitional'
+            //     ? 'practitional'
+            //     : null,
           };
+
+        //   if (accountType === 'service_seeker' || accountType === 'practitional') {
+        //   payload.user_type = accountType;
+        // }
           return registerUser(payload);
         },
         onSuccess: (data, variables) => {
@@ -71,12 +82,12 @@ const Page = () => {
             toast.error('Unexpected error occurred. Please try again.');
             return;
           }
-if (axios.isAxiosError(err)) {
-  // Handle network errors first
-  if (err.message === 'Network Error') {
-    toast.error('Network error - please check your internet connection');
-    return;
-  }
+      if (axios.isAxiosError(err)) {
+        // Handle network errors first
+        if (err.message === 'Network Error') {
+          toast.error('Network error - please check your internet connection');
+          return;
+        }
 
   const responseData = err.response?.data as {
     error?: {
