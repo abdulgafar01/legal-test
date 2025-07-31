@@ -67,63 +67,77 @@ const Page = () => {
         },
         
       onError: (err: unknown) => {
-  if (!axios.isAxiosError(err)) {
-    toast.error('Unexpected error occurred. Please try again.');
-    return;
-  }
-
-  const responseData = err.response?.data;
-  const apiError = responseData?.error;
-   const details = apiError?.details || {};
-
-  // Handle network errors
+          if (!axios.isAxiosError(err)) {
+            toast.error('Unexpected error occurred. Please try again.');
+            return;
+          }
+if (axios.isAxiosError(err)) {
+  // Handle network errors first
   if (err.message === 'Network Error') {
     toast.error('Network error - please check your internet connection');
     return;
   }
 
-  // Show specific toast message from backend if available
-      if (details?.email) {
-        const msg = Array.isArray(details.email)
-          ? details.email.join(' ')
-          : details.email;
+  const responseData = err.response?.data as {
+    error?: {
+      details?: Record<string, string | string[]>;
+    };
+  };
 
-        setError('email', {
-          type: 'server',
-          message: msg,
-        });
+  const apiError = responseData?.error;
+  const details = apiError?.details || {};
+  const detail = details?.detail;
 
-        toast.error(msg);
-      }
+  if (detail) {
+    toast.error(detail);
+  }
 
-  //  Handle password and confirm password errors
-      if (details?.password) {
-          const msg = Array.isArray(details.password)
-            ? details.password.join(' ')
-            : details.password;
+  if (details?.email) {
+    const msg = Array.isArray(details.email)
+      ? details.email.join(' ')
+      : details.email;
 
-          setError('password', {
-            type: 'server',
-            message: msg,
-          });
+    setError('email', {
+      type: 'server',
+      message: msg,
+    });
 
-          toast.error(msg);
-        }
+    toast.error(msg);
+  }
 
-          if (details?.confirm_password) {
-        const msg = Array.isArray(details.confirm_password)
-          ? details.confirm_password.join(' ')
-          : details.confirm_password;
+  if (details?.password) {
+    const msg = Array.isArray(details.password)
+      ? details.password.join(' ')
+      : details.password;
 
-        setError('confirmPassword', {
-          type: 'server',
-          message: msg,
-        });
+    setError('password', {
+      type: 'server',
+      message: msg,
+    });
 
-        toast.error(msg);
-      }
-    }
-      ,
+    toast.error(msg);
+  }
+
+  if (details?.confirm_password) {
+    const msg = Array.isArray(details.confirm_password)
+      ? details.confirm_password.join(' ')
+      : details.confirm_password;
+
+    setError('confirmPassword', {
+      type: 'server',
+      message: msg,
+    });
+
+    toast.error(msg);
+  }
+
+  // Optional: catch-all if no specific message is shown
+  if (!detail && !details?.email && !details?.password && !details?.confirm_password) {
+    toast.error('Server did not return a specific error message.');
+  }
+}
+
+  }
 
       });
 
