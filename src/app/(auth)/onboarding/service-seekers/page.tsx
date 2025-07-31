@@ -47,7 +47,7 @@ const Page = () => {
     onSuccess: () => {
       router.push("/dashboard")
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errors = error?.response?.data?.errors;
       const errorData = error?.response?.data?.error;
 
