@@ -63,16 +63,14 @@ const Page = () => {
         // }
           return registerUser(payload);
         },
-        onSuccess: (data, variables) => {
+        onSuccess: (data) => {
           toast.success('Account created successfully!',data.message);
           //  to store the token if the API returns one
           if (data.token) {
             localStorage.setItem('authToken', data.token);
           }
 
-             if (variables.email) {
-              localStorage.setItem('userEmail', variables.email);
-            }
+            
           router.push('/verifyEmail');
           console.log('Registration successful:', data);
         },

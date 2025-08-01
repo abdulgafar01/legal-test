@@ -30,7 +30,7 @@ const SeekerInfo = () => {
 
 const { data: countries = [] } = useCountries()
 
-  const selectedDate: Date | undefined = watch("dateOfBirth")
+  const selectedDate: Date | undefined = watch("date_of_birth")
   const selected = watch("country") 
   // const selectedCountry = countries.find((c) => c.name === selected)
   const selectedDialCode = countries.find((c) => c.name === selected)
@@ -53,12 +53,12 @@ const { data: countries = [] } = useCountries()
         <label className="block text-sm font-medium">First Name</label>
         <input
           type="text"
-          {...register("firstName")}
+          {...register("first_name")}
           className="w-full border rounded-md p-2"
         />
-        {errors.firstName && (
+        {errors.first_name && (
           <p className="text-red-500 text-sm">
-            {errors.firstName.message as string}
+            {errors.first_name.message as string}
           </p>
         )}
       </div>
@@ -67,19 +67,19 @@ const { data: countries = [] } = useCountries()
         <label className="block text-sm font-medium">Last Name</label>
         <input
           type="text"
-          {...register("lastName")}
+          {...register("last_name")}
           className="w-full border rounded-md p-2"
         />
-        {errors.lastName && (
+        {errors.last_name && (
           <p className="text-red-500 text-sm">
-            {errors.lastName.message as string}
+            {errors.last_name.message as string}
           </p>
         )}
       </div>
             
       {/* Date of Birth with Calendar Popover */}
       <div className="">
-        <label htmlFor="dateOfBirth" className="text-sm font-medium">
+        <label htmlFor="date_of_birth" className="text-sm font-medium">
           Date of Birth
         </label>
         <Popover>
@@ -104,15 +104,15 @@ const { data: countries = [] } = useCountries()
              onSelect={(date) => {
                 if (date) {
                   const formatted = format(date, "MM-dd-yyyy")
-                  setValue("dateOfBirth", formatted, { shouldValidate: true })
+                  setValue("date_of_birth", formatted, { shouldValidate: true })
                 }
               }}
             />
           </PopoverContent>
         </Popover>
-        {errors.dateOfBirth && (
+        {errors.date_of_birth && (
           <p className="text-red-500 text-sm">
-            {errors.dateOfBirth.message as string}
+            {errors.date_of_birth.message as string}
           </p>
         )}
       </div>
@@ -139,7 +139,7 @@ const { data: countries = [] } = useCountries()
           variant="outline"
           className={cn(
             "flex items-center gap-2 min-w-[120px] justify-between p-2 rounded-md",
-            errors.phoneNumber ? "border-red-500" : ""
+            errors.phone_number ? "border-red-500" : ""
           )}
         >
           {selectedDialCode ? (
@@ -169,7 +169,7 @@ const { data: countries = [] } = useCountries()
                   setValue("country", country.name)
                   setValue("dialCode", country.dial_code)
                   const phone = getValues("rawPhone") || ""
-                  setValue("phoneNumber", `${country.dial_code}${phone}`)
+                  setValue("phone_number", `${country.dial_code}${phone}`)
                 }}
               >
                 <span className="flex items-center gap-2">
@@ -194,7 +194,7 @@ const { data: countries = [] } = useCountries()
         const rawPhone = e.target.value.replace(/^0+/, "")
         const dialCode = watch("dialCode") || ""
         setValue("rawPhone", rawPhone) // not submitted
-        setValue("phoneNumber", `${dialCode}${rawPhone}`, {
+        setValue("phone_number", `${dialCode}${rawPhone}`, {
           shouldValidate: true,
         })
       }}
@@ -202,9 +202,9 @@ const { data: countries = [] } = useCountries()
     />
   </div>
 
-  {errors.phoneNumber && (
+  {errors.phone_number && (
     <p className="text-red-500 text-sm mt-1">
-      {errors.phoneNumber.message as string}
+      {errors.phone_number.message as string}
     </p>
   )}
 </div>

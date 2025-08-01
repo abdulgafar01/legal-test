@@ -10,6 +10,7 @@ import { assets } from '@/assets/assets';
 import SidebarLinks from './Sidebar-Links';
 import ChatLabel from './ChatLabel';
 import { Button } from './ui/button';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface SidebarProps {
   expand: boolean;
@@ -24,6 +25,11 @@ const Sidebar: React.FC<SidebarProps> = ({
   showMobileMenu,
   toggleSidebar,
 }) => {
+
+   const { data: user, isLoading, error } = useCurrentUser();
+
+  console.log("the user", user);
+  
   const sidebarBaseClasses =
     'flex flex-col bg-orange-50 pt-7 transition-all z-50 h-screen';
 
@@ -139,20 +145,35 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         {expand && (
           <div className="p-4 border-t border-gray-200 w-full">
-            <div className="flex items-center gap-3">
+            <Link href="/dashboard/profile">
+            <div 
+             onClick={() => {
+              if (isMobile && toggleSidebar) {
+                toggleSidebar();
+              }
+            }}
+            className="flex items-center gap-3 cursor-pointer">
               <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
                 <span className="text-sm font-medium text-orange-800">OR</span>
               </div>
-              <div>
-                <div className="text-xs font-medium text-gray-900">Toluwanimi Adeyemo</div>
-                <div className="text-[10px] text-gray-500">toluwanimi@legalAi.com</div>
-              </div>
+             <div>
+                        {isLoading ? (
+                          <div className='text-xs'>...</div>
+                        ) : error ? (
+                          <div>Error loading user data</div>
+                        ) : (
+                          <>
+                            <div className="text-xs font-medium text-gray-900">{user?.data.first_name}</div>
+                            <div className="text-[10px] text-gray-500">{user?.data.email}</div>
+                          </>
+                        )}
+                </div>
+
               <Button variant="ghost" size="icon" asChild>
-                <Link href="/dashboard/profile">
                   <User className="w-4 h-4" />
-                </Link>
               </Button>
             </div>
+            </Link>
           </div>
         )}
       </div>

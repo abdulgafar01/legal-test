@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const Page = () => {
     const router = useRouter();
+    const {data: user} = useCurrentUser();
   
   const menuItems = [
     {
@@ -64,13 +66,13 @@ const Page = () => {
 
                   <div className=''>
                   <h2 className="text-sm font-semibold text-foreground">Toluwanimi Adeyemo</h2>
-                  <p className="text-xs text-muted-foreground">Toluwanimi@gmail.com</p>
+                  <p className="text-xs text-muted-foreground">{user.data.email}</p>
                   <Link href="/dashboard/edit-profile" passHref>
                      <button
                               className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
                              
                             >
-                             Edit photo
+                             Edit Profile
                      </button>
                   </Link>
                   </div>

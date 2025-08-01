@@ -1,18 +1,18 @@
 import { z } from "zod"
 
 export const seekerSchema = z.object({
-  firstName: z
+  first_name: z
     .string()
     .min(1, "First name is required")
     .max(50, "First name is too long"),
 
-  lastName: z
+  last_name: z
     .string()
     .min(1, "Last name is required")
     .max(50, "Last name is too long"),
 
 
-    phoneNumber: z
+    phone_number: z
     .string()
     .min(1, "phone number is required"),
 
@@ -29,7 +29,7 @@ export const seekerSchema = z.object({
         .min(1, "city is required"),
 
 
-  dateOfBirth: z
+  date_of_birth: z
     .string()
     .regex(
       /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-\d{4}$/,

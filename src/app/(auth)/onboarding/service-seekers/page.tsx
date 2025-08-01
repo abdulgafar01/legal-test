@@ -14,13 +14,13 @@ const Page = () => {
   const methods = useForm<seekerSchemaType>({
     resolver: zodResolver(seekerSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
+      first_name: '',
+      last_name: '',
+      phone_number: '',
       country: '',
       state: '',
       city: '',
-      dateOfBirth: '',
+      date_of_birth: '',
       
     },
     mode: 'onTouched',
@@ -54,6 +54,9 @@ const Page = () => {
           error?: {
             code?: string;
             message?: string;
+            details?:{
+                detail?: string;
+            }
           };
           errors?: Record<string, string[] | string>;
           message?: string;
@@ -62,11 +65,32 @@ const Page = () => {
         const errors = data?.errors;
         const errorData = data?.error;
 
+         if (errorData?.code === 'not_authenticated') {
+            toast.error(errorData.message || "You must be logged in to complete this action.");
+            
+             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+
+            router.push('/login'); // or redirect to login page
+            return;
+          }
+
         if (errorData?.code === "USER_NOT_FOUND") {
           toast.error(errorData.message || "User not found or email not verified");
-          router.push("/verifyEmail");
+          router.push("/signup");
           return;
         }
+   if (errorData?.code === 'VALIDATION_ERROR') {
+      const detailMessage = errorData.details?.detail || errorData.message;
+      toast.error(detailMessage || 'Validation error occurred.');
+
+      // This is to redirect if profile is already complete
+      if (detailMessage === 'Profile is already complete') {
+        router.push('/dashboard');
+      }
+
+      return;
+    }
 
         if (errors && typeof errors === "object") {
           Object.entries(errors).forEach(([field, messages]) => {
