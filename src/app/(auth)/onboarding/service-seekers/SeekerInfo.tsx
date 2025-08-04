@@ -207,7 +207,7 @@ const { data: countries = [] } = useCountries()
       {errors.phone_number.message as string}
     </p>
   )}
-</div>
+      </div>
 
 
 

@@ -12,21 +12,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useUpdateUserProfile } from "@/hooks/useUpdateUserProfile";
+import { useCountries } from "@/hooks/useCountries";
+
 
 const EditProfile = () => {
   const router = useRouter();
   const { data: user } = useCurrentUser();
   const { mutate: updateProfile, isPending } = useUpdateUserProfile();
-
+  const { data: countries = [] } = useCountries()
+  
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     email: '',
     phone_number: '',
+    rawPhone: "",
     address: '',
     state: '',
     city: '',
@@ -35,19 +40,29 @@ const EditProfile = () => {
 
   // Populate form with user data
   useEffect(() => {
-    if (user?.data) {
-      setFormData({
-        first_name: user.data.first_name || '',
-        last_name: user.data.last_name || '',
-        email: user.data.email || '',
-        phone_number: user.data.phone_number || '',
-        address: user.data.address || '',
-        state: user.data.state || '',
-        city: user.data.city || '',
-        country: user.data.country || '',
-      });
-    }
-  }, [user]);
+  if (user?.data) {
+    const fullPhone = user.data.phone_number || "";
+    const matchedDialCode = countries.find((c) =>
+      fullPhone.startsWith(c.dial_code)
+    );
+
+    const dialCode = matchedDialCode?.dial_code || "";
+    const rawPhone = fullPhone.replace(dialCode, "");
+
+    setFormData({
+      first_name: user.data.first_name || "",
+      last_name: user.data.last_name || "",
+      email: user.data.email || "",
+      phone_number: fullPhone,
+      rawPhone: rawPhone,
+      address: user.data.address || "",
+      state: user.data.state || "",
+      city: user.data.city || "",
+      country: matchedDialCode?.code || user.data.country || "",
+    });
+  }
+}, [user]);
+
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -125,29 +140,59 @@ const EditProfile = () => {
             </div>
 
             <div>
-              <Label htmlFor="phone_number">Phone number</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={formData.country}
-                  onValueChange={(value) => handleInputChange("country", value)}
-                >
-                  <SelectTrigger className="w-20">
-                    <SelectValue placeholder="Country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NG">NG</SelectItem>
-                    <SelectItem value="US">US</SelectItem>
-                    <SelectItem value="UK">UK</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input
-                  id="phone_number"
-                  value={formData.phone_number}
-                  onChange={(e) => handleInputChange("phone_number", e.target.value)}
-                  className="flex-1"
-                  placeholder="+234 000 000 0000"
+  <Label htmlFor="phone_number">Phone number</Label>
+  <div className="flex gap-2">
+    {/* Country Select with Flags */}
+    <Select
+      value={formData.country}
+      onValueChange={(countryCode) => {
+        const selected = countries.find((c) => c.code === countryCode);
+        if (!selected) return;
+
+        handleInputChange("country", selected.code);
+
+        // Strip existing dial code from phone if already applied
+        const rawPhone = formData.phone_number.replace(/^\+\d+/, "").trim();
+        const updatedPhone = `${selected.dial_code}${rawPhone}`;
+
+        handleInputChange("phone_number", updatedPhone);
+      }}
+    >
+      <SelectTrigger className="w-fit">
+        <SelectValue placeholder="Country" />
+      </SelectTrigger>
+      <SelectContent>
+        {countries
+          .filter((c) => c.is_active)
+          .map((country) => (
+            <SelectItem key={country.code} value={country.code}>
+              <div className="flex items-center gap-2">
+                <Icon
+                  icon={`flag:${country.code.toLowerCase()}-4x3`}
+                  className="h-5 w-5 rounded-sm"
                 />
+                ({country.dial_code})
               </div>
+            </SelectItem>
+          ))}
+      </SelectContent>
+    </Select>
+
+        {/* Raw Phone Input */}
+        <Input
+          id="phone_number"
+          placeholder="7012345678"
+          value={formData.phone_number} // show raw phone
+          onChange={(e) => {
+            const raw = e.target.value;
+            const dialCode =
+              countries.find((c) => c.code === formData.country)?.dial_code || "";
+            handleInputChange("rawPhone", raw);
+            // handleInputChange("phone_number", `${dialCode}${raw}`);
+          }}
+          className="flex-1"
+        />
+  </div>
             </div>
 
             <div>
