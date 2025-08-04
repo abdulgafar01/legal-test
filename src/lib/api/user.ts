@@ -15,3 +15,24 @@ export const fetchCurrentUser = async () => {
 
   return response.data;
 };
+
+
+
+// update user profile
+export const updateUserProfile = async (updatedData:unknown) => {
+  const token = localStorage.getItem('accessToken');
+  if (!token) throw new Error('No access token found');
+
+  const response = await axios.patch(
+    `${API_BASE_URL}/profile/update_profile/`,
+    updatedData,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};

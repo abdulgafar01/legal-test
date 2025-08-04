@@ -163,7 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                           <div>Error loading user data</div>
                         ) : (
                           <>
-                            <div className="text-xs font-medium text-gray-900">{user?.data.first_name}</div>
+                            <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
                             <div className="text-[10px] text-gray-500">{user?.data.email}</div>
                           </>
                         )}
