@@ -51,7 +51,7 @@ const Page = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-3">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5{user.data.email}" />
           </Button>
           <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         </div>
@@ -65,8 +65,8 @@ const Page = () => {
                   </div>
 
                   <div className=''>
-                  <h2 className="text-sm font-semibold text-foreground">Toluwanimi Adeyemo</h2>
-                  <p className="text-xs text-muted-foreground">{user.data.email}</p>
+                  <h2 className="text-sm font-semibold text-foreground">{user.data.first_name} {user.data.last_name}</h2>
+                  <p className="text-xs text-muted-foreground"></p>
                   <Link href="/dashboard/edit-profile" passHref>
                      <button
                               className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
