@@ -61,7 +61,7 @@ const EditProfile = () => {
       country: matchedDialCode?.code || user.data.country || "",
     });
   }
-}, [user]);
+}, [user, countries]);
 
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
@@ -185,8 +185,8 @@ const EditProfile = () => {
           value={formData.phone_number} // show raw phone
           onChange={(e) => {
             const raw = e.target.value;
-            const dialCode =
-              countries.find((c) => c.code === formData.country)?.dial_code || "";
+            // const dialCode =
+              // countries.find((c) => c.code === formData.country)?.dial_code || "";
             handleInputChange("rawPhone", raw);
             // handleInputChange("phone_number", `${dialCode}${raw}`);
           }}
