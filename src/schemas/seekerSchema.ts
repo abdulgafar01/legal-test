@@ -29,12 +29,13 @@ export const seekerSchema = z.object({
         .min(1, "city is required"),
 
 
-  date_of_birth: z
-    .string()
-    .regex(
-      /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-\d{4}$/,
-      "Date must be in MM-DD-YYYY format"
-    ),
+ date_of_birth: z
+  .string()
+  .regex(
+    /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/,
+    "Date must be in YYYY-MM-DD format"
+  ),
+
 })
 
 export type seekerSchemaType = z.infer<typeof seekerSchema>
