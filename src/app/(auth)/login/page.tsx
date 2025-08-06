@@ -58,17 +58,25 @@ const Page = () => {
           localStorage.setItem('refreshToken', tokens.refresh);
 
           // Destructure necessary info
-          const { is_profile_complete, user_type } = user;
+          const { is_profile_complete, user_type, is_email_verified } = user;
 
           // Conditional routing
-        if (is_profile_complete) {
+          if (is_email_verified === false) {
+            router.push('/verifyEmail');
+            return;
+          }
+
+        if (is_profile_complete === true) {
             router.push('/dashboard');
           } else {
             if (user_type === 'service_seeker') {
               router.push('/onboarding/service-seekers');
             } else if (user_type === 'practitional') {
               router.push('/onboarding/professionals');
-            } else {
+            }
+        
+
+             else {
               // Optional: handle unknown user_type
               toast.error('Unknown user type. Cannot continue.');
             }

@@ -118,7 +118,104 @@ const { data: countries = [] } = useCountries()
       </div>
 
 
+  
+
+
+    {/* Phone Number Input with Flag + Dial Code */}
+      <div>
+     <label className="block text-sm font-medium mb-1">Phone Number</label>
+      <div className="flex gap-2">
+        {/* Dial Code Dropdown */}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "flex items-center gap-2 min-w-[120px] justify-between p-2 rounded-md",
+                errors.phone_number ? "border-red-500" : ""
+              )}
+            >
+              {selectedDialCode ? (
+                <>
+                  <Icon
+                    icon={`flag:${selectedDialCode.code.toLowerCase()}-4x3`}
+                    className="h-5 w-5 rounded-sm"
+                  />
+                  <span>{selectedDialCode.dial_code}</span>
+                </>
+              ) : (
+                <span>Select</span>
+              )}
+              <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[260px] p-0">
+            <Command>
+              <CommandInput placeholder="Search country..." />
+              <CommandEmpty>No country found.</CommandEmpty>
+              <CommandGroup>
+                {countries.filter(c => c.is_active).map((country) => (
+                  <CommandItem
+                    key={country.code}
+                    value={country.name}
+                    onSelect={() => {
+                      setValue("country", country.name)
+                      setValue("dialCode", country.dial_code)
+                      const phone = getValues("rawPhone") || ""
+                      setValue("phone_number", `${country.dial_code}${phone}`)
+                    }}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Icon
+                        icon={`flag:${country.code.toLowerCase()}-4x3`}
+                        className="h-5 w-5 rounded-sm"
+                      />
+                      {country.name} ({country.dial_code})
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {/* Text Input */}
+        <input
+          type="text"
+          placeholder="7012345678"
+          onChange={(e) => {
+            const rawPhone = e.target.value.replace(/^0+/, "")
+            const dialCode = watch("dialCode") || ""
+            setValue("rawPhone", rawPhone) // not submitted
+            setValue("phone_number", `${dialCode}${rawPhone}`, {
+              shouldValidate: true,
+            })
+
+          }}
+          className="w-full border rounded-md p-2"
+        />
+      </div>
+
+        {/* Hidden Fields for phone_number and rawPhone
+        <input type="hidden" {...register("phone_number")} />
+        <input type="hidden" {...register("rawPhone")} />
+        <input type="hidden" {...register("dialCode")} /> */}
+
+        {errors.phone_number && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors.phone_number.message as string}
+          </p>
+        )}
+      </div>
+
+
+
+
+
+
         {/* Country Selection */}
+
+              {/* Country Selection */}
         <CountryCombobox/>
         {/* {errors.country && (
           <p className="text-red-500 text-sm">
@@ -126,92 +223,6 @@ const { data: countries = [] } = useCountries()
           </p>
         )} */}
     
-
-
-    {/* Phone Number Input with Flag + Dial Code */}
-      <div>
-  <label className="block text-sm font-medium mb-1">Phone Number</label>
-  <div className="flex gap-2">
-    {/* Dial Code Dropdown */}
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "flex items-center gap-2 min-w-[120px] justify-between p-2 rounded-md",
-            errors.phone_number ? "border-red-500" : ""
-          )}
-        >
-          {selectedDialCode ? (
-            <>
-              <Icon
-                icon={`flag:${selectedDialCode.code.toLowerCase()}-4x3`}
-                className="h-5 w-5 rounded-sm"
-              />
-              <span>{selectedDialCode.dial_code}</span>
-            </>
-          ) : (
-            <span>Select</span>
-          )}
-          <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[260px] p-0">
-        <Command>
-          <CommandInput placeholder="Search country..." />
-          <CommandEmpty>No country found.</CommandEmpty>
-          <CommandGroup>
-            {countries.filter(c => c.is_active).map((country) => (
-              <CommandItem
-                key={country.code}
-                value={country.name}
-                onSelect={() => {
-                  setValue("country", country.name)
-                  setValue("dialCode", country.dial_code)
-                  const phone = getValues("rawPhone") || ""
-                  setValue("phone_number", `${country.dial_code}${phone}`)
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  <Icon
-                    icon={`flag:${country.code.toLowerCase()}-4x3`}
-                    className="h-5 w-5 rounded-sm"
-                  />
-                  {country.name} ({country.dial_code})
-                </span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-
-    {/* Text Input */}
-    <input
-      type="text"
-      placeholder="7012345678"
-      onChange={(e) => {
-        const rawPhone = e.target.value.replace(/^0+/, "")
-        const dialCode = watch("dialCode") || ""
-        setValue("rawPhone", rawPhone) // not submitted
-        setValue("phone_number", `${dialCode}${rawPhone}`, {
-          shouldValidate: true,
-        })
-      }}
-      className="w-full border rounded-md p-2"
-    />
-  </div>
-
-  {errors.phone_number && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors.phone_number.message as string}
-    </p>
-  )}
-      </div>
-
-
-
-        {/* Country Selection */}
       
       <div>
         {/* <label className="block text-sm font-medium">Country</label>

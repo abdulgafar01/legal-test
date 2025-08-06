@@ -65,7 +65,7 @@ export const verifyEmail = async (data: { email: string;   verification_code: st
 
 // RESEND VERIFICATION CODE
 export const resendVerificationCode = async (email: string) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/verify_reset_code/`, { email });
+  const response = await axios.post(`${API_BASE_URL}/auth/resend_verification/`, { email });
   return response.data;
 };
 
