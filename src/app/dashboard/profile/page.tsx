@@ -10,6 +10,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 const Page = () => {
     const router = useRouter();
     const {data: user} = useCurrentUser();
+    if (!user) return "login to view your profile";
   
   const menuItems = [
     {
@@ -51,7 +52,7 @@ const Page = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-3">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5{user.data.email}" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         </div>
@@ -61,11 +62,11 @@ const Page = () => {
             
                 <div className="flex items-center space-x-4">
                   <div className="w-16 h-16 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
-                    TA
+                    {user?.data?.first_name?.charAt(0) || "?"}
                   </div>
 
                   <div className=''>
-                  <h2 className="text-sm font-semibold text-foreground">{user.data.first_name} {user.data.last_name}</h2>
+                  <h2 className="text-sm font-semibold text-foreground">{user?.data?.first_name} {user?.data?.last_name}</h2>
                   <p className="text-xs text-muted-foreground"></p>
                   <Link href="/dashboard/edit-profile" passHref>
                      <button

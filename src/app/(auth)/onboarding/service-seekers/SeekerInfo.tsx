@@ -91,7 +91,7 @@ const { data: countries = [] } = useCountries()
               }`}
             >
               {selectedDate
-                ? format(selectedDate, "YYYY-MM-DD")
+                ? format(selectedDate, "yyyy-MM-dd")
                 : "Select date"}
               <ChevronDownIcon className="ml-2 h-4 w-4 text-muted-foreground" />
             </Button>
@@ -103,7 +103,7 @@ const { data: countries = [] } = useCountries()
               captionLayout="dropdown"
              onSelect={(date) => {
                 if (date) {
-                  const formatted = format(date, "YYYY-MM-DD")
+                  const formatted = format(date, "yyyy-MM-dd")
                   setValue("date_of_birth", formatted, { shouldValidate: true })
                 }
               }}
