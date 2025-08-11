@@ -1,7 +1,7 @@
 // lib/api/user.ts
 import axios from 'axios';
 
-const API_BASE_URL = 'http://ec2-40-172-8-211.me-central-1.compute.amazonaws.com/api/v1';
+const API_BASE_URL = '/api/v1';
 
 export const fetchCurrentUser = async () => {
   if (typeof window === 'undefined') return null;

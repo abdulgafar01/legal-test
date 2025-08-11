@@ -2,7 +2,7 @@ import { seekerSchemaType } from '@/schemas/seekerSchema';
 import axios from 'axios';
 // import instance from '../axios';
 
-const API_BASE_URL = 'http://ec2-40-172-8-211.me-central-1.compute.amazonaws.com/api/v1';
+const API_BASE_URL = '/api/v1';
 
 
 // Register User
