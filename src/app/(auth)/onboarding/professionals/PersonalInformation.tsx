@@ -24,11 +24,12 @@ const PersonalInformation = () => {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium">First Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
         <input
           type="text"
           {...register("firstName")}
-          className="w-full border rounded p-2"
+          className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+          placeholder="e.g john"
         />
         {errors.firstName && (
           <p className="text-red-500 text-sm">
@@ -38,11 +39,12 @@ const PersonalInformation = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Last Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
         <input
           type="text"
           {...register("lastName")}
-          className="w-full border rounded p-2"
+          placeholder="e.g doe"
+          className="w-full border p-2 border-gray-200 rounded-lg transition-all"
         />
         {errors.lastName && (
           <p className="text-red-500 text-sm">
@@ -52,11 +54,12 @@ const PersonalInformation = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Middle Name</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
         <input
           type="text"
           {...register("middleName")}
-          className="w-full border rounded p-2"
+          placeholder="e.g sam"
+          className="w-full border rounded-lg p-2"
         />
         {errors.middleName && (
           <p className="text-red-500 text-sm">
@@ -66,11 +69,11 @@ const PersonalInformation = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Country</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
         <input
           type="text"
           {...register("country")}
-          className="w-full border rounded p-2"
+          className="w-full border rounded-lg p-2"
         />
         {errors.country && (
           <p className="text-red-500 text-sm">
@@ -80,11 +83,11 @@ const PersonalInformation = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Qualification</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
         <input
           type="text"
           {...register("qualification")}
-          className="w-full border rounded p-2"
+          className="w-full border rounded-lg p-2"
         />
         {errors.qualification && (
           <p className="text-red-500 text-sm">
@@ -95,7 +98,7 @@ const PersonalInformation = () => {
 
       {/* Date of Birth with Calendar Popover */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="dateOfBirth" className="text-sm font-medium">
+        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
           Date of Birth
         </label>
         <Popover>

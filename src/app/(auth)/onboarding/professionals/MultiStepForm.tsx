@@ -25,24 +25,24 @@ const steps: Step[] = [
   {
     id: '1',
     title: 'Personal Information',
-    description: 'Kindly enter your accurate details as they appear on your license.',
+    description: 'Kindly enter your personal details',
     component: PersonalInformation,
     inputs: ['firstName', 'lastName', 'middleName', 'country', 'qualification', 'dateOfBirth'],
   },
   {
     id: '2',
     title: 'Lincence Information',
-    description: 'Enter your address information.',
+    description: 'Kindly enter your accurate details as they appear on your license.',
     component: License,
-    inputs: ['country', 'dateOfIncorporation', 'typeOfLicense', 'proofOfLicence'],
+    inputs: ['country', 'date_of_license', 'typeOfLicense'],
   },
   {
     id: '3',
-    title: 'Work Experience',
+    title: 'Certification Information',
     description:
-      'Enter your work experience. This information will be used to evaluate your application.',
+      'Kindly enter your accurate personal details as they appear on your Certificate',
     component: Certificate,
-    inputs: ['country', 'dateOfIncorporation', 'typeOfCertification', 'proofOfCertification'],
+    inputs: ['country', 'date_of_license', 'typeOfCertification'],
   },
 ];
 
@@ -137,12 +137,18 @@ const MultiStepForm: React.FC = () => {
                         </button>
 
                   ) : (
-                    <button
-                      type="submit"
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-                    >
-                      Submit
-                    </button>
+                         <button
+                           type="submit"
+                           disabled={!isStepValid}
+                           className={cn(
+                             "w-full py-2 px-4 cursor-pointer rounded-full font-semibold transition-colors text-sm",
+                             isStepValid
+                               ? "bg-black text-white hover:bg-gray-800"
+                               : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                           )}
+                         >
+                           Submit
+                         </button>
                   )}
                 </div>
               </form>

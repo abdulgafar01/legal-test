@@ -50,19 +50,45 @@ export const ProfessionalSchema = z.object({
   // Certification
   typeOfCertification: z.string(),
 
+  // date_of_licence: z
+
+  date_of_license: z.string()
+          .regex(
+            /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-(19|20)\d{2}$/,
+            {
+              message: "Date must be in MM-DD-YYYY format",
+            }
+          )
+          .refine((val) => {
+            const [month, day, year] = val.split("-").map(Number)
+            const date = new Date(year, month - 1, day)
+            return (
+              date.getFullYear() === year &&
+              date.getMonth() === month - 1 &&
+              date.getDate() === day
+            )
+          }, {
+            message: "Invalid date (e.g., 02-30-2000 doesn't exist)",
+          }),
+
+
   // Incorporation Info
-  dateOfIncorporation: z.date(),
+  // dateOfIncorporation: z.date(),
 
   country: z.string().min(2, { message: "Country must be at least 2 characters long" }) ,
 
 
 
   // File Uploads
-  proofOfLicence: z
-    .any()
-    .refine((file) => file instanceof File || file === undefined, {
-      message: "Upload a valid proof of licence file",
-    }),
+ proofOfLicense: z
+  .any()
+  .refine(
+    (files) =>
+      files instanceof FileList &&
+      files.length > 0 &&
+      files[0] instanceof File,
+    { message: "Upload a valid proof of licence file" }
+  ),
 
   proofOfCertification: z
     .any()
