@@ -19,7 +19,7 @@ interface ApiResponse {
 
 export const getActiveCountries = async (): Promise<Country[]> => {
   try {
-    const response = await axios.get("http://ec2-40-172-8-211.me-central-1.compute.amazonaws.com/api/v1/countries/active")
+    const response = await axios.get("/api/v1/countries/active")
 
     const apiData = response.data as ApiResponse
 
@@ -28,7 +28,7 @@ export const getActiveCountries = async (): Promise<Country[]> => {
     }
 
     console.log("Fetched countries:", apiData.data)
-    console.log("Number of countries fetched:", apiData.data.length)
+    // console.log("Number of countries fetched:", apiData.data.length)
 
     return apiData.data
   } catch (error) {
