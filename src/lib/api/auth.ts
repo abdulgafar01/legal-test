@@ -51,6 +51,93 @@ export const completeProfile = async (data: seekerSchemaType) => {
   return response.data
 }
 
+// Submit Personal Info for legal practitioners
+export const submitPersonalInfo = async (data:unknown) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const response = await axios.post(
+    `${API_BASE_URL}/auth/practitioner_complete_profile/`, 
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// Submit License Info
+export const submitLicense = async ( data: unknown) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+const { files, ...licensePayload } = data as Record<string, any>;
+
+  // create a license
+ const licenseRes = await axios.post(
+    `${API_BASE_URL}/licenses/`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+ const licenseId =
+    licenseRes.data?.data?.id || licenseRes.data?.id || null;
+
+  if (!licenseId) {
+    console.error("Unexpected license response:", licenseRes.data);
+    throw new Error("License ID not returned from API");
+  };
+
+ // Step 2: Upload file
+  const formData = new FormData();
+  formData.append("files", files);
+  formData.append("description", "License document")
+  
+
+  await axios.post(
+    `${API_BASE_URL}/licenses/${licenseId}/files/`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return licenseRes.data;
+
+};
+
+
+
+
+// Submit Certificate Info
+export const submitCertificate = async (data:unknown) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const response = await axios.post(
+    `${API_BASE_URL}/certificates/`, 
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+
 
 //  VERIFY EMAIL
 export const verifyEmail = async (data: { email: string;   verification_code: string }) => {

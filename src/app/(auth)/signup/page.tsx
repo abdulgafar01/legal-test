@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { registerUser } from '@/lib/api/auth';
-import { toast } from 'sonner'; // optional for user feedback
+import { toast } from 'sonner'; 
 import axios from 'axios';
 
 type FormValues = {
@@ -44,18 +44,16 @@ const Page = () => {
       const mutation = useMutation({
         mutationFn: async (formData: FormValues) => {
 
-          // const accountType = localStorage.getItem('accountType');
+          const accountType = localStorage.getItem('accountType');
           const payload = {
             email: formData.email,
             password: formData.password,
             confirm_password: formData.confirmPassword,
             // Add any other required fields the API expects
-            // user_type:
-            //   accountType === 'service_seeker'
-            //     ? 'service_seeker'
-            //     : accountType === 'practitional'
-            //     ? 'practitional'
-            //     : null,
+            user_type:
+              accountType === 'professional'
+                ? 'legal_practitioner'
+                  : "service_seeker",
           };
 
         //   if (accountType === 'service_seeker' || accountType === 'practitional') {

@@ -6,3 +6,16 @@ export type FilterValues = {
   ratings: string;
   availability: string;
 };
+
+
+export interface ApiErrorResponse {
+  success: boolean;
+  error: {
+    code: string;
+    message: string;
+    timestamp: string;
+    path: string;
+    details?: Record<string, any>;
+  };
+  data: null;
+}

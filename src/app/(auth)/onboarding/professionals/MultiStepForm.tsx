@@ -40,9 +40,9 @@ const steps: Step[] = [
     id: '3',
     title: 'Certification Information',
     description:
-      'Kindly enter your accurate personal details as they appear on your Certificate',
+    'Kindly enter your accurate personal details as they appear on your Certificate',
     component: Certificate,
-    inputs: ['country', 'date_of_license', 'typeOfCertification'],
+    inputs: ['country', 'date_of_license', 'typeOfLicense'],
   },
 ];
 

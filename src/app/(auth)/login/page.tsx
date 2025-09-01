@@ -46,13 +46,12 @@ const Page = () => {
           return loginUser(payload);
         },
       onSuccess: (data, variables) => {
-          toast.success('Login successful!', data.message);
+         
            if (variables.email) {
               localStorage.setItem('userEmail', variables.email);
             }
 
           const { tokens, user } = data.data;
-
           // Store tokens
           localStorage.setItem('accessToken', tokens.access);
           localStorage.setItem('refreshToken', tokens.refresh);
@@ -68,10 +67,12 @@ const Page = () => {
 
         if (is_profile_complete === true) {
             router.push('/dashboard');
+            toast.success('Login successful!', data.message);
+            console.log('Login successful:', data);
           } else {
             if (user_type === 'service_seeker') {
               router.push('/onboarding/service-seekers');
-            } else if (user_type === 'practitional') {
+            } else if (user_type === 'legal_practitioner') {
               router.push('/onboarding/professionals');
             }
         
@@ -81,8 +82,7 @@ const Page = () => {
               toast.error('Unknown user type. Cannot continue.');
             }
           }
-
-          console.log('Login successful:', data);
+          
         },
 
         

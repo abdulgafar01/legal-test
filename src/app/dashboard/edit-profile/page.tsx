@@ -27,7 +27,7 @@ interface EditProfileForm {
   country: string;
   rawPhone: string;
   phone_number: string;
-  address: string;
+  // address: string;
   state: string;
   city: string;
 }
@@ -45,7 +45,7 @@ const EditProfile = () => {
       email: "",
       phone_number: "",
       rawPhone: "",
-      address: "",
+      // address: "",
       state: "",
       city: "",
       country: "NG",
@@ -70,7 +70,7 @@ const EditProfile = () => {
         email: user.data.email || "",
         phone_number: fullPhone,
         rawPhone: raw,
-        address: user.data.address || "",
+        // address: user.data.address || "",
         state: user.data.state || "",
         city: user.data.city || "",
         country: matchedDialCode?.code || user.data.country || "NG",
@@ -178,10 +178,10 @@ const EditProfile = () => {
           </div>
 
           {/* Address */}
-          <div>
+          {/* <div>
             <Label htmlFor="address">Address</Label>
             <Input id="address" {...register("address")} />
-          </div>
+          </div> */}
 
           {/* State and City */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

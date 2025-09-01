@@ -9,7 +9,7 @@ import CertificationForm from "./CertificationForm";
 import { useRouter } from "next/navigation";
 
 const MultiStepForm: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
   const [showSuccess, setShowSuccess] = useState(false);
   const totalSteps = 3;
   const router = useRouter();

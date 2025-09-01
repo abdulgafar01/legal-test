@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Calendar as CalendarIcon, CheckCircle, Upload } from "lucide-react";
 import { format } from "date-fns";
-import { countries, Country } from "@/data/countries1";
+// import { countries, Country } from "@/data/countries1";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
@@ -18,58 +18,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useMutation } from "@tanstack/react-query";
+// import { submitLicense } from "@/lib/api/auth";
+import { useCountries } from '@/hooks/useCountries';
+import { Icon } from '@iconify/react/dist/iconify.js';
+import { Country } from '@/data/countries';
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "@/lib/types";
+import { submitLicense } from "@/lib/api/auth";
 
 interface LicenseFormProps {
   onNext: () => void;
 }
 
-const licenseTypes = [
-  "Barrister & Solicitor License",
-  "Patent Attorney License",
-  "Notary Public License",
-  "Advocate of the Supreme Court",
-  "State or Provincial Bar License",
-  "Foreign Legal Consultant (FLC)",
-  "Provisional or Temporary License",
-  "Legal Practitioner",
+const license_types = [
+  "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
+  // "barrister_solicitor",
 ];
 
 const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
   const [formData, setFormData] = useState({
-    licenseType: "",
+    license_type: "",
   });
 
-  const [dateOfIncorporation, setDateOfIncorporation] = useState<Date>();
-  const [selectedCountry, setSelectedCountry] = useState<Country>({ name: "Nigeria", code: "NG", flag: "🇳🇬" });
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
-  const [countrySearch, setCountrySearch] = useState("");
+  const [date_of_incorporation, setDateOfIncorporation] = useState<Date>();
+  // const [selectedCountry, setSelectedCountry] = useState<Country>({ name: "Nigeria", code: "NG", flag: "🇳🇬" });
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  // const [countrySearch, setCountrySearch] = useState("");
 
-  const filteredCountries = useMemo(() => {
-    return countries.filter((country) =>
-      country.name.toLowerCase().includes(countrySearch.toLowerCase())
-    );
-  }, [countrySearch]);
+  // const filteredCountries = useMemo(() => {
+  //   return countries.filter((country) =>
+  //     country.name.toLowerCase().includes(countrySearch.toLowerCase())
+  //   );
+  // }, [countrySearch]);
+
+    const { data: countries = [] } = useCountries();
+    const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setUploadedFile(file.name);
+    if (file) setUploadedFile(file);
   }, []);
+
+    const mutation = useMutation({
+      mutationFn: submitLicense,
+      onSuccess: () => {
+        toast.success("License saved successfully!");
+        onNext();
+      },
+      onError: (error: AxiosError<ApiErrorResponse>) => {
+        console.error("Error submitting practitioner license:", error);
+
+        // Safely extract message from API error shape
+        const message =
+          // error?.response?.data?.error?.message ||
+          error?.response?.data?.error?.details?.file||        
+          error?.message ||                   
+          "Failed to save practioner license";
+
+        toast.error(message);
+      },
+    });
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      console.log("License Info:", {
-        ...formData,
-        dateOfIncorporation: dateOfIncorporation ? format(dateOfIncorporation, "dd/MM/yyyy") : "",
-        country: selectedCountry,
-        uploadedFile,
-      });
-      onNext();
+       if (!uploadedFile || !date_of_incorporation) return;
+
+      const payload = {
+            
+              ...formData,
+              license_type: formData.license_type,
+              date_of_incorporation: format(date_of_incorporation, "yyyy-MM-dd"),
+              country_of_incorporation: selectedCountry ? selectedCountry.name : "",
+             files: uploadedFile,
+            
+          };
+  
+            mutation.mutate(payload);
+            console.log("Submitted Data:", payload);
     },
-    [formData, dateOfIncorporation, selectedCountry, uploadedFile, onNext]
+    [formData, date_of_incorporation, selectedCountry, uploadedFile, onNext]
   );
 
-  const isFormValid = formData.licenseType && dateOfIncorporation && uploadedFile;
+  const isFormValid = formData.license_type && date_of_incorporation && uploadedFile;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,12 +123,12 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               type="button"
               className={cn(
                 "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
-                !dateOfIncorporation && "text-gray-400"
+                !date_of_incorporation && "text-gray-400"
               )}
             >
               <span>
-                {dateOfIncorporation
-                  ? format(dateOfIncorporation, "dd/MM/yyyy")
+                {date_of_incorporation
+                  ? format(date_of_incorporation, "yyyy-MM-dd")
                   : "DD/MM/YYYY"}
               </span>
               <CalendarIcon size={20} className="text-gray-400" />
@@ -98,13 +137,12 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
           <PopoverContent className="w-auto p-0" align="start">
             <CalendarComponent
               mode="single"
-              selected={dateOfIncorporation}
+              selected={date_of_incorporation}
               onSelect={setDateOfIncorporation}
               disabled={(date) =>
                 date > new Date() || date < new Date("1900-01-01")
               }
               className="p-3"
-              initialFocus
             />
           </PopoverContent>
         </Popover>
@@ -116,16 +154,16 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
           Type of Licence
         </label>
         <Select
-          value={formData.licenseType}
+          value={formData.license_type}
           onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, licenseType: value }))
+            setFormData((prev) => ({ ...prev, license_type: value }))
           }
         >
           <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
             <SelectValue placeholder="Select a license type" />
           </SelectTrigger>
           <SelectContent>
-            {licenseTypes.map((type) => (
+            {license_types.map((type) => (
               <SelectItem key={type} value={type}>
                 {type}
               </SelectItem>
@@ -139,32 +177,29 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Country of Incorporation
         </label>
-        <Select
-          value={selectedCountry.name}
-          onValueChange={(value) => {
-            const country = countries.find((c) => c.name === value);
-            if (country) setSelectedCountry(country);
-          }}
-        >
-          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
-            <SelectValue placeholder="Select country" />
-          </SelectTrigger>
-          <SelectContent className="max-h-60 overflow-auto">
-            <div className="p-2 border-b">
-              <input
-                type="text"
-                placeholder="Search countries..."
-                value={countrySearch}
-                onChange={(e) => setCountrySearch(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded"
-              />
-            </div>
-            {filteredCountries.map((country) => (
-              <SelectItem key={country.code} value={country.name}>
-                {country.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
+         <Select
+               value={selectedCountry?.name}
+               onValueChange={(value) => {
+                 const country = countries.find((c: Country) => c.name === value);
+                 if (country) setSelectedCountry(country);
+               }}
+             >
+               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
+                 <SelectValue placeholder="Select country" />
+               </SelectTrigger>
+               <SelectContent className="max-h-60 overflow-auto">
+                 {countries.map((country: Country ) => (
+                   <SelectItem key={country.code} value={country.name}>
+                     <div className="flex items-center gap-2">
+                       <Icon
+                         icon={`flag:${country.code.toLowerCase()}-4x3`}
+                         className="h-5 w-5 rounded-sm"
+                       />
+                       <span>{country.name}</span>
+                     </div>
+                   </SelectItem>
+                 ))}
+               </SelectContent>
         </Select>
       </div>
 
@@ -179,7 +214,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle size={28} className="text-green-600" />
               </div>
-              <p className="text-sm text-blue-600">{uploadedFile}</p>
+              <p className="text-sm text-blue-600">{uploadedFile.name}</p>
               <button
                 type="button"
                 onClick={() => setUploadedFile(null)}
@@ -224,7 +259,9 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         )}
       >
-        Continue
+        {mutation.isPending
+                  ? 'Loading...'
+                  : 'Continue'}
       </button>
     </form>
   );

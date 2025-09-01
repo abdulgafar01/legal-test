@@ -23,7 +23,7 @@ interface LicenseFormProps {
   onNext: () => void;
 }
 
-const licenseTypes = [
+const license_types = [
   "Barrister & Solicitor License",
   "Patent Attorney License",
   "Notary Public License",
@@ -36,12 +36,12 @@ const licenseTypes = [
 
 const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
   const [formData, setFormData] = useState({
-    licenseType: "",
+    license_type: "",
   });
 
-  const [dateOfIncorporation, setDateOfIncorporation] = useState<Date>();
+  const [date_of_incorporation, setDateOfIncorporation] = useState<Date>();
   const [selectedCountry, setSelectedCountry] = useState<Country>({ name: "Nigeria", code: "NG", flag: "🇳🇬" });
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [countrySearch, setCountrySearch] = useState("");
 
   const filteredCountries = useMemo(() => {
@@ -52,7 +52,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
 
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setUploadedFile(file.name);
+    if (file) setUploadedFile(file);
   }, []);
 
   const handleSubmit = useCallback(
@@ -60,16 +60,16 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
       e.preventDefault();
       console.log("License Info:", {
         ...formData,
-        dateOfIncorporation: dateOfIncorporation ? format(dateOfIncorporation, "dd/MM/yyyy") : "",
+        date_of_incorporation: date_of_incorporation ? format(date_of_incorporation, "yyyy-MM-dd") : "",
         country: selectedCountry,
         uploadedFile,
       });
       onNext();
     },
-    [formData, dateOfIncorporation, selectedCountry, uploadedFile, onNext]
+    [formData, date_of_incorporation, selectedCountry, uploadedFile, onNext]
   );
 
-  const isFormValid = formData.licenseType && dateOfIncorporation && uploadedFile;
+  const isFormValid = formData.license_type && date_of_incorporation && uploadedFile;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,12 +84,12 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               type="button"
               className={cn(
                 "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
-                !dateOfIncorporation && "text-gray-400"
+                !date_of_incorporation && "text-gray-400"
               )}
             >
               <span>
-                {dateOfIncorporation
-                  ? format(dateOfIncorporation, "dd/MM/yyyy")
+                {date_of_incorporation
+                  ? format(date_of_incorporation, "yyyy-MM-dd")
                   : "DD/MM/YYYY"}
               </span>
               <CalendarIcon size={20} className="text-gray-400" />
@@ -98,13 +98,12 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
           <PopoverContent className="w-auto p-0" align="start">
             <CalendarComponent
               mode="single"
-              selected={dateOfIncorporation}
+              selected={date_of_incorporation}
               onSelect={setDateOfIncorporation}
               disabled={(date) =>
                 date > new Date() || date < new Date("1900-01-01")
               }
               className="p-3"
-              initialFocus
             />
           </PopoverContent>
         </Popover>
@@ -116,7 +115,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
           Type of Licence
         </label>
         <Select
-          value={formData.licenseType}
+          value={formData.license_type}
           onValueChange={(value) =>
             setFormData((prev) => ({ ...prev, licenseType: value }))
           }
@@ -125,7 +124,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
             <SelectValue placeholder="Select a license type" />
           </SelectTrigger>
           <SelectContent>
-            {licenseTypes.map((type) => (
+            {license_types.map((type) => (
               <SelectItem key={type} value={type}>
                 {type}
               </SelectItem>
@@ -179,7 +178,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle size={28} className="text-green-600" />
               </div>
-              <p className="text-sm text-blue-600">{uploadedFile}</p>
+              <p className="text-sm text-blue-600">{uploadedFile.name}</p>
               <button
                 type="button"
                 onClick={() => setUploadedFile(null)}
