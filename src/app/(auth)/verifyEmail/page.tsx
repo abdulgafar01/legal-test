@@ -75,7 +75,13 @@ export default function VerificationPage() {
   const verifyMutation = useMutation({
     mutationFn: (payload: 
       { email: string;   verification_code: string }) => verifyEmail(payload),
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      // Expect tokens if backend now returns them after verification
+      const tokens = data?.data?.tokens || data?.tokens;
+      if (tokens?.access && tokens?.refresh) {
+        localStorage.setItem('accessToken', tokens.access);
+        localStorage.setItem('refreshToken', tokens.refresh);
+      }
       toast.success('Email verified successfully!');
       if (accountType === 'professional') {
         router.push('/onboarding/professionals');

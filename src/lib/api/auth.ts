@@ -138,8 +138,8 @@ export const submitCertificate = async (data:unknown) => {
 };
 
 
-
 //  VERIFY EMAIL
+//  Now returns { email, tokens: { access, refresh } } so client can proceed without separate login.
 export const verifyEmail = async (data: { email: string;   verification_code: string }) => {
   const response = await axios.post(`${API_BASE_URL}/auth/verify_email/`, data, {
     headers: {
