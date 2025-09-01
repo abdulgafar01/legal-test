@@ -4,7 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { Scale, MessageCircle, User } from 'lucide-react';
+import { Scale, MessageCircle, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { assets } from '@/assets/assets';
 import SidebarLinks from './Sidebar-Links';
@@ -27,6 +29,15 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
 
    const { data: user, isLoading, error } = useCurrentUser();
+   const router = useRouter();
+
+   const handleLogout = () => {
+     localStorage.removeItem('accessToken');
+     localStorage.removeItem('refreshToken');
+     localStorage.removeItem('userEmail');
+     toast.success('Successfully logged out');
+     router.push('/login');
+   };
 
   console.log("the user", user);
   
@@ -145,35 +156,28 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         {expand && (
           <div className="p-4 border-t border-gray-200 w-full">
-            <Link href="/dashboard/profile">
-            <div 
-             onClick={() => {
-              if (isMobile && toggleSidebar) {
-                toggleSidebar();
-              }
-            }}
-            className="flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800">OR</span>
-              </div>
-             <div>
-                        {isLoading ? (
-                          <div className='text-xs'>...</div>
-                        ) : error ? (
-                          <div>Error loading user data</div>
-                        ) : (
-                          <>
-                            <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
-                            <div className="text-[10px] text-gray-500">{user?.data.email}</div>
-                          </>
-                        )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-orange-800">{user?.data?.first_name?.slice(0,2).toUpperCase() || 'OR'}</span>
                 </div>
-
-              <Button variant="ghost" size="icon" asChild>
-                  <User className="w-4 h-4" />
-              </Button>
+                <div>
+                  {isLoading ? (
+                    <div className='text-xs'>...</div>
+                  ) : error ? (
+                    <div className='text-xs'>Error</div>
+                  ) : (
+                    <>
+                      <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
+                      <div className="text-[10px] text-gray-500">{user?.data.email}</div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button onClick={handleLogout} title='Logout' className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'>
+                <LogOut className='w-4 h-4 text-gray-600' />
+              </button>
             </div>
-            </Link>
           </div>
         )}
       </div>
