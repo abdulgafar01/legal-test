@@ -4,15 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { Scale, MessageCircle, LogOut } from 'lucide-react';
+import { Scale, MessageCircle, LogOut, RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { assets } from '@/assets/assets';
 import SidebarLinks from './Sidebar-Links';
 import ChatLabel from './ChatLabel';
 import { Button } from './ui/button';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
   expand: boolean;
@@ -28,18 +30,37 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
 }) => {
 
-   const { data: user, isLoading, error } = useCurrentUser();
+   const { data: user, isLoading, error, refetch } = useCurrentUser();
+   const { logout } = useAuth();
    const router = useRouter();
+   const queryClient = useQueryClient();
 
    const handleLogout = () => {
-     localStorage.removeItem('accessToken');
-     localStorage.removeItem('refreshToken');
-     localStorage.removeItem('userEmail');
+     logout();
      toast.success('Successfully logged out');
-     router.push('/login');
    };
 
-  console.log("the user", user);
+   const handleRefreshUser = () => {
+     queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+     refetch();
+     toast.success('User data refreshed');
+   };
+
+  console.log("=== USER DEBUG INFO ===");
+  console.log("Raw user data:", user);
+  console.log("User first_name:", user?.data?.first_name);
+  console.log("User last_name:", user?.data?.last_name);
+  console.log("User email:", user?.data?.email);
+  console.log("User ID:", user?.data?.id);
+  console.log("isLoading:", isLoading);
+  console.log("error:", error);
+  console.log("LocalStorage email:", typeof window !== 'undefined' ? localStorage.getItem('userEmail') : 'N/A');
+  console.log("========================");
+  
+  // Don't render sidebar if no token exists
+  if (typeof window !== 'undefined' && !localStorage.getItem('accessToken')) {
+    return null;
+  }
   
   const sidebarBaseClasses =
     'flex flex-col bg-orange-50 pt-7 transition-all z-50 h-screen';
@@ -159,13 +180,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-orange-800">{user?.data?.first_name?.slice(0,2).toUpperCase() || 'OR'}</span>
+                  <span className="text-sm font-medium text-orange-800">
+                    {isLoading ? '...' : error ? '!' : (user?.data?.first_name?.slice(0,2).toUpperCase() || 'U')}
+                  </span>
                 </div>
                 <div>
                   {isLoading ? (
-                    <div className='text-xs'>...</div>
+                    <div className='text-xs text-gray-500'>Loading...</div>
                   ) : error ? (
-                    <div className='text-xs'>Error</div>
+                    <div className='text-xs text-red-500'>Please log in again</div>
                   ) : (
                     <>
                       <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
@@ -174,9 +197,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </div>
               </div>
-              <button onClick={handleLogout} title='Logout' className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'>
-                <LogOut className='w-4 h-4 text-gray-600' />
-              </button>
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={handleRefreshUser} 
+                  title='Refresh User Data' 
+                  className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'
+                >
+                  <RefreshCw className='w-3 h-3 text-gray-600' />
+                </button>
+                <button onClick={handleLogout} title='Logout' className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'>
+                  <LogOut className='w-4 h-4 text-gray-600' />
+                </button>
+              </div>
             </div>
           </div>
         )}

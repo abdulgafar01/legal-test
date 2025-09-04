@@ -1,6 +1,7 @@
 "use client"
 import { assets } from '@/assets/assets';
 import CategoryScroller from '@/components/CategoryScroller';
+import ApiTestComponent from '@/components/ApiTestComponent';
 import Image from 'next/image';
 import React from 'react'
 
@@ -44,6 +45,9 @@ const page = () => {
     <div className="flex flex-1 mx-auto h-screen">
       <div className=" overflow-y-auto w-full h-full p-8">
         <h1 className="text-3xl font-semibold text-gray-900 mb-6">Explore</h1>
+        
+        {/* Temporary API Debug Tool */}
+        <ApiTestComponent />
         
         <div className="mb-8">
           <CategoryScroller />

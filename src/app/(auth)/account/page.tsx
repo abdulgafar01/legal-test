@@ -1,10 +1,49 @@
 "use client";
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
+import { useAuth } from '@/contexts/AuthContext';
 import { ArrowDown, Scale, User } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Page() {
   const { setAccountType } = useAccountTypeStore();
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // If user is already authenticated, redirect to dashboard
+    if (!isLoading && isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
+        style={{
+          backgroundImage: "url('/background.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed"
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="relative z-10 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto"></div>
+          <p className="text-white mt-4">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render the account selection if user is authenticated (will redirect)
+  if (isAuthenticated) {
+    return null;
+  }
   return (
     <div 
       className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
