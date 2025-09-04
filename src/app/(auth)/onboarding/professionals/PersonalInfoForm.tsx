@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-// import { countries, Country } from '@/data/countries1';
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
@@ -21,11 +20,8 @@ import {
 import { useCountries } from '@/hooks/useCountries';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { Country } from '@/data/countries';
-import { submitPersonalInfo } from '@/lib/api/auth';
-import { useMutation } from '@tanstack/react-query';
+import { usePractitionerFormStore } from '@/stores/usePractitionerFormStore';
 import { toast } from 'sonner';
-import { AxiosError } from 'axios';
-import { ApiErrorResponse } from '@/lib/types';
 
 interface PersonalInfoFormProps {
   onNext: () => void;
@@ -45,9 +41,11 @@ const qualificationOptions = [
   { value: "other", label: "Other Legal Qualification" },
 ];
 
-const experience_level = [
-  'junior',
-  'senior',
+const experienceLevelOptions = [
+  { value: "junior", label: "1-3 years" },
+  { value: "mid", label: "4-7 years" },
+  { value: "senior", label: "8-15 years" },
+  { value: "expert", label: "15+ years" },
 ];
 
 const InputField = ({
@@ -82,94 +80,78 @@ const InputField = ({
 );
 
 const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    middle_name: '',
-    qualification: '',
-    state: '',
-    city: '',
-    license_number: '',
-    phone_number: '',
-    experience_level: '',
-    years_of_experience: '',
-    hourly_rate: '',
-  });
-
-  const [date_of_birth, setDateOfBirth] = useState<Date>();
-  // const [selectedCountry, setSelectedCountry] = useState<Country>({
-  //   name: "Nigeria",
-  //   code: "NG",
-  //   flag: "🇳🇬"
-  // });
-  // const [countrySearch, setCountrySearch] = useState('');
-
+  const { formData, updatePersonalInfo } = usePractitionerFormStore();
   const { data: countries = [] } = useCountries();
-  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
 
-  // const filteredCountries = useMemo(() => {
-  //   return countries.filter(country =>
-  //     country.name.toLowerCase().includes(countrySearch.toLowerCase())
-  //   );
-  // }, [countrySearch]);
+  // Local form state - use function initialization to avoid re-rendering issues
+  const [localFormData, setLocalFormData] = useState(() => ({
+    first_name: formData.first_name || '',
+    last_name: formData.last_name || '',
+    middle_name: formData.middle_name || '',
+    qualification: formData.qualification || '',
+    state: formData.state || '',
+    city: formData.city || '',
+    phone_number: formData.phone_number || '',
+    experience_level: formData.experience_level || '',
+    years_of_experience: formData.years_of_experience || '',
+    hourly_rate: formData.hourly_rate || '',
+    bio: formData.bio || '',
+    education: formData.education || '',
+  }));
+
+  // Initialize existing data - add dependency optimization
+  useEffect(() => {
+    if (formData.date_of_birth && !dateOfBirth) {
+      setDateOfBirth(new Date(formData.date_of_birth));
+    }
+  }, [formData.date_of_birth, dateOfBirth]);
+
+  useEffect(() => {
+    if (formData.country && countries.length > 0 && !selectedCountry) {
+      const country = countries.find((c: Country) => c.name === formData.country);
+      if (country) setSelectedCountry(country);
+    }
+  }, [formData.country, countries, selectedCountry]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setLocalFormData(prev => ({ ...prev, [name]: value }));
     },
     []
   );
 
-  
-    const mutation = useMutation({
-      mutationFn: submitPersonalInfo,
-      onSuccess: () => {
-        toast.success("Personal info saved successfully!");
-        onNext();
-      },
-      onError: (error: AxiosError<ApiErrorResponse>) => {
-        console.error("Error submitting personal info:", error);
-
-        // Safely extract message from API error shape
-        const message =
-          error?.response?.data?.error?.message ||        
-          error?.message ||                   
-          "Failed to save personal info";
-
-        toast.error(message);
-      },
-    });
-
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      // console.log('Personal Info:', {
-      //   ...formData,
-      //   dateOfBirth: dateOfBirth ? format(dateOfBirth, 'yyyy/MM/dd') : '',
-      //  country: selectedCountry ? selectedCountry.name : "",
-      // });
-      const storedEmail = localStorage.getItem('userEmail');
       
+      // Validation
+      if (!localFormData.first_name.trim() || !localFormData.last_name.trim() || 
+          !localFormData.qualification.trim() || !dateOfBirth) {
+        toast.error('Please fill in all required fields');
+        return;
+      }
 
-       const payload = {
-      ...formData,
-      date_of_birth: date_of_birth ? format(date_of_birth, "yyyy-MM-dd") : "",
-      country: selectedCountry ? selectedCountry.name : "",
-      email: storedEmail,
+      // Save to store
+      const personalData = {
+        ...localFormData,
+        date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : "",
+        country: selectedCountry ? selectedCountry.name : "",
+      };
 
-    };
-      mutation.mutate(payload);
-      console.log("Submitted Data:", payload);
-      
+      updatePersonalInfo(personalData);
+      toast.success("Personal information saved!");
+      onNext();
     },
-    [formData, date_of_birth, selectedCountry, onNext]
+    [localFormData, dateOfBirth, selectedCountry, updatePersonalInfo, onNext]
   );
   
-const isFormValid = formData.first_name.trim() &&
-                    formData.last_name.trim() &&
-                    formData.qualification.trim() &&
-                    date_of_birth;
+  const isFormValid = localFormData.first_name.trim() &&
+                    localFormData.last_name.trim() &&
+                    localFormData.qualification.trim() &&
+                    dateOfBirth;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -177,7 +159,7 @@ const isFormValid = formData.first_name.trim() &&
         label="First Name"
         name="first_name"
         placeholder="e.g. John"
-        value={formData.first_name}
+        value={localFormData.first_name}
         onChange={handleInputChange}
         required
       />
@@ -185,7 +167,7 @@ const isFormValid = formData.first_name.trim() &&
         label="Last Name"
         name="last_name"
         placeholder="e.g. Doe"
-        value={formData.last_name}
+        value={localFormData.last_name}
         onChange={handleInputChange}
         required
       />
@@ -193,7 +175,7 @@ const isFormValid = formData.first_name.trim() &&
         label="Middle Name (optional)"
         name="middle_name"
         placeholder="e.g. Sam"
-        value={formData.middle_name}
+        value={localFormData.middle_name}
         onChange={handleInputChange}
       />
 
@@ -208,11 +190,11 @@ const isFormValid = formData.first_name.trim() &&
               type="button"
               className={cn(
                 "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
-                !date_of_birth && "text-gray-400"
+                !dateOfBirth && "text-gray-400"
               )}
             >
               <span>
-                {date_of_birth ? format(date_of_birth, "dd/MM/yyyy") : "DD/MM/YYYY"}
+                {dateOfBirth ? format(dateOfBirth, "dd/MM/yyyy") : "DD/MM/YYYY"}
               </span>
               <CalendarIcon size={20} className="text-gray-400" />
             </button>
@@ -220,7 +202,7 @@ const isFormValid = formData.first_name.trim() &&
           <PopoverContent className="w-auto p-0" align="start">
             <CalendarComponent
               mode="single"
-              selected={date_of_birth}
+              selected={dateOfBirth}
               onSelect={setDateOfBirth}
               disabled={date =>
                 date > new Date() || date < new Date("1900-01-01")
@@ -237,8 +219,8 @@ const isFormValid = formData.first_name.trim() &&
           Qualification
         </label>
         <Select
-          value={formData.qualification}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, qualification: value }))}
+          value={localFormData.qualification || ""}
+          onValueChange={(value) => setLocalFormData(prev => ({ ...prev, qualification: value }))}
         >
           <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
             <SelectValue placeholder="Select qualification" />
@@ -258,16 +240,16 @@ const isFormValid = formData.first_name.trim() &&
           Experience Level
         </label>
         <Select
-          value={formData.experience_level}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, experience_level: value }))}
+          value={localFormData.experience_level || ""}
+          onValueChange={(value) => setLocalFormData(prev => ({ ...prev, experience_level: value }))}
         >
           <SelectTrigger className="w-full px-5 py-3 border border-gray-200 rounded-lg transition-all">
-            <SelectValue placeholder="Select qualification" />
+            <SelectValue placeholder="Select experience level" />
           </SelectTrigger>
           <SelectContent>
-            {experience_level.map(option => (
-              <SelectItem key={option} value={option}>
-                {option}
+            {experienceLevelOptions.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -275,57 +257,23 @@ const isFormValid = formData.first_name.trim() &&
       </div>
 
       {/* Country */}
-      {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Country of Residence
-          </label>
-          <Select
-            value={selectedCountry.flag}
-             onValueChange={(value) => {
-              const country = countries.find(c => c.name === value);
-              if (country) setSelectedCountry(country);
-            }}
-          >
-        <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
-          <SelectValue placeholder="Select country" />
-        </SelectTrigger>
-        <SelectContent className="max-h-60 overflow-auto">
-          <div className="p-2 border-b">
-            <input
-              type="text"
-              placeholder="Search countries..."
-              value={countrySearch}
-              onChange={(e) => setCountrySearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          {filteredCountries.map(country => (
-            <SelectItem key={country.code} value={country.name}>
-              {country.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div> */}
-
-    
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Country of Residence
-      </label>
-      <Select
-        value={selectedCountry?.name}
-        onValueChange={(value) => {
-          const country = countries.find((c: Country) => c.name === value);
-          if (country) setSelectedCountry(country);
-        }}
-      >
-        <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
-          <SelectValue placeholder="Select country" />
-        </SelectTrigger>
-        <SelectContent className="max-h-60 overflow-auto">
-          {countries.map((country: Country ) => (
-            <SelectItem key={country.code} value={country.name}>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Country of Residence
+        </label>
+        <Select
+          value={selectedCountry?.name || ""}
+          onValueChange={(value) => {
+            const country = countries.find((c: Country) => c.name === value);
+            if (country) setSelectedCountry(country);
+          }}
+        >
+          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
+            <SelectValue placeholder="Select country" />
+          </SelectTrigger>
+          <SelectContent className="max-h-60 overflow-auto">
+            {countries.map((country: Country ) => (
+              <SelectItem key={country.code} value={country.name}>
               <div className="flex items-center gap-2">
                 <Icon
                   icon={`flag:${country.code.toLowerCase()}-4x3`}
@@ -341,60 +289,79 @@ const isFormValid = formData.first_name.trim() &&
           {/* state and city */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-              label="state"
+              label="State"
               name="state"
               placeholder="e.g. Lagos"
-              value={formData.state}
+              value={localFormData.state}
               onChange={handleInputChange}
             />
 
               <InputField
-              label="city"
+              label="City"
               name="city"
-              placeholder="e.g. Laos"
-              value={formData.city}
+              placeholder="e.g. Lagos"
+              value={localFormData.city}
               onChange={handleInputChange}
             />
           </div>
 
-          {/* phone_number and license_number */}
+          {/* phone_number and years_of_experience */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-              label="phone number"
+              label="Phone Number"
               name="phone_number"
               placeholder="e.g. +2348012345678"
-              value={formData.phone_number}
+              value={localFormData.phone_number}
               onChange={handleInputChange}
             />
 
               <InputField
-              label="license number"
-              name="license_number"
-              placeholder="e.g. ABC123456"
-              value={formData.license_number}
+              label="Years of Experience"
+              name="years_of_experience"
+              placeholder="e.g. 5"
+              value={localFormData.years_of_experience}
               onChange={handleInputChange}
             />
           </div>
 
-          {/* hourly rate and years of experience */}
+          {/* hourly rate and bio */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <InputField
-              label="hourly rate"
+              label="Hourly Rate (USD)"
               name="hourly_rate"
-              placeholder="e.g. 250.00 in USD"
-              value={formData.hourly_rate}
-              onChange={handleInputChange}
-            />
-
-              <InputField
-              label="years of experience"
-              name="years_of_experience"
-              placeholder="e.g. 5 in years"
-              value={formData.years_of_experience}
+              placeholder="e.g. 250.00"
+              value={localFormData.hourly_rate}
               onChange={handleInputChange}
             />
           </div>
-  
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Bio (Optional)
+            </label>
+            <textarea
+              name="bio"
+              placeholder="Brief description about yourself..."
+              value={localFormData.bio}
+              onChange={(e) => setLocalFormData(prev => ({ ...prev, bio: e.target.value }))}
+              className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Education (Optional)
+            </label>
+            <textarea
+              name="education"
+              placeholder="Your educational background..."
+              value={localFormData.education}
+              onChange={(e) => setLocalFormData(prev => ({ ...prev, education: e.target.value }))}
+              className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+              rows={2}
+            />
+          </div>
 
       {/* Submit */}
      <button
@@ -407,7 +374,7 @@ const isFormValid = formData.first_name.trim() &&
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           )}
         >
-          {mutation.isPending ? "Saving..." : "Next"}
+          Next
         </button>
 
     </form>

@@ -30,11 +30,11 @@ interface LicenseFormProps {
 interface License {
   license_type: string;
   license_number: string;
-  date_of_incorporation: string;
-  country_of_incorporation: string;
-  issuing_authority: string;
+  issuing_jurisdiction: string;
+  date_granted: string;
   expiry_date?: string;
-  notes?: string;
+  status: string;
+  description?: string;
   files: File[];
 }
 
@@ -47,11 +47,11 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
       {
         license_type: '',
         license_number: '',
-        date_of_incorporation: '',
-        country_of_incorporation: '',
-        issuing_authority: '',
+        issuing_jurisdiction: '',
+        date_granted: '',
         expiry_date: '',
-        notes: '',
+        status: 'active',
+        description: '',
         files: []
       }
     ]
@@ -61,11 +61,11 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
     setLicenses(prev => [...prev, {
       license_type: '',
       license_number: '',
-      date_of_incorporation: '',
-      country_of_incorporation: '',
-      issuing_authority: '',
+      issuing_jurisdiction: '',
+      date_granted: '',
       expiry_date: '',
-      notes: '',
+      status: 'active',
+      description: '',
       files: []
     }]);
   };
@@ -90,7 +90,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
     }
   };
 
-  const handleDateChange = (index: number, field: 'date_of_incorporation' | 'expiry_date', date: Date | undefined) => {
+  const handleDateChange = (index: number, field: 'date_granted' | 'expiry_date', date: Date | undefined) => {
     if (date) {
       updateLicense(index, field, format(date, 'yyyy-MM-dd'));
     }
@@ -103,9 +103,8 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
     const validLicenses = licenses.filter(license => 
       license.license_type && 
       license.license_number && 
-      license.country_of_incorporation && 
-      license.date_of_incorporation &&
-      license.issuing_authority
+      license.issuing_jurisdiction && 
+      license.date_granted
     );
 
     if (validLicenses.length === 0) {
@@ -121,9 +120,8 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
   const isFormValid = licenses.some(license => 
     license.license_type && 
     license.license_number && 
-    license.country_of_incorporation && 
-    license.date_of_incorporation &&
-    license.issuing_authority
+    license.issuing_jurisdiction && 
+    license.date_granted
   );
 
   return (
@@ -188,32 +186,17 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               </div>
             </div>
 
-            {/* Issuing Authority */}
+            {/* Issuing Jurisdiction */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Issuing Authority *
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. New York State Bar Association"
-                value={license.issuing_authority}
-                onChange={(e) => updateLicense(index, 'issuing_authority', e.target.value)}
-                className="w-full p-2 border border-gray-200 rounded-lg transition-all"
-                required
-              />
-            </div>
-
-            {/* Country of Incorporation */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Country of Incorporation *
+                Issuing Jurisdiction *
               </label>
               <Select
-                value={license.country_of_incorporation}
-                onValueChange={(value) => updateLicense(index, 'country_of_incorporation', value)}
+                value={license.issuing_jurisdiction}
+                onValueChange={(value) => updateLicense(index, 'issuing_jurisdiction', value)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select country" />
+                  <SelectValue placeholder="Select country/jurisdiction" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60 overflow-auto">
                   {countries.map((country: Country) => (
@@ -231,11 +214,11 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               </Select>
             </div>
 
-            {/* Date of Incorporation and Expiry Date */}
+            {/* Date Granted and Expiry Date */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Date of Incorporation *
+                  Date Granted *
                 </label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -243,11 +226,11 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
                       type="button"
                       className={cn(
                         "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
-                        !license.date_of_incorporation && "text-gray-400"
+                        !license.date_granted && "text-gray-400"
                       )}
                     >
                       <span>
-                        {license.date_of_incorporation ? format(new Date(license.date_of_incorporation), "dd/MM/yyyy") : "DD/MM/YYYY"}
+                        {license.date_granted ? format(new Date(license.date_granted), "dd/MM/yyyy") : "DD/MM/YYYY"}
                       </span>
                       <CalendarIcon size={20} className="text-gray-400" />
                     </button>
@@ -255,8 +238,8 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
                   <PopoverContent className="w-auto p-0" align="start">
                     <CalendarComponent
                       mode="single"
-                      selected={license.date_of_incorporation ? new Date(license.date_of_incorporation) : undefined}
-                      onSelect={(date) => handleDateChange(index, 'date_of_incorporation', date)}
+                      selected={license.date_granted ? new Date(license.date_granted) : undefined}
+                      onSelect={(date) => handleDateChange(index, 'date_granted', date)}
                       disabled={date => date > new Date()}
                       className="p-3"
                     />
@@ -296,18 +279,39 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               </div>
             </div>
 
-            {/* Notes */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notes (Optional)
-              </label>
-              <textarea
-                placeholder="Additional notes about this license..."
-                value={license.notes}
-                onChange={(e) => updateLicense(index, 'notes', e.target.value)}
-                className="w-full p-2 border border-gray-200 rounded-lg transition-all"
-                rows={2}
-              />
+            {/* Status and Description */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Status
+                </label>
+                <Select
+                  value={license.status}
+                  onValueChange={(value) => updateLicense(index, 'status', value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="suspended">Suspended</SelectItem>
+                    <SelectItem value="expired">Expired</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Brief description..."
+                  value={license.description}
+                  onChange={(e) => updateLicense(index, 'description', e.target.value)}
+                  className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+                />
+              </div>
             </div>
 
             {/* File Upload */}

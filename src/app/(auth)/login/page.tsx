@@ -45,7 +45,7 @@ const Page = () => {
           };
           return loginUser(payload);
         },
-      onSuccess: (data, variables) => {
+        onSuccess: (data, variables) => {
          
            if (variables.email) {
               localStorage.setItem('userEmail', variables.email);
@@ -66,6 +66,22 @@ const Page = () => {
           }
 
         if (is_profile_complete === true) {
+            // Check if user is a practitioner and needs approval status check
+            if (user_type === 'legal_practitioner' && user.practitioner_profile?.approval_status) {
+              const approvalStatus = user.practitioner_profile.approval_status;
+              
+              if (approvalStatus === 'pending') {
+                router.push('/pending-review');
+                toast.info('Your practitioner application is still under review.');
+                return;
+              } else if (approvalStatus === 'rejected') {
+                router.push('/application-rejected');
+                toast.error('Your practitioner application was not approved.');
+                return;
+              }
+              // If approved, continue to dashboard
+            }
+            
             router.push('/dashboard');
             toast.success('Login successful!', data.message);
             console.log('Login successful:', data);

@@ -69,6 +69,24 @@ export const submitPersonalInfo = async (data:unknown) => {
   return response.data;
 };
 
+// Submit Complete Practitioner Application
+export const submitPractitionerApplication = async (data: FormData) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const response = await axios.post(
+    `${API_BASE_URL}/auth/practitioner_complete_profile/`,
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
 // Submit License Info
 export const submitLicense = async ( data: unknown) => {
   const accessToken = localStorage.getItem("accessToken");
