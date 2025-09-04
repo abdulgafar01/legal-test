@@ -102,13 +102,6 @@ const ApplicationRejectedPage: React.FC = () => {
             <LogOut size={16} />
             Logout
           </button>
-
-          <Link
-            href="/dashboard"
-            className="block w-full py-3 px-4 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center"
-          >
-            Continue as Regular User
-          </Link>
         </div>
 
         {/* Contact Info */}
