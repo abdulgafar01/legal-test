@@ -55,10 +55,8 @@ const MultiStepForm: React.FC = () => {
     try {
       // This will be handled by the final form submission
       setShowSuccess(true);
-      setTimeout(() => {
-        clearFormData(); // Clear stored form data
-        router.push("/pending-review");
-      }, 3000);
+      // Remove automatic redirection since ApplicationSubmittedPage handles logout
+      clearFormData(); // Clear stored form data
     } catch (error) {
       console.error("Submission error:", error);
       setIsSubmitting(false);

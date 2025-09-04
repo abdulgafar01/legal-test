@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Apple, Eye, EyeOff, Facebook, Scale } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser} from '@/lib/api/auth';
@@ -19,9 +19,18 @@ type FormValues = {
 
 const Page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
+
+  // Check for application submitted message
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'application-submitted') {
+      toast.success('Application submitted! Please log in to check your status. ✅');
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -66,24 +75,52 @@ const Page = () => {
           }
 
         if (is_profile_complete === true) {
-            // Check if user is a practitioner and needs approval status check
-            if (user_type === 'legal_practitioner' && user.practitioner_profile?.approval_status) {
-              const approvalStatus = user.practitioner_profile.approval_status;
+            // Check if user is a practitioner and needs verification status check
+            if (user_type === 'legal_practitioner') {
+              // Debug log to see what we're getting
+              console.log('=== PRACTITIONER LOGIN CHECK ===');
+              console.log('Full user data:', user);
+              console.log('Practitioner profile exists:', !!user.practitioner_profile);
+              console.log('Practitioner profile:', user.practitioner_profile);
               
-              if (approvalStatus === 'pending') {
-                router.push('/pending-review');
+              // Check verification status with more explicit handling
+              const practitionerProfile = user.practitioner_profile;
+              const verificationStatus = practitionerProfile?.verification_status;
+              
+              console.log('Extracted verification status:', verificationStatus);
+              
+              // Handle different verification statuses
+              if (verificationStatus === 'pending') {
+                console.log('Redirecting to pending review page');
                 toast.info('Your practitioner application is still under review.');
+                router.push('/pending-review');
                 return;
-              } else if (approvalStatus === 'rejected') {
-                router.push('/application-rejected');
+              } else if (verificationStatus === 'rejected') {
+                console.log('Redirecting to rejected page');
                 toast.error('Your practitioner application was not approved.');
+                router.push('/application-rejected');
+                return;
+              } else if (verificationStatus === 'under_review') {
+                console.log('Redirecting to pending review page');
+                toast.info('Your practitioner application is currently being reviewed.');
+                router.push('/pending-review');
+                return;
+              } else if (verificationStatus === 'verified') {
+                console.log('Practitioner verified, proceeding to dashboard');
+                // Continue to dashboard
+              } else {
+                // If no verification status or unknown status, assume pending
+                console.log('No verification status or unknown status, assuming pending');
+                toast.info('Your practitioner application is being processed.');
+                router.push('/pending-review');
                 return;
               }
-              // If approved, continue to dashboard
             }
             
+            // Only show success message if we're actually going to dashboard
+            console.log('Proceeding to dashboard with success message');
+            toast.success('Login successful! 🎉');
             router.push('/dashboard');
-            toast.success('Login successful!', data.message);
             console.log('Login successful:', data);
           } else {
             if (user_type === 'service_seeker') {

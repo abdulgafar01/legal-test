@@ -8,6 +8,8 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 import { FileText, User, Award, Briefcase, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface ApplicationSubmittedPageProps {
   onSubmit: () => void;
@@ -16,11 +18,20 @@ interface ApplicationSubmittedPageProps {
 
 const ApplicationSubmittedPage: React.FC<ApplicationSubmittedPageProps> = ({ onSubmit, isSubmitting }) => {
   const { formData } = usePractitionerFormStore();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: submitPractitionerApplication,
     onSuccess: (data) => {
-      toast.success('Application submitted successfully!');
+      toast.success('Application submitted successfully! 🎉 You will be logged out for security purposes.');
+      
+      // Log out the user after successful submission
+      setTimeout(() => {
+        logout();
+        router.push('/login?message=application-submitted');
+      }, 2000);
+      
       onSubmit();
     },
     onError: (error: AxiosError) => {

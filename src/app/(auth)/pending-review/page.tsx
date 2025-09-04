@@ -1,10 +1,17 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle, Clock, FileText, Mail, User } from 'lucide-react';
+import { CheckCircle, Clock, FileText, Mail, User, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 const PendingReviewPage: React.FC = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -65,19 +72,13 @@ const PendingReviewPage: React.FC = () => {
 
         {/* Actions */}
         <div className="space-y-3">
-          <Link
-            href="/dashboard"
-            className="block w-full py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
           >
-            Go to Dashboard
-          </Link>
-          
-          <Link
-            href="/profile"
-            className="block w-full py-3 px-4 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-          >
-            View Profile
-          </Link>
+            <LogOut size={16} />
+            Logout & Check Later
+          </button>
         </div>
 
         {/* Contact Info */}

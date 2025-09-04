@@ -1,10 +1,17 @@
 'use client';
 
 import React from 'react';
-import { AlertCircle, FileText, Mail, RefreshCw, User } from 'lucide-react';
+import { AlertCircle, FileText, Mail, RefreshCw, User, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ApplicationRejectedPage: React.FC = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
@@ -83,21 +90,22 @@ const ApplicationRejectedPage: React.FC = () => {
         <div className="space-y-3">
           <Link
             href="/onboarding/professionals"
-            className="block w-full py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="block w-full py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-center"
           >
             Submit New Application
           </Link>
           
-          <Link
-            href="/profile"
-            className="block w-full py-3 px-4 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-2 w-full py-3 px-4 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
-            View Profile
-          </Link>
+            <LogOut size={16} />
+            Logout
+          </button>
 
           <Link
             href="/dashboard"
-            className="block w-full py-3 px-4 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="block w-full py-3 px-4 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors text-center"
           >
             Continue as Regular User
           </Link>
