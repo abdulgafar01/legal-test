@@ -1,28 +1,31 @@
-import { useRef, useState, useEffect } from 'react';
+"use client";
+
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Category } from '@/lib/api/explore';
 
-const CategoryScroller = () => {
-  // Category data
-  const categories = [
-    { name: "Criminal Law", active: true },
-    { name: "Constitutional Law", active: false },
-    { name: "Administrative Law", active: false },
-    { name: "Civil Law", active: false },
-    { name: "International Law", active: false },
-    { name: "Corporate (or Company)", active: false },
-    { name: "Employment Law", active: false },
-    { name: "Property Law", active: false },
-    { name: "Tax Law", active: false }
-  ];
+interface CategoryScrollerProps {
+  categories: Category[];
+  loading?: boolean;
+  selectedCategory?: Category | null;
+  onCategorySelect?: (category: Category | null) => void;
+}
 
-  // Refs and state
+const CategoryScroller = ({ categories, loading = false, selectedCategory, onCategorySelect }: CategoryScrollerProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButtons, setShowScrollButtons] = useState({
     left: false,
     right: true
   });
 
-  // Scroll handler
+  // Filter and sort categories (memoized to avoid new array each render causing effect churn)
+  const filteredCategories = useMemo(() => {
+    return categories
+      .filter(cat => cat.is_active)
+      .slice() // defensive copy before sort
+      .sort((a, b) => a.sort_order - b.sort_order);
+  }, [categories]);
+
   const handleScroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
     
@@ -33,36 +36,47 @@ const CategoryScroller = () => {
     });
   };
 
-  // Check scroll position to determine button visibility
   const updateScrollButtons = () => {
     if (!scrollContainerRef.current) return;
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
     const canScrollLeft = scrollLeft > 0;
     const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1;
-
-    setShowScrollButtons({
-      left: canScrollLeft,
-      right: canScrollRight
+    setShowScrollButtons(prev => {
+      if (prev.left === canScrollLeft && prev.right === canScrollRight) return prev; // avoid unnecessary state update
+      return { left: canScrollLeft, right: canScrollRight };
     });
   };
 
-  // Set up event listeners and initial check
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    updateScrollButtons(); // Initial check
+    updateScrollButtons();
     container.addEventListener('scroll', updateScrollButtons);
 
     return () => {
       container.removeEventListener('scroll', updateScrollButtons);
     };
-  }, []);
+  }, [filteredCategories]);
+
+  if (loading) {
+    return (
+      <div className="relative flex items-center">
+        <div className="flex space-x-3 px-8 py-2">
+          {[...Array(6)].map((_, index) => (
+            <div 
+              key={index} 
+              className="h-10 w-24 bg-gray-200 rounded-full animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex items-center">
-      {/* Left scroll button */}
       {showScrollButtons.left && (
         <button
           onClick={() => handleScroll('left')}
@@ -73,27 +87,34 @@ const CategoryScroller = () => {
         </button>
       )}
       
-      {/* Categories container */}
       <div
         ref={scrollContainerRef}
         className="flex space-x-3 overflow-x-auto scrollbar-hide px-8 py-2"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {categories.map((category, index) => (
+        {filteredCategories.map((category) => (
           <button
-            key={index}
+            key={category.id}
+            onClick={() => {
+              // Allow deselecting if the same category is clicked
+              if (selectedCategory?.id === category.id) {
+                onCategorySelect?.(null); // Deselect
+              } else {
+                onCategorySelect?.(category);
+              }
+            }}
             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              category.active
-                ? 'bg-black text-white'
+              selectedCategory?.id === category.id
+                ? 'bg-black text-white hover:bg-gray-800'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
+            title={selectedCategory?.id === category.id ? 'Click to deselect' : `Select ${category.name}`}
           >
             {category.name}
           </button>
         ))}
       </div>
       
-      {/* Right scroll button */}
       {showScrollButtons.right && (
         <button
           onClick={() => handleScroll('right')}

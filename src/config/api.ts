@@ -19,6 +19,12 @@ interface ApiConfig {
     };
     licenses: string;
     certificates: string;
+    explore: {
+      categories: string;
+      articles: string;
+      featuredArticles: string;
+      searchArticles: string;
+    };
   };
 }
 
@@ -31,8 +37,8 @@ const getApiBaseUrl = (): string => {
   
   // Fallback to environment-based logic
   if (process.env.NODE_ENV === 'development') {
-    // For development, use localhost (matching next.config.ts)
-    return 'http://localhost:8000';
+    // For development, use the Next.js proxy instead of direct Django URL
+    return ''; // Empty string means use relative URLs (goes through Next.js proxy)
   } else {
     // For production, use AWS EC2 instance
     return 'http://ec2-40-172-8-211.me-central-1.compute.amazonaws.com';
@@ -57,6 +63,12 @@ export const API_CONFIG: ApiConfig = {
     },
     licenses: '/api/v1/licenses/',
     certificates: '/api/v1/certificates/',
+    explore: {
+      categories: '/api/v1/explore/categories/',
+      articles: '/api/v1/explore/articles/',
+      featuredArticles: '/api/v1/explore/articles/featured/',
+      searchArticles: '/api/v1/explore/articles/search/',
+    },
   },
 };
 

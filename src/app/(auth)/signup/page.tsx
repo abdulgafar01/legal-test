@@ -2,15 +2,16 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Apple, Eye, EyeOff, Facebook, Scale } from 'lucide-react';
+import { Apple, Eye, EyeOff, Facebook, Scale, User } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { registerUser } from '@/lib/api/auth';
 import { toast } from 'sonner'; 
 import axios from 'axios';
+import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
 
 type FormValues = {
   email: string;
@@ -20,10 +21,44 @@ type FormValues = {
 
 const Page = () => {
   const router = useRouter();
+  const { accountType } = useAccountTypeStore();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
+
+  // Redirect to account selection if no account type is selected
+  useEffect(() => {
+    if (!accountType) {
+      router.push('/account');
+    }
+  }, [accountType, router]);
+
+  // Dynamic content based on account type
+  const getContentByAccountType = () => {
+    if (accountType === 'professional') {
+      return {
+        icon: Scale,
+        title: "Join Our Legal Network",
+        subtitle: "Share Your Expertise",
+        description: "Connect with clients who need your specialized legal knowledge and grow your practice.",
+        formTitle: "Start Your Professional Journey",
+        formSubtitle: "Join thousands of legal professionals already serving clients on our platform."
+      };
+    } else {
+      return {
+        icon: User,
+        title: "Need Legal Help?",
+        subtitle: "Get Matched Instantly",
+        description: "Connect with verified legal professionals in your area or field — fast, secure, and AI-assisted.",
+        formTitle: "Create an account",
+        formSubtitle: "Secure your access to legal support — anytime, anywhere."
+      };
+    }
+  };
+
+  const content = getContentByAccountType();
+  const IconComponent = content.icon;
 
   const {
     register,
@@ -190,23 +225,43 @@ const Page = () => {
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-6xl mx-auto relative z-10">
         <div className="flex-1 text-center lg:text-left max-w-xl">
-          <Scale className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
+          <IconComponent className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Need Legal Help?
+            {content.title}
             <br />
-            Get Matched
-            <br />
-            Instantly.
+            {content.subtitle}
+            {accountType === 'service-seeker' && (
+              <>
+                <br />
+                Instantly.
+              </>
+            )}
           </h1>
           <p className="text-xl text-gray-200 max-w-lg">
-            Connect with verified legal professionals in your area or field — fast, secure, and AI-assisted.
+            {content.description}
           </p>
         </div>
 
         <div className="flex-1 max-w-md w-full">
           <div className="bg-white rounded-2xl py-6 px-8 shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Create an account</h2>
-            <p className="text-gray-600 mb-4">Secure your access to legal support — anytime, anywhere.</p>
+            {/* Account Type Indicator */}
+            <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <IconComponent className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">
+                  {accountType === 'professional' ? 'Legal Professional' : 'Service Seeker'}
+                </span>
+              </div>
+              <Link 
+                href="/account" 
+                className="text-xs text-blue-600 hover:underline"
+              >
+                Change
+              </Link>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{content.formTitle}</h2>
+            <p className="text-gray-600 mb-4">{content.formSubtitle}</p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
@@ -311,7 +366,8 @@ const Page = () => {
                 </Link>
               </div>
 
-              <div className="relative mt-6">
+              {/* Commented out social logins for now */}
+              {/* <div className="relative mt-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
                 </div>
@@ -336,10 +392,10 @@ const Page = () => {
                   </span>
                   Continue with Apple
                 </Button>
-              </div>
+              </div> */}
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                By signing up, you agree to our{' '}
+                By signing up as a {accountType === 'professional' ? 'Legal Professional' : 'Service Seeker'}, you agree to our{' '}
                 <Link href="/terms" className="underline">
                   Terms and Conditions of Use
                 </Link>{' '}
@@ -351,11 +407,11 @@ const Page = () => {
             </form>
           </div>
 
-          <div className="mt-6 flex items-center justify-center">
+          {/* <div className="mt-6 flex items-center justify-center">
             <Button className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-400/30">
               I am a legal practitioner
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

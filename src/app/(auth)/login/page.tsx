@@ -11,6 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import { loginUser} from '@/lib/api/auth';
 import { toast } from 'sonner'; 
 import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
 
 type FormValues = {
   email: string;
@@ -20,6 +21,7 @@ type FormValues = {
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -61,9 +63,9 @@ const Page = () => {
             }
 
           const { tokens, user } = data.data;
-          // Store tokens
-          localStorage.setItem('accessToken', tokens.access);
-          localStorage.setItem('refreshToken', tokens.refresh);
+          
+          // Store tokens using AuthContext method (this updates isAuthenticated state)
+          login(tokens.access, tokens.refresh, variables.email);
 
           // Destructure necessary info
           const { is_profile_complete, user_type, is_email_verified } = user;
@@ -77,40 +79,27 @@ const Page = () => {
         if (is_profile_complete === true) {
             // Check if user is a practitioner and needs verification status check
             if (user_type === 'legal_practitioner') {
-              // Debug log to see what we're getting
-              console.log('=== PRACTITIONER LOGIN CHECK ===');
-              console.log('Full user data:', user);
-              console.log('Practitioner profile exists:', !!user.practitioner_profile);
-              console.log('Practitioner profile:', user.practitioner_profile);
-              
               // Check verification status with more explicit handling
               const practitionerProfile = user.practitioner_profile;
               const verificationStatus = practitionerProfile?.verification_status;
               
-              console.log('Extracted verification status:', verificationStatus);
-              
               // Handle different verification statuses
               if (verificationStatus === 'pending') {
-                console.log('Redirecting to pending review page');
                 toast.info('Your practitioner application is still under review.');
                 router.push('/pending-review');
                 return;
               } else if (verificationStatus === 'rejected') {
-                console.log('Redirecting to rejected page');
                 toast.error('Your practitioner application was not approved.');
                 router.push('/application-rejected');
                 return;
               } else if (verificationStatus === 'under_review') {
-                console.log('Redirecting to pending review page');
                 toast.info('Your practitioner application is currently being reviewed.');
                 router.push('/pending-review');
                 return;
               } else if (verificationStatus === 'verified') {
-                console.log('Practitioner verified, proceeding to dashboard');
                 // Continue to dashboard
               } else {
                 // If no verification status or unknown status, assume pending
-                console.log('No verification status or unknown status, assuming pending');
                 toast.info('Your practitioner application is being processed.');
                 router.push('/pending-review');
                 return;
@@ -118,10 +107,8 @@ const Page = () => {
             }
             
             // Only show success message if we're actually going to dashboard
-            console.log('Proceeding to dashboard with success message');
             toast.success('Login successful! 🎉');
             router.push('/dashboard');
-            console.log('Login successful:', data);
           } else {
             if (user_type === 'service_seeker') {
               router.push('/onboarding/service-seekers');
@@ -222,7 +209,6 @@ const Page = () => {
           await mutation.mutateAsync(data);
         } catch (error) {
           // Error is already handled in the mutation's onError
-          console.error('Registration error:', error);
         }
       };
 
@@ -329,12 +315,13 @@ const Page = () => {
 
               <div className="text-center">
                 <span className="text-gray-500">You do not have an account? </span>
-                <Link href="/signup" className="text-blue-600 hover:underline font-medium">
+                <Link href="/account" className="text-blue-600 hover:underline font-medium">
                   Sign up
                 </Link>
               </div>
 
-              <div className="relative mt-6">
+              {/* Commented out social logins for now */}
+              {/* <div className="relative mt-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300" />
                 </div>
@@ -359,7 +346,7 @@ const Page = () => {
                   </span>
                   Continue with Apple
                 </Button>
-              </div>
+              </div> */}
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 By signing up, you agree to our{' '}
@@ -374,11 +361,11 @@ const Page = () => {
             </form>
           </div>
 
-          <div className="mt-6 flex items-center justify-center">
+          {/* <div className="mt-6 flex items-center justify-center">
             <Button className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 border border-amber-400/30">
               I am a legal practitioner
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
