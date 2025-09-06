@@ -19,6 +19,11 @@ interface ApiConfig {
     };
     licenses: string;
     certificates: string;
+    practitioners: {
+      list: string;
+      detail: string;
+      specializations: string;
+    };
     explore: {
       categories: string;
       articles: string;
@@ -63,6 +68,11 @@ export const API_CONFIG: ApiConfig = {
     },
     licenses: '/api/v1/licenses/',
     certificates: '/api/v1/certificates/',
+    practitioners: {
+      list: '/api/v1/consultations/practitioners/',
+      detail: '/api/v1/consultations/practitioners/',
+      specializations: '/api/v1/practitioner-specializations/',
+    },
     explore: {
       categories: '/api/v1/explore/categories/',
       articles: '/api/v1/explore/articles/',
