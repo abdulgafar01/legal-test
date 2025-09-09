@@ -27,21 +27,19 @@ export interface Consultation {
     profile_image?: string;
   };
   practitioner_info: {
-    id: number;
-    user_info: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      profile_image?: string;
-    };
-    specializations: string[];
-    hourly_rate: number;
+  id: number;
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  profile_image?: string;
+  specializations: string[];
   };
   time_slot_info: {
-    id: number;
-    start_time: string;
-    end_time: string;
-    date: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
   };
   status_info: {
     id: number;
@@ -72,14 +70,21 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export interface PaginatedResponse<T> {
-  success: boolean;
-  message: string;
-  data: T[];
-  count: number;
-  next?: string;
-  previous?: string;
-}
+export type PaginatedResponse<T> =
+  | {
+      success: true;
+      message?: string;
+      data: T[];
+      count?: number;
+      next?: string;
+      previous?: string;
+    }
+  | {
+      count: number;
+      next: string | null;
+      previous: string | null;
+      results: T[];
+    };
 
 /**
  * Create a new consultation booking

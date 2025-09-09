@@ -140,6 +140,56 @@ export default function PractitionerDetailPage() {
     });
   };
 
+  // Normalize specializations into an array of names, supporting various backend formats
+  const getSpecializationNames = (specializations: any): string[] => {
+    try {
+      if (!specializations) return [];
+      // Already array of objects
+      if (Array.isArray(specializations) && specializations.length && typeof specializations[0] === 'object') {
+        const names = specializations.map((s: any) => s?.name).filter(Boolean);
+        // Some backends send a single object whose name is a JSON array string
+        return names.flatMap((n: any) => {
+          if (typeof n === 'string') {
+            const t = n.trim();
+            if (t.startsWith('[')) {
+              try {
+                const parsed = JSON.parse(t);
+                return Array.isArray(parsed)
+                  ? parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean)
+                  : [n];
+              } catch {
+                return [t.replace(/^\[|\]$/g, '').replace(/\"/g, '').split(',').map((s) => s.trim()).filter(Boolean)];
+              }
+            }
+          }
+          return [n];
+        }).filter(Boolean);
+      }
+      // Array of strings
+      if (Array.isArray(specializations)) {
+        return specializations.filter(Boolean);
+      }
+      // Stringified JSON array
+      if (typeof specializations === 'string') {
+        const trimmed = specializations.trim();
+        if (trimmed.startsWith('[')) {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) return parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
+        }
+        // Fallback: comma separated
+        return trimmed
+          .replace(/^\[|\]$/g, '')
+          .replace(/"/g, '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-[calc(100vh-60px)] overflow-y-auto">
@@ -283,9 +333,13 @@ export default function PractitionerDetailPage() {
 
                   {/* Specializations */}
                   <div className="flex flex-wrap gap-2">
-                    {practitioner.specializations.map((spec) => (
-                      <Badge key={spec.id} variant="secondary">
-                        {spec.name}
+                    {getSpecializationNames(practitioner.specializations).map((name, idx) => (
+                      <Badge
+                        key={`${name}-${idx}`}
+                        variant="secondary"
+                        className="bg-blue-50 text-blue-700 border border-blue-200"
+                      >
+                        {name}
                       </Badge>
                     ))}
                   </div>
@@ -344,6 +398,8 @@ export default function PractitionerDetailPage() {
                 </CardContent>
               </Card>
             )}
+
+            
 
             {/* Education Section */}
             {practitioner.education && (
@@ -466,7 +522,7 @@ export default function PractitionerDetailPage() {
 
             {/* Available Time Slots */}
             {practitioner.available_slots && practitioner.available_slots.length > 0 && (
-              <Card>
+              <Card className="hidden">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Clock className="h-5 w-5 mr-2" />
@@ -501,7 +557,7 @@ export default function PractitionerDetailPage() {
             )}
 
             {/* Contact Options */}
-            <Card>
+            <Card className="hidden">
               <CardHeader>
                 <CardTitle>Contact Options</CardTitle>
               </CardHeader>

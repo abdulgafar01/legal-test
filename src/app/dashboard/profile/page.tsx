@@ -11,7 +11,7 @@ import { useCountries } from '@/hooks/useCountries';
 
 const Page = () => {
     const router = useRouter();
-    const {data: user} = useCurrentUser();
+  const {data: user} = useCurrentUser();
     const { data: countries = [] } = useCountries();
     const country = countries.find(
         (c) => c.name === user?.data?.country // match by name
@@ -24,6 +24,72 @@ const Page = () => {
   }, [user, router]);
 
   if (!user) return null; // prevent flash
+
+  // Helpers and normalized values for practitioner data
+  const practitioner = user?.data?.practitioner_profile || {};
+
+  const formatExperienceLevel = (level?: string) =>
+    level ? level.replace(/_/g, ' ').replace(/^\w|\s\w/g, (m) => m.toUpperCase()) : '—';
+
+  const getSpecializationNames = (specializations: any): string[] => {
+    try {
+      if (!specializations) return [];
+      if (Array.isArray(specializations) && specializations.length && typeof specializations[0] === 'object') {
+        const names = specializations.map((s: any) => s?.name).filter(Boolean);
+        return names
+          .flatMap((n: any) => {
+            if (typeof n === 'string') {
+              const t = n.trim();
+              if (t.startsWith('[')) {
+                try {
+                  const parsed = JSON.parse(t);
+                  return Array.isArray(parsed)
+                    ? parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean)
+                    : [n];
+                } catch {
+                  return [
+                    t
+                      .replace(/^\[|\]$/g, '')
+                      .replace(/"/g, '')
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  ].flat();
+                }
+              }
+            }
+            return [n];
+          })
+          .filter(Boolean) as string[];
+      }
+      if (Array.isArray(specializations)) return specializations.filter(Boolean);
+      if (typeof specializations === 'string') {
+        const trimmed = specializations.trim();
+        if (trimmed.startsWith('[')) {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) return parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
+        }
+        return trimmed
+          .replace(/^\[|\]$/g, '')
+          .replace(/"/g, '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
+  const specializationNames = getSpecializationNames(practitioner?.specializations);
+  const qualification = user?.data?.qualification || practitioner?.education || '—';
+  const yearsOfExperience = practitioner?.years_of_experience ?? practitioner?.experience_years ?? null;
+  const totalConsultations = practitioner?.total_consultations ?? practitioner?.consultations_count ?? null;
+  const hourlyRate = practitioner?.hourly_rate ?? null;
+  const levelDisplay = formatExperienceLevel(practitioner?.experience_level);
+  const rating = practitioner?.average_rating;
+  const totalReviews = practitioner?.total_reviews;
   
   const menuItems = [
     {
@@ -48,13 +114,13 @@ const Page = () => {
     {
       icon: Settings,
       title: "Settings",
-      href: "#",
+  href: "/dashboard/settings",
       showArrow: true
     },
     {
       icon: HelpCircle,
       title: "Help",
-      href: "#",
+  href: "/dashboard/help",
       showArrow: true
     }
   ];
@@ -107,16 +173,17 @@ const Page = () => {
                         </div>
 
                         {/* Rating */}
-                        <div className="flex items-center gap-1 mt-1">
-                          {[...Array(4)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className="w-4 h-4 text-yellow-400 fill-yellow-400"
-                            />
-                          ))}
-                          <Star className="w-4 h-4 text-yellow-400" />
-                          <span className="text-sm text-gray-600 ml-1">4.3 • 60 reviews</span>
-                        </div>
+                        {(typeof rating !== 'undefined' && rating !== null) && (
+                          <div className="flex items-center gap-1 mt-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < Math.round(Number(rating) || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                              />
+                            ))}
+                            <span className="text-sm text-gray-600 ml-1">{(Number(rating) || 0).toFixed(1)}{typeof totalReviews !== 'undefined' ? ` • ${totalReviews} reviews` : ''}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -124,34 +191,46 @@ const Page = () => {
                     <div className="mt-6 space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-500">Level:</span>
-                        <span className="font-medium">{user?.data?.practitioner_profile?.experience_level}</span>
+                        <span className="font-medium">{levelDisplay}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between items-start">
                         <span className="text-gray-500">Expertise:</span>
-                        <span className="font-medium">Criminal Law - Family Law</span>
+                        <div className="font-medium w-3/5">
+                          {specializationNames.length ? (
+                            <div className="flex flex-wrap gap-2 justify-end">
+                              {specializationNames.map((name, i) => (
+                                <Badge
+                                  key={`${name}-${i}`}
+                                  variant="secondary"
+                                  className="bg-blue-50 text-blue-700 border border-blue-200"
+                                >
+                                  {name}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            '—'
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Qualification:</span>
-                        <span className="font-medium">Bachelor of Law</span>
+                        <span className="font-medium">{qualification}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-500">Consultations:</span>
-                        <span className="font-medium">200</span>
+                        <span className="font-medium">{typeof totalConsultations === 'number' ? totalConsultations : '—'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-500">Experience:</span>
-                        <span className="font-medium">{user?.data?.practitioner_profile?.experience_level_display}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-500">Consultation limit:</span>
-                        <span className="font-medium">15/20</span>
+                        <span className="text-gray-500">Years of experience:</span>
+                        <span className="font-medium">{typeof yearsOfExperience === 'number' ? `${yearsOfExperience} years` : '—'}</span>
                       </div>
                     </div>
 
                     {/* Button */}
                     <button className="mt-6 w-full flex items-center justify-between border border-yellow-400 text-gray-700 px-4 py-2 rounded-lg hover:bg-yellow-50 transition">
                       <span>Consultation</span>
-                      <span className="font-semibold">$79.99</span>
+                      <span className="font-semibold">{hourlyRate ? `$${hourlyRate}` : '$—'}</span>
                     </button>
                   </div>
           </div>

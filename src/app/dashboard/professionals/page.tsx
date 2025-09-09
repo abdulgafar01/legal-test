@@ -238,7 +238,26 @@ const Page = () => {
                         name: `${practitioner.user_info.first_name} ${practitioner.user_info.last_name}`,
                         image: practitioner.user_info.profile_image || "/placeholderImage.png",
                         rating: Math.round(practitioner.average_rating),
-                        expertise: practitioner.specializations.map(s => s.name),
+                        expertise: (() => {
+                          const names = practitioner.specializations?.map((s: any) => s?.name) || [];
+                          // Flatten possible JSON array stored as name
+                          return names.flatMap((n: any) => {
+                            if (typeof n === 'string') {
+                              const t = n.trim();
+                              if (t.startsWith('[')) {
+                                try {
+                                  const parsed = JSON.parse(t);
+                                  return Array.isArray(parsed)
+                                    ? parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean)
+                                    : [n];
+                                } catch {
+                                  return t.replace(/^\[|\]$/g, '').replace(/\"/g, '').split(',').map(s => s.trim()).filter(Boolean);
+                                }
+                              }
+                            }
+                            return [n];
+                          }).filter(Boolean);
+                        })(),
                         qualification: practitioner.experience_level || "Legal Professional",
                         price: practitioner.hourly_rate,
                         location: practitioner.user_info.country,

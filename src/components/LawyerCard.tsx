@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -63,7 +64,18 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
             
             <div className="space-y-1 text-sm text-gray-600">
               <div>
-                <span className="font-medium">Expertise:</span> {lawyer.expertise.join(" - ")}
+                <span className="font-medium">Expertise:</span>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {lawyer.expertise.map((name, idx) => (
+                    <Badge
+                      key={`${name}-${idx}`}
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-700 border border-blue-200"
+                    >
+                      {name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
               <div>
                 <span className="font-medium">Qualification:</span> {lawyer.qualification}

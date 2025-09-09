@@ -33,33 +33,71 @@ export const SpecializationSettings = ({ profile }: SpecializationSettingsProps)
     }
   };
 
-  const currentSpecializations = profile?.practitioner_profile?.specializations || [];
-  
-  // Handle case where specializations might be a string instead of array
-  let parsedSpecializations = currentSpecializations;
-  if (typeof currentSpecializations === 'string') {
+  // Helper copied from practitioner details page to normalize names
+  const getSpecializationNames = (specs: any): string[] => {
     try {
-      parsedSpecializations = JSON.parse(currentSpecializations);
-    } catch (e) {
-      // If parsing fails, try to extract names from string format like ["Corporate Law","Criminal Law"]
-      const matches = currentSpecializations.match(/"([^"]+)"/g);
-      if (matches) {
-        parsedSpecializations = matches.map(match => ({ name: match.replace(/"/g, '') }));
-      } else {
-        parsedSpecializations = [];
+      if (!specs) return [];
+      if (Array.isArray(specs) && specs.length && typeof specs[0] === 'object') {
+        const names = specs.map((s: any) => s?.name).filter(Boolean);
+        return names
+          .flatMap((n: any) => {
+            if (typeof n === 'string') {
+              const t = n.trim();
+              if (t.startsWith('[')) {
+                try {
+                  const parsed = JSON.parse(t);
+                  return Array.isArray(parsed)
+                    ? parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean)
+                    : [n];
+                } catch {
+                  return [
+                    t
+                      .replace(/^\[|\]$/g, '')
+                      .replace(/\"/g, '"')
+                      .replace(/"/g, '')
+                      .split(',')
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  ].flat();
+                }
+              }
+            }
+            return [n];
+          })
+          .filter(Boolean) as string[];
       }
+      if (Array.isArray(specs)) {
+        return specs.filter(Boolean);
+      }
+      if (typeof specs === 'string') {
+        const trimmed = specs.trim();
+        if (trimmed.startsWith('[')) {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) return parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
+        }
+        return trimmed
+          .replace(/^\[|\]$/g, '')
+          .replace(/"/g, '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      return [];
+    } catch {
+      return [];
     }
-  }
-  
-  console.log('🔍 Parsed Specializations:', parsedSpecializations);
+  };
+
+  const specializationNames = getSpecializationNames(profile?.practitioner_profile?.specializations);
+
+  console.log('🔍 Specialization Names (normalized):', specializationNames);
   console.log('🔍 All Specializations:', specializations);
   console.log('🔍 Specializations is array:', Array.isArray(specializations));
-  
+
   // Ensure specializations is always an array before filtering
   const safeSpecializations = Array.isArray(specializations) ? specializations : [];
-  const availableSpecializations = safeSpecializations.filter(spec => 
-    !parsedSpecializations.some((userSpec: any) => userSpec.id === spec.id || userSpec.name === spec.name)
-  );
+  const used = new Set(specializationNames);
+  const availableSpecializations = safeSpecializations.filter((spec) => !used.has(spec.name));
 
   return (
     <div className="h-full overflow-y-auto space-y-6 pr-2">
@@ -75,24 +113,16 @@ export const SpecializationSettings = ({ profile }: SpecializationSettingsProps)
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {parsedSpecializations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {parsedSpecializations.map((spec: any, index: number) => (
-                <div 
-                  key={index} 
-                  className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg hover:shadow-md transition-shadow"
+          {specializationNames.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {specializationNames.map((name, index) => (
+                <Badge
+                  key={`${name}-${index}`}
+                  variant="secondary"
+                  className="bg-blue-50 text-blue-700 border border-blue-200"
                 >
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-blue-600" />
-                    <h3 className="font-semibold text-blue-900">{spec.name}</h3>
-                  </div>
-                  {spec.description && (
-                    <p className="text-sm text-blue-700 mt-2">{spec.description}</p>
-                  )}
-                  <Badge variant="secondary" className="mt-2 bg-blue-200 text-blue-800">
-                    Active
-                  </Badge>
-                </div>
+                  {name}
+                </Badge>
               ))}
             </div>
           ) : (

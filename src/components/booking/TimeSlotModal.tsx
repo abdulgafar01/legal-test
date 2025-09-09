@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Calendar, Clock, DollarSign, User, CheckCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { format, parseISO, isSameDay } from 'date-fns';
 import { createConsultationBooking, type TimeSlot, type ConsultationBookingData } from '@/lib/api/consultations';
 import { toast } from 'sonner';
@@ -51,6 +52,43 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
   const [isBooking, setIsBooking] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [bookedConsultationId, setBookedConsultationId] = useState<number | null>(null);
+
+  const getSpecializationNames = (specializations: any): string[] => {
+    try {
+      if (!specializations) return [];
+      if (Array.isArray(specializations) && specializations.length && typeof specializations[0] === 'object') {
+        const names = specializations.map((s: any) => s?.name).filter(Boolean);
+        return names.flatMap((n: any) => {
+          if (typeof n === 'string') {
+            const t = n.trim();
+            if (t.startsWith('[')) {
+              try {
+                const parsed = JSON.parse(t);
+                return Array.isArray(parsed)
+                  ? parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean)
+                  : [n];
+              } catch {
+                return t.replace(/^\[|\]$/g, '').replace(/\"/g, '').split(',').map(s => s.trim()).filter(Boolean);
+              }
+            }
+          }
+          return [n];
+        }).filter(Boolean);
+      }
+      if (Array.isArray(specializations)) return specializations.filter(Boolean);
+      if (typeof specializations === 'string') {
+        const trimmed = specializations.trim();
+        if (trimmed.startsWith('[')) {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) return parsed.map((v) => (typeof v === 'string' ? v : v?.name)).filter(Boolean);
+        }
+        return trimmed.replace(/^\[|\]$/g, '').replace(/"/g, '').split(',').map(s => s.trim()).filter(Boolean);
+      }
+      return [];
+    } catch {
+      return [];
+    }
+  };
 
   // Group available slots by date
   const slotsByDate = (practitioner.available_slots || []).reduce((acc, slot) => {
@@ -209,9 +247,17 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
                 <h3 className="font-semibold text-gray-900">
                   {practitioner.user_info.first_name} {practitioner.user_info.last_name}
                 </h3>
-                <p className="text-sm text-gray-600">
-                  {practitioner.specializations.map(s => s.name).join(', ')}
-                </p>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {getSpecializationNames(practitioner.specializations).map((name, idx) => (
+                    <Badge
+                      key={`${name}-${idx}`}
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-700 border border-blue-200"
+                    >
+                      {name}
+                    </Badge>
+                  ))}
+                </div>
                 <p className="text-sm font-medium text-green-600">
                   ${practitioner.hourly_rate}/hour
                 </p>

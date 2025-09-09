@@ -1,3 +1,4 @@
+"use client";
 import { Bell, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -13,10 +14,13 @@ interface NavbarProps {
 
 const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
   const { data: user } = useCurrentUser();
+  const userType = (user as any)?.data?.user_type || (user as any)?.user_type;
+  const hasPractitionerProfile = Boolean((user as any)?.data?.practitioner_profile);
+  const isPractitioner = userType === 'legal_practitioner' || userType === 'professional' || hasPractitionerProfile;
 
   return (
     <header className="w-full sticky top-0 z-20 bg-orange-50 border-b border-l border-gray-200 px-6 py-3">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <div className="flex items-center max-w-7xl mx-auto">
         {/* Mobile Menu Button - only shown on mobile */}
             {isMobile && (
                 <button 
@@ -31,16 +35,17 @@ const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
                 </button>
             )}
         
-        {/* professional button */}
-        <Link href='/dashboard/professionals'>
-          <Button className='bg-amber-200 rounded-xl text-black hover:bg-amber-100 cursor-pointer'>
-            Get a professional
-          </Button>
+  {/* professional button (hidden for practitioner accounts only) */}
+  {!isPractitioner && (
+          <Link href='/dashboard/professionals'>
+            <Button className='bg-amber-200 rounded-xl text-black hover:bg-amber-100 cursor-pointer'>
+              Get a professional
+            </Button>
+          </Link>
+        )}
 
-        </Link>
-
-        {/* Right Section */}
-        <div className="flex items-center gap-4">
+  {/* Right Section */}
+  <div className="flex items-center gap-4 ml-auto">
           {/* Toggle Switch */}
           <div className="flex items-center bg-green-500 rounded-full p-1 cursor-pointer">
         

@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { getConsultationDetails, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
+import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
+import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
 import { format, parseISO } from 'date-fns';
 
 interface ChatInterfaceProps {
@@ -18,6 +19,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [loading, setLoading] = useState(false);
   const [timeUntil, setTimeUntil] = useState({ days: 0, hours: 0, minutes: 0, isReady: false });
+  const { accountType } = useAccountTypeStore();
+  const [forceAccess, setForceAccess] = useState(false);
 
   useEffect(() => {
     if (selectedChat) {
@@ -44,7 +47,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     
     try {
       setLoading(true);
-      const response = await getConsultationDetails(parseInt(selectedChat));
+  const response = await getConsultationById(parseInt(selectedChat));
       if (response.success) {
         setConsultation(response.data);
       }
@@ -156,10 +159,13 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
 
   // Check if consultation time has arrived
   const canAccessChat = consultation ? isConsultationTimeReady(consultation) : true;
+  const allowedToEnter = canAccessChat || forceAccess;
 
   // If consultation exists but time hasn't arrived, show waiting screen
-  if (consultation && !canAccessChat) {
-    const practitioner = consultation.practitioner_info;
+  if (consultation && !allowedToEnter) {
+    const counterpart = accountType === 'professional'
+      ? consultation.service_seeker_info
+      : consultation.practitioner_info;
     const consultationDate = parseISO(consultation.time_slot_info.date);
     const formattedDate = format(consultationDate, 'EEEE, MMMM d, yyyy');
     const formattedTime = `${consultation.time_slot_info.start_time} - ${consultation.time_slot_info.end_time}`;
@@ -178,17 +184,17 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <Avatar className="w-10 h-10">
-              <AvatarImage 
-                src={practitioner.user_info.profile_image || ''} 
-                alt={`${practitioner.user_info.first_name} ${practitioner.user_info.last_name}`} 
+              <AvatarImage
+                src={counterpart.profile_image || ''}
+                alt={`${counterpart.first_name} ${counterpart.last_name}`}
               />
               <AvatarFallback>
-                {practitioner.user_info.first_name[0]}{practitioner.user_info.last_name[0]}
+                {counterpart.first_name[0]}{counterpart.last_name[0]}
               </AvatarFallback>
             </Avatar>
             <div>
               <h3 className="font-semibold text-gray-900">
-                {practitioner.user_info.first_name} {practitioner.user_info.last_name}
+                {counterpart.first_name} {counterpart.last_name}
               </h3>
               <p className="text-sm text-gray-600">Consultation scheduled</p>
             </div>
@@ -203,7 +209,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
           
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Consultation Not Ready</h2>
           <p className="text-gray-600 mb-6">
-            Your consultation with {practitioner.user_info.first_name} {practitioner.user_info.last_name} is scheduled for:
+            Your consultation with {counterpart.first_name} {counterpart.last_name} is scheduled for:
           </p>
 
           <div className="bg-white rounded-lg p-6 border mb-6">
@@ -232,6 +238,20 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               <p className="text-yellow-600 text-sm">Chat will be available 15 minutes before your consultation.</p>
             </div>
           )}
+
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Button onClick={() => setForceAccess(true)} className="bg-gray-900 hover:bg-gray-800 text-white">
+              Open Session (Debug)
+            </Button>
+            {consultation.meeting_link && (
+              <Button
+                variant="secondary"
+                onClick={() => window.open(consultation.meeting_link as string, '_blank', 'noopener')}
+              >
+                Open Meeting Link
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -239,10 +259,16 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
 
   // Display name for header
   const displayName = consultation ? 
-    `${consultation.practitioner_info.user_info.first_name} ${consultation.practitioner_info.user_info.last_name}` :
+    accountType === 'professional'
+      ? `${consultation.service_seeker_info.first_name} ${consultation.service_seeker_info.last_name}`
+      : `${consultation.practitioner_info.first_name} ${consultation.practitioner_info.last_name}` :
     currentChat?.name || 'Unknown';
 
-  const displayAvatar = consultation?.practitioner_info.user_info.profile_image || currentChat?.avatar;
+  const displayAvatar = consultation
+    ? (accountType === 'professional'
+        ? consultation.service_seeker_info.profile_image
+        : consultation.practitioner_info.profile_image)
+    : currentChat?.avatar;
 
   const displayStatus = consultation ? 
     (consultation.status_info.name === 'in_progress' ? 'In consultation' : 'Available') :
@@ -291,8 +317,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
         {/* Date separator */}
         <div className="flex justify-center">
           <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-            {consultation ? 
-              format(parseISO(consultation.time_slot_info.date), 'dd-MM-yyyy') : 
+            {consultation ?
+              format(parseISO(consultation.time_slot_info.date), 'dd-MM-yyyy') :
               '24-01-2025'
             }
           </span>
@@ -306,7 +332,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Live Chat Ready</h3>
             <p className="text-gray-600 mb-4">
-              Your consultation with {consultation.practitioner_info.user_info.first_name} {consultation.practitioner_info.user_info.last_name} is ready.
+              Your consultation with {accountType === 'professional' ? `${consultation.service_seeker_info.first_name} ${consultation.service_seeker_info.last_name}` : `${consultation.practitioner_info.first_name} ${consultation.practitioner_info.last_name}`} is ready.
             </p>
             <p className="text-sm text-gray-500">
               Real-time chat will be implemented in the next phase.

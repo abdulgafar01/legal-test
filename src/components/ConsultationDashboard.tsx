@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from './ui/badge';
 import { getMyConsultations, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
 import { format, parseISO } from 'date-fns';
+import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
 
 interface ConsultationDashboardProps {
   onSelectChat: (chatId: string) => void;
@@ -15,6 +16,7 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { accountType } = useAccountTypeStore();
 
   useEffect(() => {
     loadConsultations();
@@ -24,8 +26,9 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
     try {
       setLoading(true);
       const response = await getMyConsultations();
-      if (response.success) {
-        setConsultations(response.data);
+      const items = (response as any).success ? (response as any).data : (response as any).results;
+      if (Array.isArray(items)) {
+        setConsultations(items);
       }
     } catch (error) {
       console.error('Error loading consultations:', error);
@@ -34,11 +37,13 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
     }
   };
 
-  const filteredConsultations = consultations.filter(consultation =>
-    `${consultation.practitioner_info.user_info.first_name} ${consultation.practitioner_info.user_info.last_name}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredConsultations = consultations.filter((consultation) => {
+    const counterpart = accountType === 'professional'
+      ? consultation.service_seeker_info
+      : consultation.practitioner_info;
+    const fullName = `${counterpart.first_name} ${counterpart.last_name}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
 
   const todayConsultations = filteredConsultations.filter(consultation => {
     const consultationDate = new Date(consultation.time_slot_info.date);
@@ -108,7 +113,9 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
 
   const ConsultationItem = ({ consultation }: { consultation: Consultation }) => {
     const timeInfo = formatConsultationTime(consultation);
-    const practitioner = consultation.practitioner_info;
+    const counterpart = accountType === 'professional'
+      ? consultation.service_seeker_info
+      : consultation.practitioner_info;
     const canAccess = isConsultationTimeReady(consultation);
     
     return (
@@ -117,18 +124,18 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
         onClick={() => onSelectChat(consultation.id.toString())}
       >
         <Avatar className="w-12 h-12">
-          <AvatarImage 
-            src={practitioner.user_info.profile_image || ''} 
-            alt={`${practitioner.user_info.first_name} ${practitioner.user_info.last_name}`} 
+          <AvatarImage
+            src={counterpart.profile_image || ''}
+            alt={`${counterpart.first_name} ${counterpart.last_name}`}
           />
           <AvatarFallback>
-            {practitioner.user_info.first_name[0]}{practitioner.user_info.last_name[0]}
+            {counterpart.first_name[0]}{counterpart.last_name[0]}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <h3 className="font-medium text-gray-900 truncate">
-              {practitioner.user_info.first_name} {practitioner.user_info.last_name}
+              {counterpart.first_name} {counterpart.last_name}
             </h3>
             <div className="flex items-center space-x-2">
               <span className="text-xs text-gray-500">{timeInfo.time}</span>

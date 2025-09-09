@@ -82,8 +82,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={clsx(sidebarBaseClasses, isMobile ? mobileClasses : desktopClasses)}>
-      {/* --- Top Content --- */}
-      <div>
+  {/* --- Top Content --- */}
+  <div className="flex-1 overflow-y-auto">
         {/* --- Brand + Toggle --- */}
         <div className={clsx('flex', expand ? 'flex-row gap-10' : 'flex-col items-center gap-8')}>
           <Link href="/">
@@ -140,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* --- New Chat Button --- */}
-        <button
+        {/* <button
           className={clsx(
             'mt-2 flex items-center cursor-pointer text-gray-700',
             expand
@@ -156,22 +156,22 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
           {expand && <p className="text-xs font-medium">New Chat</p>}
-        </button>
+        </button> */}
       </div>
 
       {/* --- Scrollable Chat History Only --- */}
-      {expand && (
+      {/* {expand && (
         <div className="mt-4 flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto pr-1">
             <ChatLabel />
           </div>
         </div>
-      )}
+      )} */}
 
-      {/* --- Fixed Bottom User Info --- */}
+    {/* --- Fixed Bottom User Info --- */}
       <div
         className={clsx(
-          'text-black text-sm mt-2',
+      'text-black text-sm mt-auto',
           expand ? 'hover:bg-white/10 rounded-lg' : 'justify-center w-full'
         )}
       >
