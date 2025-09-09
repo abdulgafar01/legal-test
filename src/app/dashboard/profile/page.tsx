@@ -91,6 +91,8 @@ const Page = () => {
   const rating = practitioner?.average_rating;
   const totalReviews = practitioner?.total_reviews;
   
+  const settingsHref = user?.data?.user_type === 'legal_practitioner' ? '/dashboard/settings' : '/dashboard/settings-seeker';
+
   const menuItems = [
     {
       icon: Shield,
@@ -114,7 +116,7 @@ const Page = () => {
     {
       icon: Settings,
       title: "Settings",
-  href: "/dashboard/settings",
+      href: settingsHref,
       showArrow: true
     },
     {
