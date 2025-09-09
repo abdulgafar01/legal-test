@@ -1,79 +1,171 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from './ui/badge';
-// import { Badge } from '@/components/ui/badge';
+import { getMyConsultations, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
+import { format, parseISO } from 'date-fns';
 
 interface ConsultationDashboardProps {
   onSelectChat: (chatId: string) => void;
 }
 
 const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => {
-  const todayConsultations = [
-    {
-      id: 'floyd-1',
-      name: 'Floyd Miles',
-      message: 'Waiting...',
-      time: '45min ago',
-      avatar: '/placeholder.svg'
-    }
-  ];
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const previousConsultations = [
-    {
-      id: 'wade-1',
-      name: 'Wade Warren',
-      message: 'Hello Warren',
-      time: '45min ago',
-      avatar: '/placeholder.svg',
-      unread: true
-    },
-    {
-      id: 'wade-2',
-      name: 'Wade Warren',
-      message: 'Hello Warren', 
-      time: '45min ago',
-      avatar: '/placeholder.svg',
-      unread: true
-    },
-    {
-      id: 'wade-3',
-      name: 'Wade Warren',
-      message: 'Hello Warren',
-      time: '45min ago', 
-      avatar: '/placeholder.svg',
-      unread: true
-    },
-    {
-      id: 'wade-4',
-      name: 'Wade Warren',
-      message: 'Hello Warren',
-      time: '45min ago',
-      avatar: '/placeholder.svg',
-      unread: true
-    },
-    {
-      id: 'wade-5',
-      name: 'Wade Warren',
-      message: 'Hello Warren',
-      time: '45min ago',
-      avatar: '/placeholder.svg',
-      unread: true
-    },
-    {
-      id: 'wade-6',
-      name: 'Wade Warren',
-      message: 'Hello Warren',
-      time: '45min ago',
-      avatar: '/placeholder.svg',
-      unread: true
+  useEffect(() => {
+    loadConsultations();
+  }, []);
+
+  const loadConsultations = async () => {
+    try {
+      setLoading(true);
+      const response = await getMyConsultations();
+      if (response.success) {
+        setConsultations(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading consultations:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const filteredConsultations = consultations.filter(consultation =>
+    `${consultation.practitioner_info.user_info.first_name} ${consultation.practitioner_info.user_info.last_name}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  const todayConsultations = filteredConsultations.filter(consultation => {
+    const consultationDate = new Date(consultation.time_slot_info.date);
+    const today = new Date();
+    return consultationDate.toDateString() === today.toDateString();
+  });
+
+  const upcomingConsultations = filteredConsultations.filter(consultation => {
+    const consultationDate = new Date(consultation.time_slot_info.date);
+    const today = new Date();
+    return consultationDate > today;
+  });
+
+  const pastConsultations = filteredConsultations.filter(consultation => {
+    const consultationDate = new Date(consultation.time_slot_info.date);
+    const today = new Date();
+    return consultationDate < today;
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatConsultationTime = (consultation: Consultation) => {
+    const date = parseISO(consultation.time_slot_info.date);
+    const startTime = consultation.time_slot_info.start_time;
+    
+    return {
+      date: format(date, 'MMM d'),
+      time: startTime,
+      fullDate: format(date, 'EEEE, MMMM d, yyyy')
+    };
+  };
+
+  const getConsultationMessage = (consultation: Consultation) => {
+    const timeInfo = getTimeUntilConsultation(consultation);
+    
+    if (consultation.status_info.name === 'completed') {
+      return 'Consultation completed';
+    }
+    
+    if (consultation.status_info.name === 'cancelled') {
+      return 'Consultation cancelled';
+    }
+    
+    if (timeInfo.isReady) {
+      return 'Ready to start';
+    }
+    
+    if (timeInfo.days > 0) {
+      return `In ${timeInfo.days} day${timeInfo.days > 1 ? 's' : ''}`;
+    }
+    
+    if (timeInfo.hours > 0) {
+      return `In ${timeInfo.hours} hour${timeInfo.hours > 1 ? 's' : ''}`;
+    }
+    
+    return `In ${timeInfo.minutes} minute${timeInfo.minutes > 1 ? 's' : ''}`;
+  };
+
+  const ConsultationItem = ({ consultation }: { consultation: Consultation }) => {
+    const timeInfo = formatConsultationTime(consultation);
+    const practitioner = consultation.practitioner_info;
+    const canAccess = isConsultationTimeReady(consultation);
+    
+    return (
+      <div
+        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        onClick={() => onSelectChat(consultation.id.toString())}
+      >
+        <Avatar className="w-12 h-12">
+          <AvatarImage 
+            src={practitioner.user_info.profile_image || ''} 
+            alt={`${practitioner.user_info.first_name} ${practitioner.user_info.last_name}`} 
+          />
+          <AvatarFallback>
+            {practitioner.user_info.first_name[0]}{practitioner.user_info.last_name[0]}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-gray-900 truncate">
+              {practitioner.user_info.first_name} {practitioner.user_info.last_name}
+            </h3>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-500">{timeInfo.time}</span>
+              {canAccess && (
+                <Badge variant="secondary" className="w-2 h-2 p-0 bg-green-500 rounded-full"></Badge>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600 truncate">{getConsultationMessage(consultation)}</p>
+            <Badge className={`text-xs ${getStatusColor(consultation.status_info.name)}`}>
+              {consultation.status_info.name}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white flex flex-col" style={{ height: 'calc(100vh - 60px)' }}>
+        <div className="p-4 border-b border-gray-200">
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4">Consultations</h1>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading consultations...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className=" bg-white flex flex-col" style={{ height: 'calc(100vh - 60px)' }}>
+    <div className="bg-white flex flex-col" style={{ height: 'calc(100vh - 60px)' }}>
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="mb-4">
@@ -86,6 +178,8 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
           <Input 
             placeholder="Search consultations..."
             className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
@@ -93,63 +187,55 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
       {/* Consultations List */}
       <div className="flex-1 overflow-y-auto">
         {/* Today Section */}
-        <div className="p-4">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Today</h2>
-          <div className="space-y-1">
-            {todayConsultations.map((consultation) => (
-              <div
-                key={consultation.id}
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => onSelectChat(consultation.id)}
-              >
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={consultation.avatar} alt={consultation.name} />
-                  <AvatarFallback>{consultation.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 truncate">{consultation.name}</h3>
-                    <span className="text-xs text-gray-500">{consultation.time}</span>
-                  </div>
-                  <p className="text-sm text-gray-600 truncate">{consultation.message}</p>
-                </div>
-              </div>
-            ))}
+        {todayConsultations.length > 0 && (
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">Today</h2>
+            <div className="space-y-1">
+              {todayConsultations.map((consultation) => (
+                <ConsultationItem key={consultation.id} consultation={consultation} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Upcoming Consultations */}
+        {upcomingConsultations.length > 0 && (
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">Upcoming</h2>
+            <div className="space-y-1">
+              {upcomingConsultations.map((consultation) => (
+                <ConsultationItem key={consultation.id} consultation={consultation} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Previous Consultations */}
-        <div className="p-4">
-          <h2 className="text-sm font-semibold text-gray-900 mb-3">Previous Consultations</h2>
-          <div className="space-y-1">
-            {previousConsultations.map((consultation) => (
-              <div
-                key={consultation.id}
-                className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => onSelectChat(consultation.id)}
-              >
-                <Avatar className="w-12 h-12">
-                  <AvatarImage src={consultation.avatar} alt={consultation.name} />
-                  <AvatarFallback>{consultation.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900 truncate">{consultation.name}</h3>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-500">{consultation.time}</span>
-                      {consultation.unread && (
-                        <Badge variant="secondary" className="w-2 h-2 p-0 bg-gray-800"></Badge>
-                    
-                        // <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 truncate">{consultation.message}</p>
-                </div>
-              </div>
-            ))}
+        {pastConsultations.length > 0 && (
+          <div className="p-4">
+            <h2 className="text-sm font-semibold text-gray-900 mb-3">Previous Consultations</h2>
+            <div className="space-y-1">
+              {pastConsultations.map((consultation) => (
+                <ConsultationItem key={consultation.id} consultation={consultation} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Empty State */}
+        {filteredConsultations.length === 0 && !loading && (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No consultations found</h3>
+              <p className="text-gray-600">
+                {searchTerm ? 'Try adjusting your search' : 'Book a consultation to get started'}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

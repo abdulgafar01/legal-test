@@ -25,14 +25,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getPractitionerById } from '@/lib/api/practitioners';
 import { PractitionerDetail } from '@/lib/types';
+import { TimeSlot } from '@/lib/api/consultations';
+import TimeSlotModal from '@/components/booking/TimeSlotModal';
+import { toast } from 'sonner';
 import Image from 'next/image';
+
+// Local interface for the modal that extends the base PractitionerDetail
+interface PractitionerForModal extends Omit<PractitionerDetail, 'available_slots'> {
+  available_slots: TimeSlot[];
+}
 
 export default function PractitionerDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [practitioner, setPractitioner] = useState<PractitionerDetail | null>(null);
+  const [practitioner, setPractitioner] = useState<PractitionerForModal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const practitionerId = parseInt(params.id as string);
 
@@ -48,80 +57,30 @@ export default function PractitionerDetailPage() {
         console.log('📥 Practitioner details response:', response);
         
         if (response.success && response.data) {
-          setPractitioner(response.data);
+          console.log('✅ Successfully loaded practitioner:', response.data);
+          console.log('📅 Available slots:', response.data.available_slots);
+          
+          // Map available slots to match TimeSlot interface expected by modal
+          const mappedPractitioner = {
+            ...response.data,
+            available_slots: response.data.available_slots?.map(slot => ({
+              id: slot.id,
+              date: slot.date,
+              start_time: slot.start_time,
+              end_time: slot.end_time,
+              duration_minutes: slot.duration_minutes,
+              is_booked: false // Available slots are already filtered to non-booked
+            })) || []
+          };
+          
+          setPractitioner(mappedPractitioner);
         } else {
+          console.log('❌ API response indicates failure:', response);
           setError('Failed to load practitioner details');
         }
       } catch (err) {
         console.error('❌ Error fetching practitioner:', err);
-        // For demo purposes, provide fallback data if API fails
-        console.log('🔄 Using fallback demo data...');
-        const demoData: PractitionerDetail = {
-          id: practitionerId,
-          user_info: {
-            id: practitionerId,
-            first_name: 'Dr. Sarah',
-            last_name: 'Johnson',
-            profile_image: null,
-            country: 'United States',
-            city: 'New York'
-          },
-          specializations: [
-            { id: 1, name: 'Corporate Law', description: 'Business and corporate legal matters' },
-            { id: 2, name: 'Contract Law', description: 'Contract drafting and review' }
-          ],
-          experience_level: 'senior',
-          years_of_experience: 12,
-          hourly_rate: 350,
-          bio: 'Dr. Sarah Johnson is a highly experienced corporate lawyer with over 12 years of practice. She specializes in corporate governance, mergers and acquisitions, and contract law. Sarah has helped numerous startups and established companies navigate complex legal challenges.',
-          education: 'Harvard Law School (J.D.), Yale University (B.A. Political Science)',
-          availability_status: 'available',
-          total_consultations: 456,
-          average_rating: 4.8,
-          total_reviews: 89,
-          is_available_for_booking: true,
-          is_available_now: true,
-          available_slots: [
-            {
-              id: 1,
-              date: '2025-09-08',
-              start_time: '09:00:00',
-              end_time: '10:00:00',
-              duration_minutes: 60
-            },
-            {
-              id: 2,
-              date: '2025-09-08',
-              start_time: '14:00:00',
-              end_time: '15:00:00',
-              duration_minutes: 60
-            },
-            {
-              id: 3,
-              date: '2025-09-09',
-              start_time: '10:00:00',
-              end_time: '11:00:00',
-              duration_minutes: 60
-            }
-          ],
-          recent_reviews: [
-            {
-              id: 1,
-              rating: 5,
-              review_text: 'Excellent lawyer with deep expertise in corporate law. Very professional and responsive.',
-              reviewer_name: 'John D.',
-              created_at: '2025-09-01T10:30:00Z'
-            },
-            {
-              id: 2,
-              rating: 5,
-              review_text: 'Sarah helped us with our startup incorporation. Great attention to detail and very knowledgeable.',
-              reviewer_name: 'Emily R.',
-              created_at: '2025-08-28T14:20:00Z'
-            }
-          ]
-        };
-        setPractitioner(demoData);
+        setError('Failed to load practitioner details. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -137,10 +96,17 @@ export default function PractitionerDetailPage() {
   };
 
   const handleBookConsultation = () => {
-    // TODO: Implement booking flow
-    console.log('📅 Book consultation for practitioner:', practitioner?.id);
-    // For now, just show a message
-    alert('Booking functionality will be implemented soon!');
+    if (!practitioner?.available_slots?.length) {
+      toast.error('No available time slots for this practitioner at the moment. Please check back later.');
+      return;
+    }
+    setIsBookingModalOpen(true);
+  };
+
+  const handleBookingSuccess = (consultationId: number) => {
+    toast.success('Consultation booked successfully! 🎉');
+    // Redirect to consultations page
+    router.push('/dashboard/consultation');
   };
 
   const formatExperienceLevel = (level: string) => {
@@ -559,6 +525,16 @@ export default function PractitionerDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      {practitioner && (
+        <TimeSlotModal
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          practitioner={practitioner}
+          onBookingSuccess={handleBookingSuccess}
+        />
+      )}
     </div>
   );
 }

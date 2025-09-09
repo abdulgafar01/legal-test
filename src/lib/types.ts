@@ -62,6 +62,7 @@ export interface PractitionerDetail extends Practitioner {
     start_time: string;
     end_time: string;
     duration_minutes: number;
+    is_booked?: boolean; // Optional since available slots are already filtered
   }>;
   recent_reviews: Array<{
     id: number;

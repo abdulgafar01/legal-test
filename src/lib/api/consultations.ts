@@ -1,0 +1,247 @@
+import axios from 'axios';
+import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
+
+// Types for consultation booking
+export interface TimeSlot {
+  id: number;
+  start_time: string;
+  end_time: string;
+  is_booked: boolean;
+  date: string; // Flattened from availability.date
+  duration_minutes?: number;
+}
+
+export interface ConsultationBookingData {
+  practitioner_id: number;
+  time_slot_id: number;
+  consultation_notes?: string;
+}
+
+export interface Consultation {
+  id: number;
+  service_seeker_info: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_image?: string;
+  };
+  practitioner_info: {
+    id: number;
+    user_info: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      profile_image?: string;
+    };
+    specializations: string[];
+    hourly_rate: number;
+  };
+  time_slot_info: {
+    id: number;
+    start_time: string;
+    end_time: string;
+    date: string;
+  };
+  status_info: {
+    id: number;
+    name: string;
+    description?: string;
+  };
+  consultation_fee: number;
+  platform_fee: number;
+  practitioner_earnings: number;
+  consultation_notes?: string;
+  practitioner_notes?: string;
+  meeting_link?: string;
+  booked_at: string;
+  confirmed_at?: string;
+  started_at?: string;
+  completed_at?: string;
+  cancelled_at?: string;
+  cancellation_reason?: string;
+  can_be_cancelled: boolean;
+  can_be_started: boolean;
+  is_upcoming: boolean;
+  is_past: boolean;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface PaginatedResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+  count: number;
+  next?: string;
+  previous?: string;
+}
+
+/**
+ * Create a new consultation booking
+ */
+export const createConsultationBooking = async (bookingData: ConsultationBookingData): Promise<{ success: boolean; data: any; message?: string }> => {
+  try {
+    // Check for accessToken first (from AuthContext), fallback to authToken (from signup)
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const response = await axios.post(
+      buildApiUrl(API_ENDPOINTS.consultations.create),
+      bookingData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error creating consultation booking:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user's consultations with optional filtering
+ */
+export const getMyConsultations = async (filters?: {
+  status?: string;
+  upcoming_only?: boolean;
+}): Promise<PaginatedResponse<Consultation>> => {
+  try {
+    // Check for accessToken first (from AuthContext), fallback to authToken (from signup)
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const params = new URLSearchParams();
+    if (filters?.status) {
+      params.append('status', filters.status);
+    }
+    if (filters?.upcoming_only) {
+      params.append('upcoming_only', 'true');
+    }
+
+    const url = buildApiUrl(API_ENDPOINTS.consultations.list);
+    const fullUrl = params.toString() ? `${url}?${params.toString()}` : url;
+
+    const response = await axios.get(fullUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching consultations:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get specific consultation details
+ */
+export const getConsultationById = async (consultationId: number): Promise<{ success: boolean; data: Consultation }> => {
+  try {
+    // Check for accessToken first (from AuthContext), fallback to authToken (from signup)
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const response = await axios.get(
+      buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/`),
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error fetching consultation details:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel a consultation
+ */
+export const cancelConsultation = async (
+  consultationId: number,
+  reason?: string
+): Promise<ApiResponse<Consultation>> => {
+  try {
+    // Check for accessToken first (from AuthContext), fallback to authToken (from signup)
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const response = await axios.post(
+      buildApiUrl(`${API_ENDPOINTS.consultations.cancel}${consultationId}/cancel/`),
+      { reason },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error cancelling consultation:', error);
+    throw error;
+  }
+};
+
+/**
+ * Check if consultation time has arrived (frontend validation)
+ */
+export const isConsultationTimeReady = (consultation: Consultation): boolean => {
+  const now = new Date();
+  const consultationDateTime = new Date(`${consultation.time_slot_info.date}T${consultation.time_slot_info.start_time}`);
+  
+  // Allow access 15 minutes before consultation time
+  const accessTime = new Date(consultationDateTime.getTime() - (15 * 60 * 1000));
+  
+  return now >= accessTime && consultation.status_info.name === 'confirmed';
+};
+
+/**
+ * Get time remaining until consultation
+ */
+export const getTimeUntilConsultation = (consultation: Consultation): {
+  days: number;
+  hours: number;
+  minutes: number;
+  isReady: boolean;
+} => {
+  const now = new Date();
+  const consultationDateTime = new Date(`${consultation.time_slot_info.date}T${consultation.time_slot_info.start_time}`);
+  const accessTime = new Date(consultationDateTime.getTime() - (15 * 60 * 1000));
+  
+  const timeDiff = accessTime.getTime() - now.getTime();
+  
+  if (timeDiff <= 0) {
+    return { days: 0, hours: 0, minutes: 0, isReady: true };
+  }
+  
+  const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  return { days, hours, minutes, isReady: false };
+};

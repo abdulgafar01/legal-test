@@ -24,6 +24,12 @@ interface ApiConfig {
       detail: string;
       specializations: string;
     };
+    consultations: {
+      create: string;
+      list: string;
+      detail: string;
+      cancel: string;
+    };
     explore: {
       categories: string;
       articles: string;
@@ -72,6 +78,12 @@ export const API_CONFIG: ApiConfig = {
       list: '/api/v1/consultations/practitioners/',
       detail: '/api/v1/consultations/practitioners/',
       specializations: '/api/v1/practitioner-specializations/',
+    },
+    consultations: {
+      create: '/api/v1/consultations/bookings/',
+      list: '/api/v1/consultations/bookings/',
+      detail: '/api/v1/consultations/bookings/',
+      cancel: '/api/v1/consultations/bookings/',
     },
     explore: {
       categories: '/api/v1/explore/categories/',
