@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
+import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, startConsultation, type Consultation } from '@/lib/api/consultations';
+import { getChatMessages, type ChatMessage } from '@/lib/api/chat';
+import { useChatStore } from '@/stores/useChatStore';
+import { openChatSocket } from '@/lib/ws';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
 import { format, parseISO } from 'date-fns';
+import { getCurrentUserId } from '@/lib/auth';
 
 interface ChatInterfaceProps {
   selectedChat: string | null;
@@ -21,6 +26,48 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const [timeUntil, setTimeUntil] = useState({ days: 0, hours: 0, minutes: 0, isReady: false });
   const { accountType } = useAccountTypeStore();
   const [forceAccess, setForceAccess] = useState(false);
+  const chatStore = useChatStore();
+  const consultationId = useMemo(() => selectedChat ? parseInt(selectedChat) : null, [selectedChat]);
+  const socketRef = useRef<ReturnType<typeof openChatSocket> | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const prevIdsRef = useRef<Set<string | number>>(new Set());
+  const prevLenRef = useRef<number>(0);
+  const initialScrolledRef = useRef<boolean>(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const openedViaDebugRef = useRef<boolean>(false);
+  const queueInitialScroll = () => {
+    const run = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+      try {
+        if (bottomRef.current?.scrollIntoView) {
+          bottomRef.current.scrollIntoView({ block: 'end' });
+        } else {
+          el.scrollTop = el.scrollHeight;
+        }
+      } catch {}
+      initialScrolledRef.current = true;
+    };
+    requestAnimationFrame(() => requestAnimationFrame(run));
+    setTimeout(run, 80);
+  };
+  const setScrollEl = (el: HTMLDivElement | null) => {
+    scrollRef.current = el;
+    if (el && !initialScrolledRef.current && messages.length > 0) {
+      queueInitialScroll();
+    }
+  };
+  // Subscribe to store maps once; derive per-consultation values without creating new arrays
+  const messagesMap = useChatStore((s) => s.messages);
+  const nextCursorMap = useChatStore((s) => s.nextCursorByConsultation);
+  const readOnlyMap = useChatStore((s) => s.readOnlyByConsultation);
+  const EMPTY_MESSAGES: ChatMessage[] = useMemo(() => [], []);
+  const messages = consultationId ? (messagesMap[consultationId] ?? EMPTY_MESSAGES) : EMPTY_MESSAGES;
+  const nextCursor = consultationId ? (nextCursorMap[consultationId] ?? null) : null;
+  const readOnly = consultationId ? !!readOnlyMap[consultationId] : false;
+  // Access gating computed early to keep hook order consistent
+  const canAccessChat = consultation ? isConsultationTimeReady(consultation) : true;
+  const allowedToEnter = canAccessChat || forceAccess;
 
   useEffect(() => {
     if (selectedChat) {
@@ -57,6 +104,109 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
       setLoading(false);
     }
   };
+
+  // Track when Open Session (Debug) was used
+  useEffect(() => {
+    if (forceAccess) {
+      openedViaDebugRef.current = true;
+    }
+  }, [forceAccess]);
+
+  // History: fetch messages with cursor pagination
+  const { data: pages, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['chat', 'messages', consultationId],
+    queryFn: async ({ pageParam }) => {
+      if (!consultationId) return { data: [], next_cursor: null };
+      return getChatMessages(consultationId, 50, pageParam as string | undefined);
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
+    enabled: !!consultationId,
+  });
+
+  // Merge history pages into store
+  useEffect(() => {
+    if (!consultationId || !pages) return;
+    const all: ChatMessage[] = [];
+    for (const p of pages.pages) {
+      all.unshift(...p.data);
+    }
+    if (all.length) {
+      chatStore.addMessages(consultationId, all, 'prepend');
+      const nextCursor = pages.pages[pages.pages.length - 1]?.next_cursor ?? null;
+      chatStore.setNextCursor(consultationId, nextCursor);
+      // Prime previous IDs on initial history load to avoid animating everything
+      prevIdsRef.current = new Set(all.map((m) => m.id));
+      // Scroll to bottom on open after DOM paints
+  queueInitialScroll();
+    }
+  }, [pages, consultationId]);
+
+  // Open WebSocket when allowed
+  useEffect(() => {
+    if (!consultationId) return;
+    if (!(consultation && (isConsultationTimeReady(consultation) || forceAccess))) return;
+    socketRef.current = openChatSocket(consultationId);
+    return () => {
+      socketRef.current?.close();
+      socketRef.current = null;
+    };
+  }, [consultationId, consultation, forceAccess]);
+
+  // Auto-scroll on new messages appended; cache seen ids after paint
+  useEffect(() => {
+    if (!scrollRef.current) return;
+    const listLen = messages.length;
+    const prevLen = prevLenRef.current;
+    const appended = listLen > prevLen;
+    if (appended) {
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      });
+    }
+    // Update seen ids for animation dedupe
+    prevIdsRef.current = new Set(messages.map((m) => m.id));
+    prevLenRef.current = listLen;
+  }, [messages]);
+
+  // Reset scroll trackers when switching conversations
+  useEffect(() => {
+    prevLenRef.current = 0;
+    prevIdsRef.current = new Set();
+    initialScrolledRef.current = false;
+  }, [consultationId]);
+
+  // Ensure initial scroll once messages are first rendered
+  useEffect(() => {
+    if (!initialScrolledRef.current && messages.length > 0) {
+  queueInitialScroll();
+    }
+  }, [messages, consultationId]);
+
+  // When chat becomes allowed (e.g., after clicking Open Session), ensure we scroll to bottom once
+  useEffect(() => {
+    if (!allowedToEnter) return;
+    if (messages.length === 0) return;
+    if (openedViaDebugRef.current) {
+      const scrollNow = () => {
+        if (bottomRef.current?.scrollIntoView) {
+          try { bottomRef.current.scrollIntoView({ block: 'end' }); } catch {}
+        }
+        if (scrollRef.current) {
+          try { scrollRef.current.scrollTop = scrollRef.current.scrollHeight; } catch {}
+        }
+        initialScrolledRef.current = true;
+      };
+      setTimeout(scrollNow, 0);
+      setTimeout(scrollNow, 150);
+      openedViaDebugRef.current = false;
+      return;
+    }
+    if (initialScrolledRef.current) return;
+    queueInitialScroll();
+  }, [allowedToEnter, messages.length]);
 
   const chatData = {
     'wade-1': {
@@ -157,9 +307,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     );
   }
 
-  // Check if consultation time has arrived
-  const canAccessChat = consultation ? isConsultationTimeReady(consultation) : true;
-  const allowedToEnter = canAccessChat || forceAccess;
+  // Check if consultation time has arrived (values computed above)
 
   // If consultation exists but time hasn't arrived, show waiting screen
   if (consultation && !allowedToEnter) {
@@ -275,14 +423,28 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     currentChat?.status || 'Active now';
 
   const handleSendMessage = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message);
-      setMessage('');
-    }
+    if (!consultationId) return;
+    const text = message.trim();
+    if (!text) return;
+    socketRef.current?.send(text);
+    setMessage('');
   };
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
+  };
+
+  const handleStartConsultationDebug = async () => {
+    if (!consultationId) return;
+    try {
+      setLoading(true);
+  await startConsultation(consultationId, { force: process.env.NODE_ENV === 'development' });
+      await loadConsultationDetails();
+    } catch (e) {
+      console.error('Failed to start consultation:', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -307,13 +469,28 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
             <p className="text-sm text-green-600">{displayStatus}</p>
           </div>
         </div>
-        <Button variant="ghost" size="sm">
+        <div className="flex items-center gap-2">
+          {consultation && consultation.status_info.name !== 'in_progress' && ((process.env.NODE_ENV === 'development') || accountType === 'professional') && (
+            <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white" onClick={handleStartConsultationDebug}>
+              Start (Debug)
+            </Button>
+          )}
+          <Button variant="ghost" size="sm">
           <MoreVertical className="w-4 h-4" />
-        </Button>
+          </Button>
+        </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: 'calc(100vh - 60px - 64px - 64px)' }}>
+    {/* Messages */}
+  <div ref={setScrollEl} className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: 'calc(100vh - 60px - 64px - 64px)' }}>
+        {/* Read-only banner when chat is not writable */}
+  {consultation && readOnly && (
+          <div className="flex justify-center">
+            <span className="text-xs text-yellow-800 bg-yellow-100 border border-yellow-200 px-3 py-1 rounded">
+              Chat is read-only until the session starts
+            </span>
+          </div>
+        )}
         {/* Date separator */}
         <div className="flex justify-center">
           <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
@@ -326,18 +503,40 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
 
         {/* Show consultation-specific content or fallback to mock messages */}
         {consultation ? (
-          <div className="text-center p-8">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Live Chat Ready</h3>
-            <p className="text-gray-600 mb-4">
-              Your consultation with {accountType === 'professional' ? `${consultation.service_seeker_info.first_name} ${consultation.service_seeker_info.last_name}` : `${consultation.practitioner_info.first_name} ${consultation.practitioner_info.last_name}`} is ready.
-            </p>
-            <p className="text-sm text-gray-500">
-              Real-time chat will be implemented in the next phase.
-            </p>
-          </div>
+          <>
+            {nextCursor ? (
+              <div className="flex justify-center">
+                <Button variant="secondary" size="sm" disabled={isFetchingNextPage} onClick={() => fetchNextPage()}>
+                  {isFetchingNextPage ? 'Loading...' : 'Load older messages'}
+                </Button>
+              </div>
+            ) : null}
+
+            {messages.map((msg) => {
+              const currentUserId = getCurrentUserId();
+              const isMine = currentUserId != null && msg.sender.id === currentUserId;
+              const isNew = !prevIdsRef.current.has(msg.id);
+              const refCb = (el: HTMLDivElement | null) => {
+                if (!el || !isNew) return;
+                try {
+                  el.animate([
+                    { opacity: 0, transform: 'translateY(4px)' },
+                    { opacity: 1, transform: 'translateY(0)' },
+                  ], { duration: 180, easing: 'ease-out' });
+                } catch {}
+              };
+              return (
+              <div key={msg.id} ref={refCb} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isMine ? 'bg-yellow-100 text-gray-900' : 'bg-gray-100 text-gray-900'}`}>
+                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                  <div className="flex items-center justify-end mt-1 space-x-1">
+                    <span className="text-xs text-gray-500">{format(parseISO(msg.created_at), 'HH:mm')}</span>
+                  </div>
+                </div>
+              </div>
+            );})}
+            <div ref={bottomRef} />
+          </>
         ) : (
           currentChat?.messages.map((msg) => (
           <div
@@ -430,6 +629,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Write your message"
               className="pr-12"
+              disabled={consultation ? readOnly : false}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <Button
@@ -440,7 +640,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               <Smile className="w-4 h-4" />
             </Button>
           </div>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" disabled={consultation ? readOnly : false}>
             <Paperclip className="w-4 h-4" />
           </Button>
           <Button
@@ -452,7 +652,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
             <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500' : ''}`} />
           </Button>
           {message.trim() && (
-            <Button onClick={handleSendMessage} size="sm">
+            <Button onClick={handleSendMessage} size="sm" disabled={consultation ? readOnly : false}>
               <Send className="w-4 h-4" />
             </Button>
           )}

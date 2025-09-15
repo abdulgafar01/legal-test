@@ -213,6 +213,37 @@ export const cancelConsultation = async (
 };
 
 /**
+ * Start a consultation (debug/controlled invocation)
+ */
+export const startConsultation = async (
+  consultationId: number,
+  options?: { force?: boolean }
+): Promise<ApiResponse<Consultation>> => {
+  try {
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    const response = await axios.post(
+      buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/start/`),
+      { force: options?.force ?? false },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error starting consultation:', error);
+    throw error;
+  }
+};
+
+/**
  * Check if consultation time has arrived (frontend validation)
  */
 export const isConsultationTimeReady = (consultation: Consultation): boolean => {
