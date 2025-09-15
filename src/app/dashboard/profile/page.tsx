@@ -96,10 +96,22 @@ const Page = () => {
   const menuItems = [
     {
       icon: Shield,
-      title: "Subscription",
-      description: "Free",
+      title: "Subscription Plans",
+      description: "View",
       href: "/dashboard/subscription",
       showArrow: false
+    },
+    {
+      icon: Shield,
+      title: "Manage Subscription",
+      href: "/dashboard/subscription/manage",
+      showArrow: true
+    },
+    {
+      icon: Shield,
+      title: "Subscription Payments",
+      href: "/dashboard/subscription/payments",
+      showArrow: true
     },
     {
       icon: Shield,
