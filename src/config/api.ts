@@ -13,6 +13,11 @@ interface ApiConfig {
       practitionerCompleteProfile: string;
       tokenRefresh: string;
     };
+    chatbot?: {
+      threads: string;
+      threadsList: string;
+      threadMessages: (threadId: string) => string;
+    };
     profile: {
       me: string;
       updateProfile: string;
@@ -90,6 +95,11 @@ export const API_CONFIG: ApiConfig = {
       articles: '/api/v1/explore/articles/',
       featuredArticles: '/api/v1/explore/articles/featured/',
       searchArticles: '/api/v1/explore/articles/search/',
+    },
+    chatbot: {
+      threads: '/api/v1/chatbot/threads/',
+      threadsList: '/api/v1/chatbot/threads/list/',
+      threadMessages: (threadId: string) => `/api/v1/chatbot/threads/${threadId}/messages/`,
     },
   },
 };
