@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPlans, checkout, getCurrentSubscription, getSubscriptionHistory, cancelSubscription, getSubscriptionPayments } from '@/lib/api/subscriptions';
+import { getPlans, checkout, getCurrentSubscription, getSubscriptionHistory, cancelSubscription, getSubscriptionPayments, getAllSubscriptionPayments } from '@/lib/api/subscriptions';
 import { Plan, Subscription, SubscriptionPayment } from '@/types/subscription';
 
 export function useSubscriptionPlans() {
@@ -53,5 +53,12 @@ export function useCancelSubscription() {
       qc.invalidateQueries({ queryKey: ['subscription','current'] });
       qc.invalidateQueries({ queryKey: ['subscription','history'] });
     }
+  });
+}
+
+export function useAllSubscriptionPayments() {
+  return useQuery<SubscriptionPayment[]>({
+    queryKey: ['subscription','payments','all'],
+    queryFn: getAllSubscriptionPayments,
   });
 }

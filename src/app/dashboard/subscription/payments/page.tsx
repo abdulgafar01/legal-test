@@ -1,12 +1,15 @@
 'use client'
 import Link from 'next/link';
 import { ArrowLeft, Loader2, CircleDollarSign } from 'lucide-react';
-import { useCurrentSubscription, useSubscriptionPayments } from '@/hooks/useSubscriptions';
+import { useCurrentSubscription, useSubscriptionPayments, useAllSubscriptionPayments } from '@/hooks/useSubscriptions';
 import { format } from 'date-fns';
 
 export default function SubscriptionPaymentsPage(){
   const { data: sub, isLoading } = useCurrentSubscription();
-  const { data: payments = [], isLoading: loadingPayments } = useSubscriptionPayments(sub?.id);
+  const { data: allPayments = [], isLoading: loadingAll } = useAllSubscriptionPayments();
+  const { data: currentPayments = [], isLoading: loadingCurrent } = useSubscriptionPayments(sub?.id);
+  const payments = allPayments;
+  const showingHistorical = currentPayments.length !== allPayments.length && allPayments.length > 0;
   return (
     <div className="h-[calc(100vh-60px)] overflow-y-auto mb-3">
       <div className="max-w-4xl mx-auto p-6">
@@ -30,10 +33,10 @@ export default function SubscriptionPaymentsPage(){
               </tr>
             </thead>
             <tbody>
-              {loadingPayments && (
+              {(loadingAll || loadingCurrent) && (
                 <tr><td className="p-3" colSpan={4}><Loader2 className="w-4 h-4 animate-spin inline"/> Loading payments...</td></tr>
               )}
-              {!loadingPayments && payments.length === 0 && (
+              {!loadingAll && payments.length === 0 && (
                 <tr><td className="p-3 text-muted-foreground text-center" colSpan={4}>No payments yet.</td></tr>
               )}
               {payments.map(p => (
@@ -47,6 +50,9 @@ export default function SubscriptionPaymentsPage(){
             </tbody>
           </table>
         </div>
+        {showingHistorical && (
+          <div className="mt-2 text-xs text-muted-foreground">Showing all payments across current and past subscriptions.</div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import instance from '../axios';
 import { Plan, Subscription, SubscriptionPayment, Paginated } from '@/types/subscription';
 
-const BASE = '/subscriptions'; // appended after API base (already configured in axios instance buildApiUrl)
+const BASE = '/api/v1/subscriptions'; // appended after API base (already configured in axios instance buildApiUrl)
 
 export async function getPlans(): Promise<Plan[]> {
   const { data } = await instance.get(`${BASE}/plans/`);
@@ -37,6 +37,13 @@ export async function cancelSubscription(id: string, immediate = false): Promise
 
 export async function getSubscriptionPayments(id: string): Promise<SubscriptionPayment[]> {
   const { data } = await instance.get(`${BASE}/${id}/payments/`);
+  if (Array.isArray(data)) return data as SubscriptionPayment[];
+  if (data?.results) return data.results as SubscriptionPayment[];
+  return [];
+}
+
+export async function getAllSubscriptionPayments(): Promise<SubscriptionPayment[]> {
+  const { data } = await instance.get(`${BASE}/payments/`);
   if (Array.isArray(data)) return data as SubscriptionPayment[];
   if (data?.results) return data.results as SubscriptionPayment[];
   return [];

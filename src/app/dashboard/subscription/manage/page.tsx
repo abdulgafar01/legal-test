@@ -53,9 +53,9 @@ export default function ManageSubscriptionPage(){
             <input id="immediate" type="checkbox" checked={immediate} onChange={(e)=>setImmediate(e.target.checked)} />
             <label htmlFor="immediate">Cancel immediately</label>
           </div>
-          <div className="flex gap-2 mt-4">
-            <Button variant="outline" className="w-full" onClick={()=>setOpenConfirm(false)}>Close</Button>
-            <Button className="w-full" variant="destructive" disabled={cancelMutation.isPending} onClick={()=>{
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button variant="outline" className="w-full sm:flex-1" onClick={()=>setOpenConfirm(false)}>Close</Button>
+            <Button className="w-full sm:flex-1" variant="destructive" disabled={cancelMutation.isPending} onClick={()=>{
               if(!sub) return; 
               cancelMutation.mutate({id: sub.id, immediate},{
                 onSuccess: ()=>{ setOpenConfirm(false); },
