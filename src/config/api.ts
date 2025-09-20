@@ -46,6 +46,9 @@ interface ApiConfig {
       transactions: string;
       withdraw: string;
     };
+    subscriptions: {
+      plans: string;
+    };
   };
 }
 
@@ -110,6 +113,9 @@ export const API_CONFIG: ApiConfig = {
       base: '/api/v1/consultations/wallet/',
       transactions: '/api/v1/consultations/wallet/transactions/',
       withdraw: '/api/v1/consultations/wallet/request_withdraw/',
+    },
+    subscriptions: {
+      plans: '/api/v1/subscriptions/plans/',
     }
   },
 };
