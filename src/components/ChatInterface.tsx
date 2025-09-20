@@ -358,6 +358,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     );
   }
 
+  const debugEnabled = (process.env.NODE_ENV === 'development') || (process.env.NEXT_PUBLIC_ENABLE_DEBUG_CONSULTATION === 'true');
+
   if (consultation && !allowedToEnter) {
     const counterpart = accountType === 'professional'
       ? consultation.service_seeker_info
@@ -435,7 +437,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
             </div>
           )}
 
-          {process.env.NODE_ENV === 'development' && !consultation.is_past && !autoInProgress && !isCompleted && (
+          {debugEnabled && !consultation.is_past && !autoInProgress && !isCompleted && (
             <div className="mt-6 flex items-center justify-center gap-3">
               <Button
                 onClick={async () => {
@@ -540,7 +542,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {consultation && consultation.status_info.name !== 'in_progress' && ((process.env.NODE_ENV === 'development') || accountType === 'professional') && (
+          {consultation && consultation.status_info.name !== 'in_progress' && (debugEnabled || accountType === 'professional') && (
             <Button size="sm" className="bg-gray-900 hover:bg-gray-800 text-white" onClick={handleStartConsultationDebug}>
               Start (Debug)
             </Button>
