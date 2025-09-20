@@ -1,6 +1,8 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const navItems = [
   { href: '#home', label: 'Home' },
@@ -11,6 +13,14 @@ const navItems = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    // Ensure we return to homepage after logout
+    router.push('/');
+  };
   return (
     <header className="w-full bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-40 font-nunito">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8">
@@ -25,8 +35,17 @@ export default function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-4">
-          <Link href="/login" className="text-sm font-semibold text-black/80 hover:text-black">Login</Link>
-          <Link href="/account" className="btn-primary text-sm">Get Started</Link>
+          {!isAuthenticated ? (
+            <>
+              <Link href="/login" className="text-sm font-semibold text-black/80 hover:text-black">Login</Link>
+              <Link href="/account" className="btn-primary text-sm">Get Started</Link>
+            </>
+          ) : (
+            <>
+              <Link href="/dashboard" className="text-sm font-semibold text-black/80 hover:text-black">Go to Dashboard</Link>
+              <button onClick={handleLogout} className="btn-secondary text-sm">Logout</button>
+            </>
+          )}
         </div>
         <button aria-label="Menu" onClick={() => setOpen(o=>!o)} className="md:hidden ml-auto text-black p-2">
           <span className="block w-6 h-0.5 bg-black mb-1" />
@@ -42,8 +61,17 @@ export default function Header() {
             </a>
           ))}
           <div className="pt-2 flex gap-3">
-            <Link href="/login" className="flex-1 btn-secondary text-center text-sm">Login</Link>
-            <Link href="/account" className="flex-1 btn-primary text-sm">Get Started</Link>
+            {!isAuthenticated ? (
+              <>
+                <Link href="/login" className="flex-1 btn-secondary text-center text-sm">Login</Link>
+                <Link href="/account" className="flex-1 btn-primary text-sm">Get Started</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/dashboard" className="flex-1 btn-secondary text-center text-sm">Go to Dashboard</Link>
+                <button onClick={handleLogout} className="flex-1 btn-primary text-sm">Logout</button>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { Scale, MessageCircle, LogOut, RefreshCw } from 'lucide-react';
+import { Scale, MessageCircle, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -40,11 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
      toast.success('Successfully logged out');
    };
 
-   const handleRefreshUser = () => {
-     queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-     refetch();
-     toast.success('User data refreshed');
-   };
+  // Refresh user removed — left handlers for logout and other actions only
 
   console.log("=== USER DEBUG INFO ===");
   console.log("Raw user data:", user);
@@ -198,13 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button 
-                  onClick={handleRefreshUser} 
-                  title='Refresh User Data' 
-                  className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'
-                >
-                  <RefreshCw className='w-3 h-3 text-gray-600' />
-                </button>
+                {/* Refresh button removed per design — kept logout button */}
                 <button onClick={handleLogout} title='Logout' className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'>
                   <LogOut className='w-4 h-4 text-gray-600' />
                 </button>

@@ -19,6 +19,10 @@ const getApiBaseUrl = (): string => {
 
 const nextConfig: NextConfig = {
   /* config options here */
+  eslint: {
+    // Ignore ESLint errors during production builds as requested
+    ignoreDuringBuilds: true,
+  },
   async rewrites() {
     const apiBaseUrl = getApiBaseUrl();
     

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
-import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, startConsultation, type Consultation } from '@/lib/api/consultations';
+import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, startConsultation, debugSetConsultationNow, completeConsultation, type Consultation } from '@/lib/api/consultations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { getChatMessages, type ChatMessage } from '@/lib/api/chat';
 import { useChatStore } from '@/stores/useChatStore';
 import { openChatSocket } from '@/lib/ws';
@@ -23,6 +25,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [loading, setLoading] = useState(false);
+  const [completing, setCompleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [timeUntil, setTimeUntil] = useState({ days: 0, hours: 0, minutes: 0, isReady: false });
   const { accountType } = useAccountTypeStore();
   const [forceAccess, setForceAccess] = useState(false);
@@ -66,8 +70,11 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const nextCursor = consultationId ? (nextCursorMap[consultationId] ?? null) : null;
   const readOnly = consultationId ? !!readOnlyMap[consultationId] : false;
   // Access gating computed early to keep hook order consistent
-  const canAccessChat = consultation ? isConsultationTimeReady(consultation) : true;
-  const allowedToEnter = canAccessChat || forceAccess;
+  const statusName = consultation?.status_info.name;
+  const autoInProgress = statusName === 'in_progress';
+  const isCompleted = statusName === 'completed';
+  const canAccessChat = consultation ? (autoInProgress ? true : isConsultationTimeReady(consultation)) : true;
+  const allowedToEnter = (autoInProgress || canAccessChat || forceAccess) && !isCompleted;
 
   useEffect(() => {
     if (selectedChat) {
@@ -88,6 +95,19 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
       return () => clearInterval(interval);
     }
   }, [consultation]);
+
+  // Listen for status change events from WebSocket
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail: any = (e as CustomEvent).detail;
+      if (!consultationId) return;
+      if (detail && detail.consultation_id === consultationId) {
+        loadConsultationDetails();
+      }
+    };
+    window.addEventListener('consultation-status-changed', handler as EventListener);
+    return () => window.removeEventListener('consultation-status-changed', handler as EventListener);
+  }, [consultationId]);
 
   const loadConsultationDetails = async () => {
     if (!selectedChat) return;
@@ -142,16 +162,17 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     }
   }, [pages, consultationId]);
 
-  // Open WebSocket when allowed
+  // Open WebSocket when allowed (supports auto in_progress sessions)
   useEffect(() => {
     if (!consultationId) return;
-    if (!(consultation && (isConsultationTimeReady(consultation) || forceAccess))) return;
+    if (!consultation) return;
+    if (!allowedToEnter) return;
     socketRef.current = openChatSocket(consultationId);
     return () => {
       socketRef.current?.close();
       socketRef.current = null;
     };
-  }, [consultationId, consultation, forceAccess]);
+  }, [consultationId, consultation, allowedToEnter]);
 
   // Auto-scroll on new messages appended; cache seen ids after paint
   useEffect(() => {
@@ -310,6 +331,33 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   // Check if consultation time has arrived (values computed above)
 
   // If consultation exists but time hasn't arrived, show waiting screen
+  // Closed consultation (past) state
+  if (consultation && isCompleted) {
+    const counterpart = accountType === 'professional'
+      ? consultation.service_seeker_info
+      : consultation.practitioner_info;
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-50" style={{ height: 'calc(100vh - 60px)' }}>
+        <div className="text-center p-8 max-w-md">
+          <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-gray-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Consultation Completed</h2>
+          <p className="text-gray-600 mb-6">This consultation has been completed. {accountType === 'service-seeker' ? `You can book a new session with ${counterpart.first_name} ${counterpart.last_name}.` : 'Thank you for your session.'}</p>
+          {accountType === 'service-seeker' && (
+            <div className="space-y-3">
+              <Button className="w-full bg-gray-900 hover:bg-gray-800 text-white" onClick={() => window.location.assign(`/dashboard/professionals/${consultation.practitioner_info.id}`)}>Book New Consultation</Button>
+              <Button variant="outline" className="w-full" onClick={onBack}>Back to Consultations</Button>
+            </div>
+          )}
+          {accountType === 'professional' && (
+            <Button variant="outline" onClick={onBack}>Back to Consultations</Button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (consultation && !allowedToEnter) {
     const counterpart = accountType === 'professional'
       ? consultation.service_seeker_info
@@ -387,36 +435,58 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
             </div>
           )}
 
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <Button onClick={() => setForceAccess(true)} className="bg-gray-900 hover:bg-gray-800 text-white">
-              Open Session (Debug)
-            </Button>
-            {consultation.meeting_link && (
+          {process.env.NODE_ENV === 'development' && !consultation.is_past && !autoInProgress && !isCompleted && (
+            <div className="mt-6 flex items-center justify-center gap-3">
               <Button
-                variant="secondary"
-                onClick={() => window.open(consultation.meeting_link as string, '_blank', 'noopener')}
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    await debugSetConsultationNow(consultation.id);
+                    await loadConsultationDetails();
+                    // After shifting time, force access and start consultation
+                    setForceAccess(true);
+                    await startConsultation(consultation.id, { force: true });
+                    await loadConsultationDetails();
+                  } catch (e) {
+                    console.error('Failed debug open:', e);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="bg-gray-900 hover:bg-gray-800 text-white"
               >
-                Open Meeting Link
+                Open Session (Debug)
               </Button>
-            )}
-          </div>
+              {consultation.meeting_link && (
+                <Button
+                  variant="secondary"
+                  onClick={() => window.open(consultation.meeting_link as string, '_blank', 'noopener')}
+                >
+                  Open Meeting Link
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
   // Display name for header
-  const displayName = consultation ? 
-    accountType === 'professional'
-      ? `${consultation.service_seeker_info.first_name} ${consultation.service_seeker_info.last_name}`
-      : `${consultation.practitioner_info.first_name} ${consultation.practitioner_info.last_name}` :
-    currentChat?.name || 'Unknown';
+  // Derive counterpart name robustly; treat store 'professional' as practitioner perspective; otherwise show practitioner.
+  const currentUserId = getCurrentUserId();
+  let displayName = currentChat?.name || 'Unknown';
+  let counterpartImage: string | undefined = currentChat?.avatar;
+  if (consultation) {
+    const seeker = consultation.service_seeker_info;
+    const practitioner = consultation.practitioner_info; // has user_id
+    const isUserPractitioner = currentUserId === practitioner.user_id;
+    const counterpart = isUserPractitioner ? seeker : practitioner;
+    displayName = `${counterpart.first_name} ${counterpart.last_name}`;
+    counterpartImage = counterpart.profile_image;
+  }
 
-  const displayAvatar = consultation
-    ? (accountType === 'professional'
-        ? consultation.service_seeker_info.profile_image
-        : consultation.practitioner_info.profile_image)
-    : currentChat?.avatar;
+  const displayAvatar = counterpartImage;
 
   const displayStatus = consultation ? 
     (consultation.status_info.name === 'in_progress' ? 'In consultation' : 'Available') :
@@ -475,8 +545,19 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               Start (Debug)
             </Button>
           )}
+          {consultation && consultation.status_info.name === 'in_progress' && !isCompleted && (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={completing}
+              className="border-red-600 text-red-600 hover:bg-red-50 disabled:opacity-50"
+              onClick={() => setConfirmOpen(true)}
+            >
+              Complete
+            </Button>
+          )}
           <Button variant="ghost" size="sm">
-          <MoreVertical className="w-4 h-4" />
+            <MoreVertical className="w-4 h-4" />
           </Button>
         </div>
       </div>
@@ -658,6 +739,53 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
           )}
         </div>
       </div>
+      {/* Completion Confirmation Dialog */}
+      <Dialog open={confirmOpen} onOpenChange={(o) => { if (!completing) setConfirmOpen(o); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Complete Consultation</DialogTitle>
+            <DialogDescription>
+              This will mark the consultation as completed and close the chat for both participants. You cannot send further messages afterward.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-gray-600">
+            <p>Are you sure you want to continue?</p>
+          </div>
+          <DialogFooter className="flex justify-end gap-2 pt-2">
+            <Button
+              variant="ghost"
+              disabled={completing}
+              onClick={() => setConfirmOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-500 text-white"
+              disabled={completing}
+              onClick={async () => {
+                if (!consultation) return;
+                try {
+                  setCompleting(true);
+                  const optimisticPayload = { consultation_id: consultation.id, status: 'completed', completed_at: new Date().toISOString() };
+                  window.dispatchEvent(new CustomEvent('consultation-status-changed', { detail: optimisticPayload }));
+                  toast.info('Completing consultation...');
+                  await completeConsultation(consultation.id);
+                  toast.success('Consultation completed');
+                  await loadConsultationDetails();
+                  setConfirmOpen(false);
+                } catch (e) {
+                  console.error('Failed to complete consultation:', e);
+                  toast.error('Failed to complete consultation');
+                } finally {
+                  setCompleting(false);
+                }
+              }}
+            >
+              {completing ? 'Completing...' : 'Confirm'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

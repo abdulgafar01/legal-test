@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Apple, Eye, EyeOff, Facebook, Scale } from 'lucide-react';
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
@@ -18,7 +18,7 @@ type FormValues = {
   password: string;
 };
 
-const Page = () => {
+const LoginContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -371,5 +371,11 @@ const Page = () => {
     </div>
   );
 };
+
+const Page = () => (
+  <Suspense fallback={null}>
+    <LoginContent />
+  </Suspense>
+);
 
 export default Page;

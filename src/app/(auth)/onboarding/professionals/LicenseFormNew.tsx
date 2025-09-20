@@ -28,14 +28,22 @@ interface LicenseFormProps {
 }
 
 interface License {
+  // Core shared fields
   license_type: string;
   license_number: string;
-  issuing_jurisdiction: string;
-  date_granted: string;
-  expiry_date?: string;
-  status: string;
-  description?: string;
   files: File[];
+  // Original store schema (all optional here to allow using either version)
+  date_of_incorporation?: string;
+  country_of_incorporation?: string;
+  issuing_authority?: string;
+  notes?: string;
+  // New schema variant fields (optional for compatibility)
+  issuing_jurisdiction?: string;
+  date_granted?: string;
+  status?: string;
+  description?: string;
+  // Shared optional field
+  expiry_date?: string;
 }
 
 const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
@@ -112,7 +120,18 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
       return;
     }
 
-    updateLicenses(validLicenses);
+    // Map to store schema shape ensuring required store fields exist
+    const mapped = validLicenses.map(l => ({
+      license_type: l.license_type,
+      license_number: l.license_number,
+      date_of_incorporation: l.date_of_incorporation || l.date_granted || '',
+      country_of_incorporation: l.country_of_incorporation || '',
+      issuing_authority: l.issuing_authority || l.issuing_jurisdiction || '',
+      expiry_date: l.expiry_date,
+      notes: l.notes || l.description || '',
+      files: l.files || []
+    }));
+    updateLicenses(mapped);
     toast.success(`${validLicenses.length} license(s) added!`);
     onNext();
   };

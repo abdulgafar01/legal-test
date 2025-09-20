@@ -200,26 +200,29 @@ const ProfileSettingsForm = ({ user }: ProfileSettingsFormProps) => {
               <Label htmlFor="first_name">First Name</Label>
               <Input
                 id="first_name"
+                aria-invalid={!!errors.first_name}
                 {...register('first_name')}
-                error={errors.first_name?.message}
               />
+              {errors.first_name && <p className="mt-1 text-xs text-red-500">{errors.first_name.message}</p>}
             </div>
             <div>
               <Label htmlFor="last_name">Last Name</Label>
               <Input
                 id="last_name"
+                aria-invalid={!!errors.last_name}
                 {...register('last_name')}
-                error={errors.last_name?.message}
               />
+              {errors.last_name && <p className="mt-1 text-xs text-red-500">{errors.last_name.message}</p>}
             </div>
             <div>
               <Label htmlFor="phone_number">Phone Number</Label>
               <Input
                 id="phone_number"
+                aria-invalid={!!errors.phone_number}
                 {...register('phone_number')}
-                error={errors.phone_number?.message}
                 placeholder="+1234567890"
               />
+              {errors.phone_number && <p className="mt-1 text-xs text-red-500">{errors.phone_number.message}</p>}
             </div>
             <div>
               <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
@@ -227,10 +230,11 @@ const ProfileSettingsForm = ({ user }: ProfileSettingsFormProps) => {
                 id="hourly_rate"
                 type="number"
                 step="0.01"
+                aria-invalid={!!errors.hourly_rate}
                 {...register('hourly_rate', { valueAsNumber: true })}
-                error={errors.hourly_rate?.message}
                 placeholder="0.00"
               />
+              {errors.hourly_rate && <p className="mt-1 text-xs text-red-500">{errors.hourly_rate.message}</p>}
             </div>
           </div>
         </CardContent>
@@ -247,25 +251,28 @@ const ProfileSettingsForm = ({ user }: ProfileSettingsFormProps) => {
               <Label htmlFor="country">Country</Label>
               <Input
                 id="country"
+                aria-invalid={!!errors.country}
                 {...register('country')}
-                error={errors.country?.message}
               />
+              {errors.country && <p className="mt-1 text-xs text-red-500">{errors.country.message}</p>}
             </div>
             <div>
               <Label htmlFor="state">State</Label>
               <Input
                 id="state"
+                aria-invalid={!!errors.state}
                 {...register('state')}
-                error={errors.state?.message}
               />
+              {errors.state && <p className="mt-1 text-xs text-red-500">{errors.state.message}</p>}
             </div>
             <div>
               <Label htmlFor="city">City</Label>
               <Input
                 id="city"
+                aria-invalid={!!errors.city}
                 {...register('city')}
-                error={errors.city?.message}
               />
+              {errors.city && <p className="mt-1 text-xs text-red-500">{errors.city.message}</p>}
             </div>
           </div>
         </CardContent>
