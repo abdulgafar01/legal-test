@@ -12,6 +12,7 @@ const Page = () => {
   const [thread, setThread] = useState<ChatbotThread | null>(null)
   const [messages, setMessages] = useState<Msg[]>([])
   const [guestId, setGuestId] = useState<string | null>(null)
+  const [creatingThread, setCreatingThread] = useState(false)
 
   const wsRef = useRef<WebSocket | null>(null)
   const bottomRef = useRef<HTMLDivElement | null>(null)
@@ -76,10 +77,39 @@ const Page = () => {
     }
   }, [connectWS, guestId, router])
 
-  const handleSubmit = useCallback((text: string) => {
-    if (!text.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return
-    wsRef.current.send(JSON.stringify({ type: 'message:new', payload: { content: text.trim() } }))
-  }, [])
+  const handleSubmit = useCallback(async (text: string) => {
+    const trimmed = text.trim()
+    if (!trimmed) return
+
+    // If no thread yet (blank state after user deleted all threads), create one first
+    if (!thread && guestId && !creatingThread) {
+      try {
+        setCreatingThread(true)
+        const t = await createThread(guestId)
+        setThread(t)
+        setMessages([])
+        connectWS(t, guestId)
+        router.replace(`/dashboard/chat?thread=${t.id}`)
+        // slight delay to allow ws to open; fallback send once open
+        setTimeout(() => {
+          if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify({ type: 'message:new', payload: { content: trimmed } }))
+          }
+        }, 150)
+      } catch (e) {
+        console.error('Failed to auto-create thread before sending message', e)
+      } finally {
+        setCreatingThread(false)
+      }
+      return
+    }
+
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.warn('Chat not ready yet. Initializing...')
+      return
+    }
+    wsRef.current.send(JSON.stringify({ type: 'message:new', payload: { content: trimmed } }))
+  }, [thread, guestId, creatingThread, connectWS, router])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -109,6 +139,13 @@ const Page = () => {
       newChat()
     }
   }, [guestId, selectThread, newChat, search])
+
+  // Auto create a new chat thread when user lands on blank state with no params
+  useEffect(() => {
+    if (guestId && !thread && !search.get('thread') && !search.get('new') && !creatingThread) {
+      newChat()
+    }
+  }, [guestId, thread, search, newChat, creatingThread])
 
   return (
     <div className='flex-1 flex flex-col items-center justify-center px-4 pb-8 text-black h-[80vh] overflow-hidden'>
