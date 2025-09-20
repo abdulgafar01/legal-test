@@ -1,5 +1,6 @@
 "use client";
 import MotionSection from './MotionSection';
+import { FaCheckCircle } from 'react-icons/fa';
 import { DividerWave } from './Decorative';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
@@ -102,7 +103,12 @@ export default function Pricing(){
                 <p className="text-sm text-gray-500 mb-6">{t.tagline}</p>
                 <div className="text-4xl font-extrabold text-black mb-6">{t.price}<span className="text-base font-medium text-gray-500 ml-1">{t.price !== 'Apply' && '/mo'}</span></div>
                 <ul className="space-y-2 text-sm text-gray-600 mb-8 flex-1">
-                  {t.features.map(f => <li key={f}>✔ {f}</li>)}
+                  {t.features.map(f => (
+                    <li key={f} className="flex items-start gap-2">
+                      <FaCheckCircle className="text-[#BE9C05] mt-0.5 flex-shrink-0" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
                 </ul>
                 <a href={t.practitioner? '/account?type=lawyer':'/account'} className={`text-center ${t.highlight? 'btn-primary':'btn-secondary'} text-sm`}>{t.cta}</a>
               </MotionSection>

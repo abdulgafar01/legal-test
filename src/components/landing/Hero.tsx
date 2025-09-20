@@ -2,6 +2,7 @@ import Link from 'next/link';
 import MotionSection from './MotionSection';
 import { GradientBlob } from './Decorative';
 import Image from 'next/image';
+import { FaCheckCircle } from 'react-icons/fa';
 
 export default function Hero(){
   return (
@@ -22,9 +23,16 @@ export default function Hero(){
             <a href="#services" className="btn-secondary text-sm">Explore Services</a>
           </div>
           <ul className="mt-8 text-sm text-gray-600 space-y-2">
-            <li>✔ Instant AI answers trained for legal context</li>
-            <li>✔ On‑demand consultations with vetted lawyers</li>
-            <li>✔ Secure workspace for documents & chats</li>
+            {[
+              'Instant AI answers trained for legal context',
+              'On‑demand consultations with vetted lawyers',
+              'Secure workspace for documents & chats'
+            ].map(item => (
+              <li key={item} className="flex items-start gap-2">
+                <FaCheckCircle className="text-[#BE9C05] mt-0.5 flex-shrink-0" />
+                <span>{item}</span>
+              </li>
+            ))}
           </ul>
         </MotionSection>
         <MotionSection delay={0.15} className="relative flex items-center justify-center overflow-visible">
