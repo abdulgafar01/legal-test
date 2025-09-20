@@ -41,6 +41,11 @@ interface ApiConfig {
       featuredArticles: string;
       searchArticles: string;
     };
+    wallet: {
+      base: string;
+      transactions: string;
+      withdraw: string;
+    };
   };
 }
 
@@ -101,6 +106,11 @@ export const API_CONFIG: ApiConfig = {
       threadsList: '/api/v1/chatbot/threads/list/',
       threadMessages: (threadId: string) => `/api/v1/chatbot/threads/${threadId}/messages/`,
     },
+    wallet: {
+      base: '/api/v1/consultations/wallet/',
+      transactions: '/api/v1/consultations/wallet/transactions/',
+      withdraw: '/api/v1/consultations/wallet/request_withdraw/',
+    }
   },
 };
 

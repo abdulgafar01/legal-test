@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
-import { Shield, FileText, Settings, HelpCircle, ChevronRight, Star, Flag} from "lucide-react";
+import { Shield, FileText, Settings, HelpCircle, ChevronRight, Star, Flag, Wallet} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -94,6 +94,12 @@ const Page = () => {
   const settingsHref = user?.data?.user_type === 'legal_practitioner' ? '/dashboard/settings' : '/dashboard/settings-seeker';
 
   const menuItems = [
+    ...(user?.data?.user_type === 'legal_practitioner' ? [{
+      icon: Wallet,
+      title: "Wallet",
+      href: "/dashboard/wallet",
+      showArrow: true
+    }] : []),
     {
       icon: Shield,
       title: "Subscription Plans",

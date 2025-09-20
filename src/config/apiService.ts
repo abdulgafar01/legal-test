@@ -104,4 +104,21 @@ export const ApiService = {
     const response = await apiClient.get('/api/v1/practitioner-specializations/');
     return response;
   },
+
+  // Wallet Management
+  async getWallet() {
+    return apiClient.get('/api/v1/consultations/wallet/');
+  },
+
+  async getWalletTransactions(params?: { page?: number; type?: string }) {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', String(params.page));
+    if (params?.type) query.append('type', params.type);
+    const qs = query.toString();
+    return apiClient.get(`/api/v1/consultations/wallet/transactions/${qs ? `?${qs}` : ''}`);
+  },
+
+  async requestWithdrawal() {
+    return apiClient.post('/api/v1/consultations/wallet/request_withdraw/');
+  },
 };
