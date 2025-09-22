@@ -2,6 +2,7 @@
 import Sidebar from "@/components/Sidebar"
 import React, { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import AuthGuard from "@/components/AuthGuard"
 
 const Layout = ({children}:{children:React.ReactNode}) => {
     const [expand, setExpand] = useState(true)
@@ -38,25 +39,27 @@ const Layout = ({children}:{children:React.ReactNode}) => {
       }, [isMobile]);
 
   return (
-    <div className="flex  max-h-screen">
-   <Sidebar 
-        expand={expand} 
-        // setExpand={setExpand}
-        isMobile={isMobile}
-        showMobileMenu={showMobileMenu}
-        toggleSidebar={toggleSidebar}
-      />
-  <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden">
-       <Navbar 
+    <AuthGuard>
+      <div className="flex  max-h-screen">
+     <Sidebar 
+          expand={expand} 
+          // setExpand={setExpand}
           isMobile={isMobile}
           showMobileMenu={showMobileMenu}
           toggleSidebar={toggleSidebar}
-      />
-    <div>
-      {children}
-    </div>
-  </main>
-</div>
+        />
+    <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden">
+         <Navbar 
+            isMobile={isMobile}
+            showMobileMenu={showMobileMenu}
+            toggleSidebar={toggleSidebar}
+        />
+      <div>
+        {children}
+      </div>
+    </main>
+  </div>
+    </AuthGuard>
   )
 }
 

@@ -1,8 +1,7 @@
 import { seekerSchemaType } from '@/schemas/seekerSchema';
 import axios from 'axios';
-// import instance from '../axios';
-
-const API_BASE_URL = '/api/v1';
+import instance from '../axios';
+import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
 
 
 // Register User
@@ -13,7 +12,7 @@ export const registerUser = async (data: {
   password: string;
   confirm_password: string;
 }) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/register/`, data, {
+  const response = await instance.post(API_ENDPOINTS.auth.register, data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -28,7 +27,7 @@ export const loginUser = async (data: {
   email: string;
   password: string;
 }) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/login/`, data, {
+  const response = await instance.post(API_ENDPOINTS.auth.login, data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -40,12 +39,9 @@ export const loginUser = async (data: {
 // This function is used to complete the user's profile after registration
 // It requires an access token stored in localStorage for authentication
 export const completeProfile = async (data: seekerSchemaType) => {
-  const accessToken = localStorage.getItem('accessToken');
-
-  const response = await axios.post(`${API_BASE_URL}/auth/complete_profile/`, data,{
+  const response = await instance.post(API_ENDPOINTS.auth.completeProfile, data,{
     headers: {
       'Content-Type': 'application/json',
-       Authorization: `Bearer ${accessToken}`,
     },
   })
   return response.data
@@ -53,15 +49,27 @@ export const completeProfile = async (data: seekerSchemaType) => {
 
 // Submit Personal Info for legal practitioners
 export const submitPersonalInfo = async (data:unknown) => {
-  const accessToken = localStorage.getItem("accessToken");
-
-  const response = await axios.post(
-    `${API_BASE_URL}/auth/practitioner_complete_profile/`, 
+  const response = await instance.post(
+    API_ENDPOINTS.auth.practitionerCompleteProfile, 
     data,
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// Submit Complete Practitioner Application
+export const submitPractitionerApplication = async (data: FormData) => {
+  const response = await instance.post(
+    API_ENDPOINTS.auth.practitionerCompleteProfile,
+    data,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
     }
   );
@@ -71,18 +79,15 @@ export const submitPersonalInfo = async (data:unknown) => {
 
 // Submit License Info
 export const submitLicense = async ( data: unknown) => {
-  const accessToken = localStorage.getItem("accessToken");
-
 const { files, ...licensePayload } = data as Record<string, any>;
 
   // create a license
- const licenseRes = await axios.post(
-    `${API_BASE_URL}/licenses/`,
+ const licenseRes = await instance.post(
+    API_ENDPOINTS.licenses,
     data,
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
     }
   );
@@ -101,13 +106,12 @@ const { files, ...licensePayload } = data as Record<string, any>;
   formData.append("description", "License document")
   
 
-  await axios.post(
-    `${API_BASE_URL}/licenses/${licenseId}/files/`,
+  await instance.post(
+    `${API_ENDPOINTS.licenses}${licenseId}/files/`,
     formData,
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${accessToken}`,
       },
     }
   );
@@ -121,15 +125,12 @@ const { files, ...licensePayload } = data as Record<string, any>;
 
 // Submit Certificate Info
 export const submitCertificate = async (data:unknown) => {
-  const accessToken = localStorage.getItem("accessToken");
-
-  const response = await axios.post(
-    `${API_BASE_URL}/certificates/`, 
+  const response = await instance.post(
+    API_ENDPOINTS.certificates, 
     data,
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
     }
   );
@@ -138,10 +139,10 @@ export const submitCertificate = async (data:unknown) => {
 };
 
 
-
 //  VERIFY EMAIL
+//  Now returns { email, tokens: { access, refresh } } so client can proceed without separate login.
 export const verifyEmail = async (data: { email: string;   verification_code: string }) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/verify_email/`, data, {
+  const response = await instance.post(API_ENDPOINTS.auth.verifyEmail, data, {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -152,7 +153,7 @@ export const verifyEmail = async (data: { email: string;   verification_code: st
 
 // RESEND VERIFICATION CODE
 export const resendVerificationCode = async (email: string) => {
-  const response = await axios.post(`${API_BASE_URL}/auth/resend_verification/`, { email });
+  const response = await instance.post(API_ENDPOINTS.auth.resendVerification, { email });
   return response.data;
 };
 
@@ -160,14 +161,26 @@ export const resendVerificationCode = async (email: string) => {
 // This function is used to fetch the current user's profile data
 // It requires an access token stored in localStorage for authentication
 export const getCurrentUser = async () => {
-  const accessToken = localStorage.getItem('accessToken');
-  
-  const response = await axios.get(`${API_BASE_URL}/profile/me/`, {
+  const response = await instance.get(API_ENDPOINTS.profile.me, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
     },
   });
 
+  return response.data;
+};
+
+// REFRESH TOKEN
+// This function is used to refresh the access token using the refresh token
+export const refreshToken = async (refresh: string) => {
+  const response = await axios.post(
+    buildApiUrl(API_ENDPOINTS.auth.tokenRefresh),
+    { refresh },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   return response.data;
 };

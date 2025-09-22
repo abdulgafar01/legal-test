@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CODE_LENGTH = 6;
 
@@ -20,6 +21,7 @@ type VerificationCodeForm = {
 export default function VerificationPage() {
   const router = useRouter();
   const { accountType } = useAccountTypeStore();
+  const { login } = useAuth();
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   const [email, setEmail] = useState<string>('');
@@ -75,7 +77,14 @@ export default function VerificationPage() {
   const verifyMutation = useMutation({
     mutationFn: (payload: 
       { email: string;   verification_code: string }) => verifyEmail(payload),
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      // Expect tokens if backend now returns them after verification
+      const tokens = data?.data?.tokens || data?.tokens;
+      if (tokens?.access && tokens?.refresh) {
+        // Use AuthContext login method to properly update auth state
+        const userEmail = localStorage.getItem('userEmail') || '';
+        login(tokens.access, tokens.refresh, userEmail);
+      }
       toast.success('Email verified successfully!');
       if (accountType === 'professional') {
         router.push('/onboarding/professionals');

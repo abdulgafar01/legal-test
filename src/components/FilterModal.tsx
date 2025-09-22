@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "./ui/button";
-import { FilterValues } from "@/lib/types";
+import { FilterValues, PractitionerSpecialization, Country } from "@/lib/types";
+import { getSpecializations, getPractitionerCountries } from "@/lib/api/practitioners";
 
 
 
@@ -38,6 +39,73 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
   const [selectedAvailability, setSelectedAvailability] = useState(filters.availability || "");
   const [selectedLocation, setSelectedLocation] = useState(filters.location || "");
   const [hasChanges, setHasChanges] = useState(false);
+  const [specializations, setSpecializations] = useState<PractitionerSpecialization[]>([]);
+  const [loadingSpecializations, setLoadingSpecializations] = useState(false);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(false);
+
+  // Load specializations when modal opens and filterType is expertise
+  useEffect(() => {
+    if (isOpen && filterType === "expertise" && specializations.length === 0) {
+      setLoadingSpecializations(true);
+      getSpecializations()
+        .then((response) => {
+          console.log('🔍 Specializations API Response:', response);
+          
+          // Updated response format handling for list_response
+          if (response.success && Array.isArray(response.data)) {
+            setSpecializations(response.data);
+            console.log('✅ Specializations loaded:', response.data.length, 'items');
+          } else if (Array.isArray(response)) {
+            // Handle case where response is directly an array
+            setSpecializations(response);
+            console.log('✅ Specializations loaded (direct array):', response.length, 'items');
+          } else {
+            console.error('❌ Invalid specializations response format:', response);
+            setSpecializations([]);
+          }
+        })
+        .catch((error) => {
+          console.error('❌ Error loading specializations:', error);
+          setSpecializations([]);
+        })
+        .finally(() => {
+          setLoadingSpecializations(false);
+        });
+    }
+  }, [isOpen, filterType, specializations.length]);
+
+  // Load countries when modal opens and filterType is location
+  useEffect(() => {
+    if (isOpen && filterType === "location" && countries.length === 0) {
+      setLoadingCountries(true);
+      getPractitionerCountries()
+        .then((response) => {
+          console.log('🔍 Countries API Response:', response);
+          
+          if (response.success && Array.isArray(response.data)) {
+            // Filter to only active countries
+            const activeCountries = response.data.filter(country => country.is_active);
+            setCountries(activeCountries);
+            console.log('✅ Countries loaded:', activeCountries.length, 'items');
+          } else if (Array.isArray(response)) {
+            // Handle case where response is directly an array
+            setCountries(response);
+            console.log('✅ Countries loaded (direct array):', response.length, 'items');
+          } else {
+            console.error('❌ Invalid countries response format:', response);
+            setCountries([]);
+          }
+        })
+        .catch((error) => {
+          console.error('❌ Error loading countries:', error);
+          setCountries([]);
+        })
+        .finally(() => {
+          setLoadingCountries(false);
+        });
+    }
+  }, [isOpen, filterType, countries.length]);
 
   // Check if any filters have been changed from their initial state
   useEffect(() => {
@@ -46,7 +114,7 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
         case "expertise":
           return selectedExpertise.length > 0;
         case "experience":
-          return experienceRange.min > 0 || experienceRange.max < 10;
+          return experienceRange.min > 0 || experienceRange.max !== 10;
         case "ratings":
           return selectedRating !== "";
         case "availability":
@@ -73,20 +141,45 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
 
   const handleExpertiseChange = (expertise: string, checked: boolean) => {
     let newExpertise;
+    let newExpertiseIds: number[] = [];
+    
     if (checked) {
       newExpertise = [...selectedExpertise, expertise];
     } else {
       newExpertise = selectedExpertise.filter((item: string) => item !== expertise);
     }
+    
+    // Map expertise names to IDs
+    newExpertiseIds = specializations
+      .filter(spec => newExpertise.includes(spec.name))
+      .map(spec => spec.id);
+    
     setSelectedExpertise(newExpertise);
     onFiltersChange({
       ...filters,
-      expertise: newExpertise
+      expertise: newExpertise,
+      expertiseIds: newExpertiseIds
     });
   };
 
   const handleSave = () => {
     if (hasChanges) {
+      // Create the final filter state to apply
+      const finalFilters = {
+        ...filters,
+        expertise: selectedExpertise,
+        location: selectedLocation,
+        pricing: { min: priceRange[0], max: priceRange[1] },
+        experience: experienceRange,
+        ratings: selectedRating,
+        availability: selectedAvailability,
+        expertiseIds: specializations
+          .filter(spec => selectedExpertise.includes(spec.name))
+          .map(spec => spec.id)
+      };
+      
+      // Apply the final filters
+      onFiltersChange(finalFilters);
       onClose();
     }
   };
@@ -94,30 +187,34 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
   const renderExpertiseFilter = () => (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            "Criminal Law", "Civil Law", "Constitutional Law",
-            "Administrative Law", "International Law", "Labour & Employment Law",
-            "Corporate (or Company) Law", "Tax Law", "Commercial Law",
-            "Family Law", "Property Law", "Environmental Law",
-            "Intellectual Property Law", "Human Rights Law", "Immigration Law"
-          ].map((expertise) => (
-            <div key={expertise} className="flex items-center space-x-2">
-              <Checkbox
-                id={expertise}
-                checked={selectedExpertise.includes(expertise)}
-                onCheckedChange={(checked) => handleExpertiseChange(expertise, checked as boolean)}
-                className={selectedExpertise.includes(expertise) ? "bg-black border-black" : ""}
-              />
-              <Label 
-                htmlFor={expertise} 
-                className={`text-sm ${selectedExpertise.includes(expertise) ? "font-medium" : ""}`}
-              >
-                {expertise}
-              </Label>
-            </div>
-          ))}
-        </div>
+        {loadingSpecializations ? (
+          <div className="flex justify-center py-4">
+            <div className="text-sm text-gray-500">Loading specializations...</div>
+          </div>
+        ) : Array.isArray(specializations) && specializations.length > 0 ? (
+          <div className="grid grid-cols-2 gap-4">
+            {specializations.map((specialization) => (
+              <div key={specialization.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`specialization-${specialization.id}`}
+                  checked={selectedExpertise.includes(specialization.name)}
+                  onCheckedChange={(checked) => handleExpertiseChange(specialization.name, checked as boolean)}
+                  className={selectedExpertise.includes(specialization.name) ? "bg-black border-black" : ""}
+                />
+                <Label 
+                  htmlFor={`specialization-${specialization.id}`}
+                  className={`text-sm ${selectedExpertise.includes(specialization.name) ? "font-medium" : ""}`}
+                >
+                  {specialization.name}
+                </Label>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex justify-center py-4">
+            <div className="text-sm text-gray-500">No specializations available</div>
+          </div>
+        )}
       </div>
       
       <Button 
@@ -138,7 +235,15 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
           <Input
             type="number"
             value={experienceRange.min}
-            onChange={(e) => setExperienceRange({ ...experienceRange, min: parseInt(e.target.value) || 0 })}
+            onChange={(e) => {
+              const newMin = parseInt(e.target.value) || 0;
+              const newRange = { ...experienceRange, min: newMin };
+              setExperienceRange(newRange);
+              onFiltersChange({
+                ...filters,
+                experience: newRange
+              });
+            }}
             className="w-20 text-center"
             min="0"
           />
@@ -149,7 +254,15 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
           <Input
             type="number"
             value={experienceRange.max}
-            onChange={(e) => setExperienceRange({ ...experienceRange, max: parseInt(e.target.value) || 10 })}
+            onChange={(e) => {
+              const newMax = parseInt(e.target.value) || 10;
+              const newRange = { ...experienceRange, max: newMax };
+              setExperienceRange(newRange);
+              onFiltersChange({
+                ...filters,
+                experience: newRange
+              });
+            }}
             className="w-20 text-center"
             min="0"
           />
@@ -168,22 +281,54 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
 
   const renderLocationFilter = () => (
     <div className="space-y-6">
-      <div className="space-y-4">
-        <div className={`flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer ${selectedLocation === "Kuwait" ? "bg-gray-100" : ""}`}
-             onClick={() => setSelectedLocation("Kuwait")}>
-          <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded-full"></div>
-          </div>
-          <span className="text-sm">Kuwait</span>
+      {loadingCountries ? (
+        <div className="flex justify-center py-4">
+          <div className="text-sm text-gray-500">Loading countries...</div>
         </div>
-        <div className={`flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer ${selectedLocation === "Nigeria" ? "bg-gray-100" : ""}`}
-             onClick={() => setSelectedLocation("Nigeria")}>
-          <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-            <div className="w-3 h-3 bg-white rounded-full"></div>
+      ) : Array.isArray(countries) && countries.length > 0 ? (
+        <div className="space-y-4">
+          {/* Add "All Countries" option for unselecting */}
+          <div 
+            className={`flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer ${selectedLocation === "" ? "bg-gray-100" : ""} border-b border-gray-200`}
+            onClick={() => {
+              setSelectedLocation("");
+              onFiltersChange({
+                ...filters,
+                location: ""
+              });
+            }}
+          >
+            <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-400">
+              <div className="w-3 h-3 bg-white rounded-full"></div>
+            </div>
+            <span className="text-sm font-medium">All Countries</span>
           </div>
-          <span className="text-sm">Nigeria</span>
+          
+          {countries.map((country, index) => (
+            <div 
+              key={country.code}
+              className={`flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer ${selectedLocation === country.name ? "bg-gray-100" : ""}`}
+              onClick={() => {
+                setSelectedLocation(country.name);
+                onFiltersChange({
+                  ...filters,
+                  location: country.name
+                });
+              }}
+            >
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center`}
+                   style={{ backgroundColor: `hsl(${(index * 137.508) % 360}, 70%, 50%)` }}>
+                <div className="w-3 h-3 bg-white rounded-full"></div>
+              </div>
+              <span className="text-sm">{country.name}</span>
+            </div>
+          ))}
         </div>
-      </div>
+      ) : (
+        <div className="flex justify-center py-4">
+          <div className="text-sm text-gray-500">No countries available</div>
+        </div>
+      )}
       
       <Button 
         onClick={handleSave}
@@ -222,6 +367,10 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
                 if (checked) {
                   setSelectedRating(item.rating);
                   onFiltersChange({ ...filters, ratings: item.rating });
+                } else {
+                  // Allow unselecting
+                  setSelectedRating("");
+                  onFiltersChange({ ...filters, ratings: "" });
                 }
               }}
               className={selectedRating === item.rating ? "bg-black border-black" : ""}
@@ -251,8 +400,12 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
               if (checked) {
                 setSelectedAvailability("all");
                 onFiltersChange({ ...filters, availability: "all" });
+              } else {
+                setSelectedAvailability("");
+                onFiltersChange({ ...filters, availability: "" });
               }
             }}
+            className={selectedAvailability === "all" ? "bg-black border-black" : ""}
           />
         </div>
         <div className="flex items-center justify-between">
@@ -263,6 +416,9 @@ const FilterModal = ({ isOpen, onClose, filters, onFiltersChange, filterType = "
               if (checked) {
                 setSelectedAvailability("available");
                 onFiltersChange({ ...filters, availability: "available" });
+              } else {
+                setSelectedAvailability("");
+                onFiltersChange({ ...filters, availability: "" });
               }
             }}
             className={selectedAvailability === "available" ? "bg-black border-black" : ""}

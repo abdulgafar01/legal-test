@@ -6,24 +6,36 @@ import StepIndicator from "./StepIndicator";
 import PersonalInfoForm from "./PersonalInfoForm";
 import LicenseForm from "./LicenseForm";
 import CertificationForm from "./CertificationForm";
+import SpecializationsForm from "./SpecializationsForm";
+import ExperienceForm from "./ExperienceForm";
+import ApplicationSubmittedPage from "./ApplicationSubmittedPage";
 import { useRouter } from "next/navigation";
+import { usePractitionerFormStore } from "@/stores/usePractitionerFormStore";
 
 const MultiStepForm: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState(2);
+  const [currentStep, setCurrentStep] = useState(1);
   const [showSuccess, setShowSuccess] = useState(false);
-  const totalSteps = 3;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const totalSteps = 6;
   const router = useRouter();
+  const { formData, clearFormData } = usePractitionerFormStore();
 
   const stepTitles = {
     1: "Personal information",
-    2: "Licence information",
+    2: "License information",
     3: "Certification information",
+    4: "Legal specializations",
+    5: "Work experience",
+    6: "Review & submit",
   };
 
   const stepDescriptions = {
     1: "Kindly enter your accurate details as they appear on your license.",
     2: "Please provide your professional license details for verification.",
     3: "Add any relevant certifications to enhance your profile.",
+    4: "Select your areas of legal expertise.",
+    5: "Add your professional work experience.",
+    6: "Review your information and submit for approval.",
   };
 
   const handleNext = () => {
@@ -38,11 +50,17 @@ const MultiStepForm: React.FC = () => {
     }
   };
 
-  const handleComplete = () => {
-    setShowSuccess(true);
-    setTimeout(() => {
-      router.push("/account");
-    }, 3000); // Show modal for 3 seconds
+  const handleComplete = async () => {
+    setIsSubmitting(true);
+    try {
+      // This will be handled by the final form submission
+      setShowSuccess(true);
+      // Remove automatic redirection since ApplicationSubmittedPage handles logout
+      clearFormData(); // Clear stored form data
+    } catch (error) {
+      console.error("Submission error:", error);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -65,6 +83,7 @@ const MultiStepForm: React.FC = () => {
           <button
             onClick={handleBack}
             className="flex items-center text-white mb-6 hover:text-gray-200 transition-colors"
+            disabled={isSubmitting}
           >
             <ArrowLeft size={20} className="mr-2" />
             Back
@@ -88,7 +107,10 @@ const MultiStepForm: React.FC = () => {
               <div className="transition-all duration-300 ease-in-out">
                 {currentStep === 1 && <PersonalInfoForm onNext={handleNext} />}
                 {currentStep === 2 && <LicenseForm onNext={handleNext} />}
-                {currentStep === 3 && <CertificationForm onNext={handleComplete} />}
+                {currentStep === 3 && <CertificationForm onNext={handleNext} />}
+                {currentStep === 4 && <SpecializationsForm onNext={handleNext} />}
+                {currentStep === 5 && <ExperienceForm onNext={handleNext} />}
+                {currentStep === 6 && <ApplicationSubmittedPage onSubmit={handleComplete} isSubmitting={isSubmitting} />}
               </div>
             </>
           ) : (
@@ -108,9 +130,9 @@ const MultiStepForm: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">All Done!</h2>
-              <p className="text-gray-600 mb-1">Your information has been submitted.</p>
-              <p className="text-gray-400 text-sm">Redirecting to your account...</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Application Submitted!</h2>
+              <p className="text-gray-600 mb-1">Your application has been sent for admin review.</p>
+              <p className="text-gray-400 text-sm">You'll be notified once approved. Redirecting...</p>
             </div>
           )}
         </div>

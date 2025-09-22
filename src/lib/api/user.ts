@@ -1,7 +1,6 @@
 // lib/api/user.ts
-import axios from 'axios';
-
-const API_BASE_URL = '/api/v1';
+import instance from '../axios';
+import { API_ENDPOINTS } from '@/config/api';
 
 export const fetchCurrentUser = async () => {
   if (typeof window === 'undefined') return null;
@@ -9,32 +8,20 @@ export const fetchCurrentUser = async () => {
   if (!localStorage.getItem('accessToken')) {
     throw new Error('No access token found');
   }
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('No access token found');
 
-  const response = await axios.get(`${API_BASE_URL}/profile/me/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await instance.get(API_ENDPOINTS.profile.me);
 
   return response.data;
 };
 
-
-
 // update user profile
 export const updateUserProfile = async (updatedData:unknown) => {
-  const token = localStorage.getItem('accessToken');
-  if (!token) throw new Error('No access token found');
-
-  const response = await axios.patch(
-    `${API_BASE_URL}/profile/update_profile/`,
+  const response = await instance.patch(
+    API_ENDPOINTS.profile.updateProfile,
     updatedData,
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     }
   );

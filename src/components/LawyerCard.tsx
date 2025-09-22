@@ -1,6 +1,8 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface LawyerCardProps {
   lawyer: {
@@ -17,8 +19,25 @@ interface LawyerCardProps {
 }
 
 const LawyerCard = ({ lawyer }: LawyerCardProps) => {
+  const router = useRouter();
+
+  const handleViewProfile = () => {
+    router.push(`/dashboard/professionals/${lawyer.id}`);
+  };
+
+  const handleBookNow = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation when clicking book button
+    // TODO: Implement booking functionality
+    console.log('📅 Book now clicked for lawyer:', lawyer.id);
+    // For now, navigate to the details page
+    router.push(`/dashboard/professionals/${lawyer.id}`);
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div 
+      className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={handleViewProfile}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start space-x-4">
           <Image
@@ -30,7 +49,9 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
           />
           
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">{lawyer.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 hover:text-blue-600 transition-colors">
+              {lawyer.name}
+            </h3>
             
             <div className="flex items-center mb-2">
               {[...Array(5)].map((_, i) => (
@@ -43,7 +64,18 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
             
             <div className="space-y-1 text-sm text-gray-600">
               <div>
-                <span className="font-medium">Expertise:</span> {lawyer.expertise.join(" - ")}
+                <span className="font-medium">Expertise:</span>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {lawyer.expertise.map((name, idx) => (
+                    <Badge
+                      key={`${name}-${idx}`}
+                      variant="secondary"
+                      className="bg-blue-50 text-blue-700 border border-blue-200"
+                    >
+                      {name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
               <div>
                 <span className="font-medium">Qualification:</span> {lawyer.qualification}
@@ -63,11 +95,19 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
         
         <div className="flex flex-col items-end space-y-2">
           {lawyer.status === "available" ? (
-            <Button className="bg-black text-white hover:bg-gray-800">
+            <Button 
+              className="bg-black text-white hover:bg-gray-800"
+              onClick={handleBookNow}
+            >
               Book Now
             </Button>
           ) : (
-            <Button variant="outline" className="bg-gray-100 text-gray-600" disabled>
+            <Button 
+              variant="outline" 
+              className="bg-gray-100 text-gray-600" 
+              disabled
+              onClick={handleBookNow}
+            >
               Completely Booked
             </Button>
           )}

@@ -4,13 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { Scale, MessageCircle, User } from 'lucide-react';
+import { Scale, MessageCircle, LogOut, RefreshCw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { assets } from '@/assets/assets';
 import SidebarLinks from './Sidebar-Links';
 import ChatLabel from './ChatLabel';
 import { Button } from './ui/button';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SidebarProps {
   expand: boolean;
@@ -26,9 +30,37 @@ const Sidebar: React.FC<SidebarProps> = ({
   toggleSidebar,
 }) => {
 
-   const { data: user, isLoading, error } = useCurrentUser();
+   const { data: user, isLoading, error, refetch } = useCurrentUser();
+   const { logout } = useAuth();
+   const router = useRouter();
+   const queryClient = useQueryClient();
 
-  console.log("the user", user);
+   const handleLogout = () => {
+     logout();
+     toast.success('Successfully logged out');
+   };
+
+   const handleRefreshUser = () => {
+     queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+     refetch();
+     toast.success('User data refreshed');
+   };
+
+  console.log("=== USER DEBUG INFO ===");
+  console.log("Raw user data:", user);
+  console.log("User first_name:", user?.data?.first_name);
+  console.log("User last_name:", user?.data?.last_name);
+  console.log("User email:", user?.data?.email);
+  console.log("User ID:", user?.data?.id);
+  console.log("isLoading:", isLoading);
+  console.log("error:", error);
+  console.log("LocalStorage email:", typeof window !== 'undefined' ? localStorage.getItem('userEmail') : 'N/A');
+  console.log("========================");
+  
+  // Don't render sidebar if no token exists
+  if (typeof window !== 'undefined' && !localStorage.getItem('accessToken')) {
+    return null;
+  }
   
   const sidebarBaseClasses =
     'flex flex-col bg-orange-50 pt-7 transition-all z-50 h-screen';
@@ -50,8 +82,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={clsx(sidebarBaseClasses, isMobile ? mobileClasses : desktopClasses)}>
-      {/* --- Top Content --- */}
-      <div>
+  {/* --- Top Content --- */}
+  <div className="flex-1 overflow-y-auto">
         {/* --- Brand + Toggle --- */}
         <div className={clsx('flex', expand ? 'flex-row gap-10' : 'flex-col items-center gap-8')}>
           <Link href="/">
@@ -108,7 +140,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* --- New Chat Button --- */}
-        <button
+        {/* <button
           className={clsx(
             'mt-2 flex items-center cursor-pointer text-gray-700',
             expand
@@ -124,56 +156,60 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
           {expand && <p className="text-xs font-medium">New Chat</p>}
-        </button>
+        </button> */}
       </div>
 
       {/* --- Scrollable Chat History Only --- */}
-      {expand && (
+      {/* {expand && (
         <div className="mt-4 flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto pr-1">
             <ChatLabel />
           </div>
         </div>
-      )}
+      )} */}
 
-      {/* --- Fixed Bottom User Info --- */}
+    {/* --- Fixed Bottom User Info --- */}
       <div
         className={clsx(
-          'text-black text-sm mt-2',
+      'text-black text-sm mt-auto',
           expand ? 'hover:bg-white/10 rounded-lg' : 'justify-center w-full'
         )}
       >
         {expand && (
           <div className="p-4 border-t border-gray-200 w-full">
-            <Link href="/dashboard/profile">
-            <div 
-             onClick={() => {
-              if (isMobile && toggleSidebar) {
-                toggleSidebar();
-              }
-            }}
-            className="flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-medium text-orange-800">OR</span>
-              </div>
-             <div>
-                        {isLoading ? (
-                          <div className='text-xs'>...</div>
-                        ) : error ? (
-                          <div>Error loading user data</div>
-                        ) : (
-                          <>
-                            <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
-                            <div className="text-[10px] text-gray-500">{user?.data.email}</div>
-                          </>
-                        )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
+                  <span className="text-sm font-medium text-orange-800">
+                    {isLoading ? '...' : error ? '!' : (user?.data?.first_name?.slice(0,2).toUpperCase() || 'U')}
+                  </span>
                 </div>
-
-              <Button variant="ghost" size="icon" asChild>
-                  <User className="w-4 h-4" />
-              </Button>
+                <div>
+                  {isLoading ? (
+                    <div className='text-xs text-gray-500'>Loading...</div>
+                  ) : error ? (
+                    <div className='text-xs text-red-500'>Please log in again</div>
+                  ) : (
+                    <>
+                      <div className="text-xs font-medium text-gray-900">{user?.data.first_name} {user?.data.last_name}</div>
+                      <div className="text-[10px] text-gray-500">{user?.data.email}</div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <button 
+                  onClick={handleRefreshUser} 
+                  title='Refresh User Data' 
+                  className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'
+                >
+                  <RefreshCw className='w-3 h-3 text-gray-600' />
+                </button>
+                <button onClick={handleLogout} title='Logout' className='p-2 rounded-md hover:bg-amber-100 cursor-pointer'>
+                  <LogOut className='w-4 h-4 text-gray-600' />
+                </button>
+              </div>
             </div>
-            </Link>
           </div>
         )}
       </div>

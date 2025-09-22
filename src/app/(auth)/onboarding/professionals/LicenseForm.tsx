@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useCallback, useState } from "react";
-import { Calendar as CalendarIcon, CheckCircle, Upload } from "lucide-react";
-import { format } from "date-fns";
-// import { countries, Country } from "@/data/countries1";
+import React, { useState } from 'react';
 import { cn } from "@/lib/utils";
+import { usePractitionerFormStore } from '@/stores/usePractitionerFormStore';
+import { toast } from 'sonner';
+import { Plus, Trash2, Upload, FileText, Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
   Popover,
@@ -18,237 +19,337 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation } from "@tanstack/react-query";
-// import { submitLicense } from "@/lib/api/auth";
 import { useCountries } from '@/hooks/useCountries';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { Country } from '@/data/countries';
-import { toast } from "sonner";
-import { AxiosError } from "axios";
-import { ApiErrorResponse } from "@/lib/types";
-import { submitLicense } from "@/lib/api/auth";
 
 interface LicenseFormProps {
   onNext: () => void;
 }
 
-const license_types = [
-  "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-  // "barrister_solicitor",
-];
+interface License {
+  license_type: string;
+  license_number: string;
+  date_of_incorporation: string;
+  country_of_incorporation: string;
+  issuing_authority: string;
+  expiry_date?: string;
+  notes?: string;
+  files: File[];
+}
 
 const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
-  const [formData, setFormData] = useState({
-    license_type: "",
-  });
-
-  const [date_of_incorporation, setDateOfIncorporation] = useState<Date>();
-  // const [selectedCountry, setSelectedCountry] = useState<Country>({ name: "Nigeria", code: "NG", flag: "🇳🇬" });
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  // const [countrySearch, setCountrySearch] = useState("");
-
-  // const filteredCountries = useMemo(() => {
-  //   return countries.filter((country) =>
-  //     country.name.toLowerCase().includes(countrySearch.toLowerCase())
-  //   );
-  // }, [countrySearch]);
-
-    const { data: countries = [] } = useCountries();
-    const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
-
-  const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setUploadedFile(file);
-  }, []);
-
-    const mutation = useMutation({
-      mutationFn: submitLicense,
-      onSuccess: () => {
-        toast.success("License saved successfully!");
-        onNext();
-      },
-      onError: (error: AxiosError<ApiErrorResponse>) => {
-        console.error("Error submitting practitioner license:", error);
-
-        // Safely extract message from API error shape
-        const message =
-          // error?.response?.data?.error?.message ||
-          error?.response?.data?.error?.details?.file||        
-          error?.message ||                   
-          "Failed to save practioner license";
-
-        toast.error(message);
-      },
-    });
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-       if (!uploadedFile || !date_of_incorporation) return;
-
-      const payload = {
-            
-              ...formData,
-              license_type: formData.license_type,
-              date_of_incorporation: format(date_of_incorporation, "yyyy-MM-dd"),
-              country_of_incorporation: selectedCountry ? selectedCountry.name : "",
-              files: uploadedFile,
-            
-          };
+  const { formData, updateLicenses } = usePractitionerFormStore();
+  const { data: countries = [] } = useCountries();
   
-            mutation.mutate(payload);
-            console.log("Submitted Data:", payload);
-    },
-    [formData, date_of_incorporation, selectedCountry, uploadedFile, onNext]
+  const [licenses, setLicenses] = useState<License[]>(
+    formData.licenses.length > 0 ? formData.licenses : [
+      {
+        license_type: '',
+        license_number: '',
+        date_of_incorporation: '',
+        country_of_incorporation: '',
+        issuing_authority: '',
+        expiry_date: '',
+        notes: '',
+        files: []
+      }
+    ]
   );
 
-  const isFormValid = formData.license_type && date_of_incorporation && uploadedFile;
+  const addLicense = () => {
+    setLicenses(prev => [...prev, {
+      license_type: '',
+      license_number: '',
+      date_of_incorporation: '',
+      country_of_incorporation: '',
+      issuing_authority: '',
+      expiry_date: '',
+      notes: '',
+      files: []
+    }]);
+  };
+
+  const removeLicense = (index: number) => {
+    if (licenses.length > 1) {
+      setLicenses(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateLicense = (index: number, field: keyof License, value: string | File[]) => {
+    setLicenses(prev => prev.map((license, i) => 
+      i === index ? { ...license, [field]: value } : license
+    ));
+  };
+
+  const handleFileUpload = (index: number, files: FileList | null) => {
+    if (files && files.length > 0) {
+      const fileArray = Array.from(files);
+      updateLicense(index, 'files', fileArray);
+      toast.success(`${fileArray.length} file(s) uploaded for license ${index + 1}`);
+    }
+  };
+
+  const handleDateChange = (index: number, field: 'date_of_incorporation' | 'expiry_date', date: Date | undefined) => {
+    if (date) {
+      updateLicense(index, field, format(date, 'yyyy-MM-dd'));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate at least one license with required fields
+    const validLicenses = licenses.filter(license => 
+      license.license_type && 
+      license.license_number && 
+      license.country_of_incorporation && 
+      license.date_of_incorporation &&
+      license.issuing_authority
+    );
+
+    if (validLicenses.length === 0) {
+      toast.error('Please add at least one valid license with all required fields');
+      return;
+    }
+
+    updateLicenses(validLicenses);
+    toast.success(`${validLicenses.length} license(s) added!`);
+    onNext();
+  };
+
+  const isFormValid = licenses.some(license => 
+    license.license_type && 
+    license.license_number && 
+    license.country_of_incorporation && 
+    license.date_of_incorporation &&
+    license.issuing_authority
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Date of Incorporation */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Date of Incorporation
-        </label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              className={cn(
-                "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
-                !date_of_incorporation && "text-gray-400"
-              )}
-            >
-              <span>
-                {date_of_incorporation
-                  ? format(date_of_incorporation, "yyyy-MM-dd")
-                  : "DD/MM/YYYY"}
-              </span>
-              <CalendarIcon size={20} className="text-gray-400" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <CalendarComponent
-              mode="single"
-              selected={date_of_incorporation}
-              onSelect={setDateOfIncorporation}
-              disabled={(date) =>
-                date > new Date() || date < new Date("1900-01-01")
-              }
-              className="p-3"
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      {/* License Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Type of Licence
-        </label>
-        <Select
-          value={formData.license_type}
-          onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, license_type: value }))
-          }
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-medium text-gray-900">Professional Licenses</h3>
+        <button
+          type="button"
+          onClick={addLicense}
+          className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
         >
-          <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
-            <SelectValue placeholder="Select a license type" />
-          </SelectTrigger>
-          <SelectContent>
-            {license_types.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Plus size={16} />
+          Add License
+        </button>
       </div>
 
-      {/* Country of Incorporation */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Country of Incorporation
-        </label>
-         <Select
-               value={selectedCountry?.name}
-               onValueChange={(value) => {
-                 const country = countries.find((c: Country) => c.name === value);
-                 if (country) setSelectedCountry(country);
-               }}
-             >
-               <SelectTrigger className="w-full px-4 py-3 border border-gray-200 rounded-lg transition-all">
-                 <SelectValue placeholder="Select country" />
-               </SelectTrigger>
-               <SelectContent className="max-h-60 overflow-auto">
-                 {countries.map((country: Country ) => (
-                   <SelectItem key={country.code} value={country.name}>
-                     <div className="flex items-center gap-2">
-                       <Icon
-                         icon={`flag:${country.code.toLowerCase()}-4x3`}
-                         className="h-5 w-5 rounded-sm"
-                       />
-                       <span>{country.name}</span>
-                     </div>
-                   </SelectItem>
-                 ))}
-               </SelectContent>
-        </Select>
-      </div>
-
-      {/* File Upload */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Upload Proof of Licence
-        </label>
-        <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center bg-gray-50 hover:bg-gray-100 transition-colors">
-          {uploadedFile ? (
-            <div className="space-y-2">
-              <div className="w-14 h-14 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle size={28} className="text-green-600" />
-              </div>
-              <p className="text-sm text-blue-600">{uploadedFile.name}</p>
-              <button
-                type="button"
-                onClick={() => setUploadedFile(null)}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Clear Upload
-              </button>
+      <div className="space-y-6">
+        {licenses.map((license, index) => (
+          <div key={index} className="p-4 border border-gray-200 rounded-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                License #{index + 1}
+              </span>
+              {licenses.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeLicense(index)}
+                  className="text-red-500 hover:text-red-700 transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="w-14 h-14 mx-auto bg-gray-200 rounded-full flex items-center justify-center">
-                <Upload size={24} className="text-gray-400" />
+
+            {/* License Type and Number */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  License Type *
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Bar License"
+                  value={license.license_type}
+                  onChange={(e) => updateLicense(index, 'license_type', e.target.value)}
+                  className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+                  required
+                />
               </div>
-              <p className="text-sm font-medium text-gray-700">Click to upload</p>
-              <p className="text-xs text-gray-500">PDF, PNG, JPG, GIF</p>
-              <input
-                id="license-file-upload"
-                type="file"
-                onChange={handleFileUpload}
-                accept=".pdf,.png,.jpg,.jpeg,.gif"
-                className="hidden"
-              />
-              <label
-                htmlFor="license-file-upload"
-                className="inline-block bg-black text-white px-6 py-2 rounded-full text-sm font-medium cursor-pointer hover:bg-gray-800 transition-colors"
-              >
-                Browse Files
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  License Number *
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. NY-BAR-2020-1234"
+                  value={license.license_number}
+                  onChange={(e) => updateLicense(index, 'license_number', e.target.value)}
+                  className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Issuing Authority */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Issuing Authority *
               </label>
+              <input
+                type="text"
+                placeholder="e.g. New York State Bar Association"
+                value={license.issuing_authority}
+                onChange={(e) => updateLicense(index, 'issuing_authority', e.target.value)}
+                className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+                required
+              />
             </div>
-          )}
-        </div>
+
+            {/* Country of Incorporation */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Country of Incorporation *
+              </label>
+              <Select
+                value={license.country_of_incorporation}
+                onValueChange={(value) => updateLicense(index, 'country_of_incorporation', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60 overflow-auto">
+                  {countries.map((country: Country) => (
+                    <SelectItem key={country.code} value={country.name}>
+                      <div className="flex items-center gap-2">
+                        <Icon
+                          icon={`flag:${country.code.toLowerCase()}-4x3`}
+                          className="h-4 w-4 rounded-sm"
+                        />
+                        <span>{country.name}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date of Incorporation and Expiry Date */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Date of Incorporation *
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
+                        !license.date_of_incorporation && "text-gray-400"
+                      )}
+                    >
+                      <span>
+                        {license.date_of_incorporation ? format(new Date(license.date_of_incorporation), "dd/MM/yyyy") : "DD/MM/YYYY"}
+                      </span>
+                      <CalendarIcon size={20} className="text-gray-400" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={license.date_of_incorporation ? new Date(license.date_of_incorporation) : undefined}
+                      onSelect={(date) => handleDateChange(index, 'date_of_incorporation', date)}
+                      disabled={date => date > new Date()}
+                      className="p-3"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expiry Date (Optional)
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "w-full px-4 py-2 border border-gray-200 rounded-lg text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-all",
+                        !license.expiry_date && "text-gray-400"
+                      )}
+                    >
+                      <span>
+                        {license.expiry_date ? format(new Date(license.expiry_date), "dd/MM/yyyy") : "DD/MM/YYYY (Optional)"}
+                      </span>
+                      <CalendarIcon size={20} className="text-gray-400" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={license.expiry_date ? new Date(license.expiry_date) : undefined}
+                      onSelect={(date) => handleDateChange(index, 'expiry_date', date)}
+                      disabled={date => date < new Date()}
+                      className="p-3"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Notes (Optional)
+              </label>
+              <textarea
+                placeholder="Additional notes about this license..."
+                value={license.notes}
+                onChange={(e) => updateLicense(index, 'notes', e.target.value)}
+                className="w-full p-2 border border-gray-200 rounded-lg transition-all"
+                rows={2}
+              />
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                License Documents
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <input
+                  type="file"
+                  id={`license-files-${index}`}
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => handleFileUpload(index, e.target.files)}
+                  className="hidden"
+                />
+                <label
+                  htmlFor={`license-files-${index}`}
+                  className="flex flex-col items-center cursor-pointer hover:text-blue-600 transition-colors"
+                >
+                  <Upload size={24} className="mb-2" />
+                  <span className="text-sm font-medium">Upload License Documents</span>
+                  <span className="text-xs text-gray-500">PDF, JPG, PNG (Max 5MB each)</span>
+                </label>
+                
+                {license.files.length > 0 && (
+                  <div className="mt-3 space-y-1">
+                    {license.files.map((file, fileIndex) => (
+                      <div key={fileIndex} className="flex items-center gap-2 text-sm text-gray-600">
+                        <FileText size={16} />
+                        <span>{file.name}</span>
+                        <span className="text-gray-400">({Math.round(file.size / 1024)} KB)</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={!isFormValid}
@@ -259,9 +360,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
             : "bg-gray-300 text-gray-500 cursor-not-allowed"
         )}
       >
-        {mutation.isPending
-                  ? 'Loading...'
-                  : 'Continue'}
+        Next
       </button>
     </form>
   );
