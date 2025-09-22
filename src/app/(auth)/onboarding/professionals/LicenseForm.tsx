@@ -98,7 +98,7 @@ const LicenseForm: React.FC<LicenseFormProps> = ({ onNext }) => {
               license_type: formData.license_type,
               date_of_incorporation: format(date_of_incorporation, "yyyy-MM-dd"),
               country_of_incorporation: selectedCountry ? selectedCountry.name : "",
-             files: uploadedFile,
+              files: uploadedFile,
             
           };
   
