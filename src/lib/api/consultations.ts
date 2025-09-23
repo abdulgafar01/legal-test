@@ -244,6 +244,60 @@ export const startConsultation = async (
 };
 
 /**
+ * Complete a consultation manually (allowed for either participant while in progress)
+ */
+export const completeConsultation = async (
+  consultationId: number
+): Promise<ApiResponse<Consultation>> => {
+  try {
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+    const response = await axios.post(
+      buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/complete/`),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error completing consultation:', error);
+    throw error;
+  }
+};
+
+/**
+ * (DEBUG) Shift consultation time to now server-side
+ */
+export const debugSetConsultationNow = async (consultationId: number): Promise<ApiResponse<Consultation>> => {
+  try {
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+    const response = await axios.post(
+      buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/debug_set_now/`),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('❌ Error shifting consultation time (debug):', error);
+    throw error;
+  }
+};
+
+/**
  * Check if consultation time has arrived (frontend validation)
  */
 export const isConsultationTimeReady = (consultation: Consultation): boolean => {

@@ -49,9 +49,10 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  /* Brand palette overrides */
+  --primary: #BE9C05; /* Golden primary */
+  --primary-foreground: #ffffff;
+  --secondary: #FEF7D4; /* Light secondary */
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -117,6 +118,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  html { scroll-behavior: smooth; }
+
+  .font-nunito { font-family: 'Nunito', sans-serif; }
+  .font-ttcommons { font-family: var(--ttcommons-font-stack); }
+  .font-jost { font-family: 'Jost', 'Inter', system-ui, sans-serif; }
+  .text-gradient-gold { background: linear-gradient(90deg,#BE9C05,#d4b139); -webkit-background-clip: text; color: transparent; }
+  .btn-primary { @apply inline-flex items-center justify-center px-6 py-3 rounded-md bg-[var(--primary)] text-white font-semibold shadow-sm hover:brightness-110 transition; }
+  .btn-secondary { @apply inline-flex items-center justify-center px-6 py-3 rounded-md bg-[var(--secondary)] text-black font-semibold shadow-sm hover:bg-yellow-100 transition; }
 }
 
 /* Hide scrollbar but allow scrolling */

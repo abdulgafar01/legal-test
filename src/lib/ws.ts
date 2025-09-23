@@ -43,6 +43,10 @@ export const openChatSocket = (consultationId: number) => {
       } else if (data.type === 'message:created') {
         const msg: ChatMessage = data.payload;
         useChatStore.getState().addMessages(consultationId, [msg], 'append');
+      } else if (data.type === 'consultation:status') {
+        // Dispatch a DOM event so components can refetch consultation details
+        const evt = new CustomEvent('consultation-status-changed', { detail: data.payload });
+        window.dispatchEvent(evt);
       } else if (data.type === 'error') {
         // noop for now; could expose UI notifications
       }

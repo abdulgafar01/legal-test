@@ -7,6 +7,7 @@ import { Badge } from './ui/badge';
 import { getMyConsultations, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
 import { format, parseISO } from 'date-fns';
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
+import { getCurrentUserId } from '@/lib/auth';
 
 interface ConsultationDashboardProps {
   onSelectChat: (chatId: string) => void;
@@ -17,9 +18,42 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const { accountType } = useAccountTypeStore();
+  const currentUserId = getCurrentUserId();
+  const [recentlyCompleted, setRecentlyCompleted] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     loadConsultations();
+  }, []);
+
+  // Optimistic status updates from WebSocket/other tabs
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail: any = (e as CustomEvent).detail;
+      if (!detail || !detail.consultation_id) return;
+      setConsultations(prev => prev.map(c => {
+        if (c.id === detail.consultation_id) {
+          const updated = {
+            ...c,
+            status_info: { ...c.status_info, name: detail.status },
+            completed_at: detail.completed_at || c.completed_at,
+          };
+          if (detail.status === 'completed') {
+            setRecentlyCompleted(rc => {
+              const next = new Set(rc);
+              next.add(c.id);
+              setTimeout(() => {
+                setRecentlyCompleted(inner => { const clone = new Set(inner); clone.delete(c.id); return clone; });
+              }, 1200);
+              return next;
+            });
+          }
+          return updated;
+        }
+        return c;
+      }));
+    };
+    window.addEventListener('consultation-status-changed', handler as EventListener);
+    return () => window.removeEventListener('consultation-status-changed', handler as EventListener);
   }, []);
 
   const loadConsultations = async () => {
@@ -38,29 +72,29 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
   };
 
   const filteredConsultations = consultations.filter((consultation) => {
-    const counterpart = accountType === 'professional'
-      ? consultation.service_seeker_info
-      : consultation.practitioner_info;
+    const seeker = consultation.service_seeker_info;
+    const practitioner = consultation.practitioner_info; // has user_id
+    const isUserPractitioner = currentUserId === practitioner.user_id;
+    const counterpart = isUserPractitioner ? seeker : practitioner;
     const fullName = `${counterpart.first_name} ${counterpart.last_name}`.toLowerCase();
     return fullName.includes(searchTerm.toLowerCase());
   });
 
-  const todayConsultations = filteredConsultations.filter(consultation => {
-    const consultationDate = new Date(consultation.time_slot_info.date);
-    const today = new Date();
-    return consultationDate.toDateString() === today.toDateString();
-  });
+  // Build date-time boundaries
+  const now = new Date();
+  const toDateTime = (c: Consultation) => new Date(`${c.time_slot_info.date}T${c.time_slot_info.start_time}`);
+  const todayDateStr = now.toDateString();
 
-  const upcomingConsultations = filteredConsultations.filter(consultation => {
-    const consultationDate = new Date(consultation.time_slot_info.date);
-    const today = new Date();
-    return consultationDate > today;
-  });
+  const previousConsultations = filteredConsultations.filter(c => c.status_info.name === 'completed');
+  const activeOrUpcoming = filteredConsultations.filter(c => c.status_info.name !== 'completed');
 
-  const pastConsultations = filteredConsultations.filter(consultation => {
-    const consultationDate = new Date(consultation.time_slot_info.date);
-    const today = new Date();
-    return consultationDate < today;
+  const todayConsultations = activeOrUpcoming.filter(c => {
+    const d = new Date(c.time_slot_info.date);
+    return d.toDateString() === todayDateStr;
+  });
+  const upcomingConsultations = activeOrUpcoming.filter(c => {
+    const start = toDateTime(c);
+    return start > now && new Date(c.time_slot_info.date).toDateString() !== todayDateStr; // future days only
   });
 
   const getStatusColor = (status: string) => {
@@ -113,14 +147,16 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
 
   const ConsultationItem = ({ consultation }: { consultation: Consultation }) => {
     const timeInfo = formatConsultationTime(consultation);
-    const counterpart = accountType === 'professional'
-      ? consultation.service_seeker_info
-      : consultation.practitioner_info;
+    const seeker = consultation.service_seeker_info;
+    const practitioner = consultation.practitioner_info;
+    const isUserPractitioner = currentUserId === practitioner.user_id;
+    const counterpart = isUserPractitioner ? seeker : practitioner;
     const canAccess = isConsultationTimeReady(consultation);
-    
+    const animate = recentlyCompleted.has(consultation.id);
+
     return (
       <div
-        className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+        className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ${animate ? 'animate-slide-fade' : ''}`}
         onClick={() => onSelectChat(consultation.id.toString())}
       >
         <Avatar className="w-12 h-12">
@@ -217,12 +253,12 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
           </div>
         )}
 
-        {/* Previous Consultations */}
-        {pastConsultations.length > 0 && (
+        {/* Previous Consultations (completed only) */}
+        {previousConsultations.length > 0 && (
           <div className="p-4">
             <h2 className="text-sm font-semibold text-gray-900 mb-3">Previous Consultations</h2>
             <div className="space-y-1">
-              {pastConsultations.map((consultation) => (
+              {previousConsultations.map((consultation) => (
                 <ConsultationItem key={consultation.id} consultation={consultation} />
               ))}
             </div>
