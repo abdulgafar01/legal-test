@@ -31,7 +31,7 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
 
             {!isLast && (
               <div
-                className={`w-20 sm:w-28 h-0.5 mx-1 transition-all ${
+                className={`w-8 sm:w-10 h-0.5 mx-1 transition-all ${
                   currentStep > index + 1 ? "bg-black" : "bg-gray-300"
                 }`}
               />

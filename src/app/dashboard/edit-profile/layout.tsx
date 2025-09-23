@@ -41,13 +41,13 @@ const EditProfileLayout = ({children}:{children:React.ReactNode}) => {
   return (
     <ProfileAuthGuard>
       <div className="flex  max-h-screen">
-     <Sidebar 
+     {/* <Sidebar 
           expand={expand} 
           // setExpand={setExpand}
           isMobile={isMobile}
           showMobileMenu={showMobileMenu}
           toggleSidebar={toggleSidebar}
-        />
+        /> */}
     <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden">
          <Navbar 
             isMobile={isMobile}
