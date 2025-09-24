@@ -18,6 +18,8 @@ import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useUpdateUserProfile } from '@/hooks/useUpdateUserProfile'
 import { useCountries } from '@/hooks/useCountries'
 import { Icon } from '@iconify/react'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 
 type FormValues = {
   full_name: string
@@ -103,7 +105,14 @@ const SettingsSeekerPage = () => {
   return (
     <div className="h-[calc(100vh-60px)] overflow-y-auto mb-3">
       <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
+        <div className="flex items-center gap-4 mb-3">
+          <Link href="/dashboard/profile" passHref className="cursor-pointer">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold text-foreground">Edit Profile</h1>
+        </div>
 
         <Card>
           <CardContent className="p-6">
@@ -191,7 +200,7 @@ const SettingsSeekerPage = () => {
               </div>
 
               <div className="pt-2">
-                <Button type="submit" variant="outline" size="lg" className="w-full rounded-3xl" disabled={isPending}>
+                <Button type="submit" variant="outline" size="lg" className="w-full rounded-3xl cursor-pointer" disabled={isPending}>
                   {isPending ? 'Updating…' : 'Update'}
                 </Button>
               </div>

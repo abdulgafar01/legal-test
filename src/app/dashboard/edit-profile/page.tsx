@@ -201,7 +201,7 @@ const EditProfile = () => {
               type="submit"
               variant="outline"
               size="lg"
-              className="w-full rounded-3xl"
+              className="w-full rounded-3xl cursor-pointer"
               disabled={isPending}
             >
               {isPending ? "Updating..." : "Update"}
