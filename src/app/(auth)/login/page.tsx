@@ -289,7 +289,7 @@ const LoginContent = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                       >
                         {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                       </button>
@@ -303,7 +303,7 @@ const LoginContent = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-4xl font-medium"
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-4xl font-medium cursor-pointer"
                 disabled={mutation.isPending}
               >
                 {mutation.isPending
