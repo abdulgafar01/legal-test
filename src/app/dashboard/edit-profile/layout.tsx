@@ -41,11 +41,6 @@ const EditProfileLayout = ({ children }: { children: React.ReactNode }) => {
     <ProfileAuthGuard>
       <div className="flex  max-h-screen">
         <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden">
-          <Navbar
-            isMobile={isMobile}
-            showMobileMenu={showMobileMenu}
-            toggleSidebar={toggleSidebar}
-          />
           <div>{children}</div>
         </main>
       </div>

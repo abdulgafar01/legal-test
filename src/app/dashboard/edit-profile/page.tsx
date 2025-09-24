@@ -94,7 +94,7 @@ const EditProfile = () => {
     <div className="h-[calc(100vh-60px)] overflow-y-auto mb-3">
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center gap-4 mb-3">
-          <Link href="/dashboard/profile" passHref>
+          <Link href="/dashboard/profile" passHref className="cursor-pointer">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>
