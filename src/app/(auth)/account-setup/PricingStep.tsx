@@ -183,7 +183,7 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
       <Button
         onClick={handleSubmit}
         disabled={!isFormValid}
-        className={`w-full mt-8 ${
+        className={`w-full mt-8 cursor-pointer ${
           isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
         }`}
       >
