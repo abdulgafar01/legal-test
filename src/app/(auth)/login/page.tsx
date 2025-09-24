@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Apple, Eye, EyeOff, Facebook, Scale } from 'lucide-react';
-import Link from 'next/link';
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { loginUser} from '@/lib/api/auth';
-import { toast } from 'sonner'; 
-import axios from 'axios';
-import { useAuth } from '@/contexts/AuthContext';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Eye, EyeOff, Scale } from "lucide-react";
+import Link from "next/link";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "@/lib/api/auth";
+import { toast } from "sonner";
+import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
 
 type FormValues = {
   email: string;
@@ -28,9 +28,11 @@ const LoginContent = () => {
 
   // Check for application submitted message
   useEffect(() => {
-    const message = searchParams.get('message');
-    if (message === 'application-submitted') {
-      toast.success('Application submitted! Please log in to check your status. ✅');
+    const message = searchParams.get("message");
+    if (message === "application-submitted") {
+      toast.success(
+        "Application submitted! Please log in to check your status. ✅"
+      );
     }
   }, [searchParams]);
 
@@ -41,186 +43,182 @@ const LoginContent = () => {
     trigger,
     setError,
     formState: { errors },
-  } = useForm<FormValues>({ mode: 'onChange' });
+  } = useForm<FormValues>({ mode: "onChange" });
 
-  const email = watch('email');
+  const email = watch("email");
 
   // Mutation for user registration
   // Using react-query for better state management and error handling
 
-      const mutation = useMutation({
-        mutationFn: async (formData: FormValues) => {
-          const payload = {
-            email: formData.email,
-            password: formData.password,
-          };
-          return loginUser(payload);
-        },
-        onSuccess: (data, variables) => {
-         
-           if (variables.email) {
-              localStorage.setItem('userEmail', variables.email);
-            }
+  const mutation = useMutation({
+    mutationFn: async (formData: FormValues) => {
+      const payload = {
+        email: formData.email,
+        password: formData.password,
+      };
+      return loginUser(payload);
+    },
+    onSuccess: (data, variables) => {
+      if (variables.email) {
+        localStorage.setItem("userEmail", variables.email);
+      }
 
-          const { tokens, user } = data.data;
-          
-          // Store tokens using AuthContext method (this updates isAuthenticated state)
-          login(tokens.access, tokens.refresh, variables.email);
+      const { tokens, user } = data.data;
 
-          // Destructure necessary info
-          const { is_profile_complete, user_type, is_email_verified } = user;
+      // Store tokens using AuthContext method (this updates isAuthenticated state)
+      login(tokens.access, tokens.refresh, variables.email);
 
-          // Conditional routing
-          if (is_email_verified === false) {
-            router.push('/verifyEmail');
+      // Destructure necessary info
+      const { is_profile_complete, user_type, is_email_verified } = user;
+
+      // Conditional routing
+      if (is_email_verified === false) {
+        router.push("/verifyEmail");
+        return;
+      }
+
+      if (is_profile_complete === true) {
+        // Check if user is a practitioner and needs verification status check
+        if (user_type === "legal_practitioner") {
+          // Check verification status with more explicit handling
+          const practitionerProfile = user.practitioner_profile;
+          const verificationStatus = practitionerProfile?.verification_status;
+
+          // Handle different verification statuses
+          if (verificationStatus === "pending") {
+            toast.info("Your practitioner application is still under review.");
+            router.push("/pending-review");
             return;
-          }
-
-        if (is_profile_complete === true) {
-            // Check if user is a practitioner and needs verification status check
-            if (user_type === 'legal_practitioner') {
-              // Check verification status with more explicit handling
-              const practitionerProfile = user.practitioner_profile;
-              const verificationStatus = practitionerProfile?.verification_status;
-              
-              // Handle different verification statuses
-              if (verificationStatus === 'pending') {
-                toast.info('Your practitioner application is still under review.');
-                router.push('/pending-review');
-                return;
-              } else if (verificationStatus === 'rejected') {
-                toast.error('Your practitioner application was not approved.');
-                router.push('/application-rejected');
-                return;
-              } else if (verificationStatus === 'under_review') {
-                toast.info('Your practitioner application is currently being reviewed.');
-                router.push('/pending-review');
-                return;
-              } else if (verificationStatus === 'verified') {
-                // Continue to dashboard
-              } else {
-                // If no verification status or unknown status, assume pending
-                toast.info('Your practitioner application is being processed.');
-                router.push('/pending-review');
-                return;
-              }
-            }
-            
-            // Only show success message if we're actually going to dashboard
-            toast.success('Login successful! 🎉');
-            router.push('/dashboard');
+          } else if (verificationStatus === "rejected") {
+            toast.error("Your practitioner application was not approved.");
+            router.push("/application-rejected");
+            return;
+          } else if (verificationStatus === "under_review") {
+            toast.info(
+              "Your practitioner application is currently being reviewed."
+            );
+            router.push("/pending-review");
+            return;
+          } else if (verificationStatus === "verified") {
+            // Continue to dashboard
           } else {
-            if (user_type === 'service_seeker') {
-              router.push('/onboarding/service-seekers');
-            } else if (user_type === 'legal_practitioner') {
-              router.push('/onboarding/professionals');
-            }
-        
-
-             else {
-              // Optional: handle unknown user_type
-              toast.error('Unknown user type. Cannot continue.');
-            }
-          }
-          
-        },
-
-        
-      onError: (err: unknown) => {
-          if (!axios.isAxiosError(err)) {
-            toast.error('Unexpected error occurred. Please try again.');
+            // If no verification status or unknown status, assume pending
+            toast.info("Your practitioner application is being processed.");
+            router.push("/pending-review");
             return;
           }
+        }
+
+        // Only show success message if we're actually going to dashboard
+        toast.success("Login successful! 🎉");
+        router.push("/dashboard");
+      } else {
+        if (user_type === "service_seeker") {
+          router.push("/onboarding/service-seekers");
+        } else if (user_type === "legal_practitioner") {
+          router.push("/onboarding/professionals");
+        } else {
+          // Optional: handle unknown user_type
+          toast.error("Unknown user type. Cannot continue.");
+        }
+      }
+    },
+
+    onError: (err: unknown) => {
+      if (!axios.isAxiosError(err)) {
+        toast.error("Unexpected error occurred. Please try again.");
+        return;
+      }
       if (axios.isAxiosError(err)) {
         // Handle network errors first
-        if (err.message === 'Network Error') {
-          toast.error('Network error - please check your internet connection');
+        if (err.message === "Network Error") {
+          toast.error("Network error - please check your internet connection");
           return;
         }
 
-  const responseData = err.response?.data as {
-    error?: {
-      details?: Record<string, string | string[]>;
-    };
-  };
+        const responseData = err.response?.data as {
+          error?: {
+            details?: Record<string, string | string[]>;
+          };
+        };
 
-  const apiError = responseData?.error;
-  const details = apiError?.details || {};
-  const detail = details?.detail;
+        const apiError = responseData?.error;
+        const details = apiError?.details || {};
+        const detail = details?.detail;
 
-  if (detail) {
-    toast.error(detail);
-  }
+        if (detail) {
+          toast.error(detail);
+        }
 
-  if (details?.email) {
-    const msg = Array.isArray(details.email)
-      ? details.email.join(' ')
-      : details.email;
+        if (details?.email) {
+          const msg = Array.isArray(details.email)
+            ? details.email.join(" ")
+            : details.email;
 
-    setError('email', {
-      type: 'server',
-      message: msg,
-    });
+          setError("email", {
+            type: "server",
+            message: msg,
+          });
 
-    toast.error(msg);
-  }
+          toast.error(msg);
+        }
 
-  if (details?.password) {
-    const msg = Array.isArray(details.password)
-      ? details.password.join(' ')
-      : details.password;
+        if (details?.password) {
+          const msg = Array.isArray(details.password)
+            ? details.password.join(" ")
+            : details.password;
 
-    setError('password', {
-      type: 'server',
-      message: msg,
-    });
+          setError("password", {
+            type: "server",
+            message: msg,
+          });
 
-    toast.error(msg);
-  }
+          toast.error(msg);
+        }
 
-  
+        // Optional: catch-all if no specific message is shown
+        if (
+          !detail &&
+          !details?.email &&
+          !details?.password &&
+          !details?.confirm_password
+        ) {
+          toast.error("Server did not return a specific error message.");
+        }
+      }
+    },
+  });
 
-  // Optional: catch-all if no specific message is shown
-  if (!detail && !details?.email && !details?.password && !details?.confirm_password) {
-    toast.error('Server did not return a specific error message.');
-  }
-}
-
-  }
-
-      });
-
-
-// Function to handle form submission
+  // Function to handle form submission
   // This will be called when the user clicks "Sign Up" after entering their email
 
-      const onSubmit = async (data: FormValues) => {
-        // If the email field is not valid, we don't proceed to show password fields
-        
-         const isEmailValid = await trigger('email');
-          if (!isEmailValid || errors.email) return;
-          
-        if (!showPasswordField) {
-          setShowPasswordField(true);
-          return;
-        }
+  const onSubmit = async (data: FormValues) => {
+    // If the email field is not valid, we don't proceed to show password fields
 
-        try {
-          await mutation.mutateAsync(data);
-        } catch (error) {
-          // Error is already handled in the mutation's onError
-        }
-      };
+    const isEmailValid = await trigger("email");
+    if (!isEmailValid || errors.email) return;
+
+    if (!showPasswordField) {
+      setShowPasswordField(true);
+      return;
+    }
+
+    try {
+      await mutation.mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
       style={{
         backgroundImage: "url('/background.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
@@ -228,7 +226,7 @@ const LoginContent = () => {
       <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-6xl mx-auto relative z-10">
         <div className="flex-1 text-center lg:text-left max-w-xl">
           <Scale className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
-           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Welcome Back.
             <br />
             Access Legal Services
@@ -236,52 +234,65 @@ const LoginContent = () => {
             Seamlessly.
           </h1>
           <p className="text-xl text-gray-200 max-w-lg">
-            Login to your account and connect with legal professionals instantly.
+            Login to your account and connect with legal professionals
+            instantly.
           </p>
         </div>
 
         <div className="flex-1 max-w-md w-full">
           <div className="bg-white rounded-2xl py-6 px-8 shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Login to your account</h2>
-           <p className="text-gray-600 mb-4">Your legal access starts here.</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Login to your account
+            </h2>
+            <p className="text-gray-600 mb-4">Your legal access starts here.</p>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
                   <Input
                     type="email"
                     placeholder="Enter your email"
-                    {...register('email', {
-                      required: 'Email is required',
+                    {...register("email", {
+                      required: "Email is required",
                       pattern: {
                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Invalid email address',
+                        message: "Invalid email address",
                       },
                     })}
-                    onBlur={() => trigger('email')}
-                    className={`w-full ${errors.email ? 'border-red-500' : 'border-yellow-400'}`}
+                    onBlur={() => trigger("email")}
+                    className={`w-full ${
+                      errors.email ? "border-red-500" : "border-yellow-400"
+                    }`}
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
               ) : (
-                <p className="text-sm font-medium text-gray-700 mb-1">{email}</p>
+                <p className="text-sm font-medium text-gray-700 mb-1">
+                  {email}
+                </p>
               )}
 
               {showPasswordField && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Password
+                    </label>
                     <div className="relative">
                       <Input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        {...register('password', {
-                          required: 'Password is required',
+                        {...register("password", {
+                          required: "Password is required",
                           minLength: {
                             value: 8,
-                            message: 'Password must be at least 8 characters',
+                            message: "Password must be at least 8 characters",
                           },
                         })}
                         className="w-full pr-10"
@@ -291,11 +302,17 @@ const LoginContent = () => {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                       >
-                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                        {showPassword ? (
+                          <Eye size={18} />
+                        ) : (
+                          <EyeOff size={18} />
+                        )}
                       </button>
                     </div>
                     {errors.password && (
-                      <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.password.message}
+                      </p>
                     )}
                   </div>
                 </>
@@ -307,15 +324,20 @@ const LoginContent = () => {
                 disabled={mutation.isPending}
               >
                 {mutation.isPending
-                  ? 'Loading...'
+                  ? "Loading..."
                   : showPasswordField
-                  ? 'Sign in'
-                  : 'Continue'}
+                  ? "Sign in"
+                  : "Continue"}
               </Button>
 
               <div className="text-center">
-                <span className="text-gray-500">You do not have an account? </span>
-                <Link href="/account" className="text-blue-600 hover:underline font-medium">
+                <span className="text-gray-500">
+                  You do not have an account?{" "}
+                </span>
+                <Link
+                  href="/account"
+                  className="text-blue-600 hover:underline font-medium"
+                >
                   Sign up
                 </Link>
               </div>
@@ -349,11 +371,11 @@ const LoginContent = () => {
               </div> */}
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                By signing up, you agree to our{' '}
+                By signing up, you agree to our{" "}
                 <Link href="/terms" className="underline">
                   Terms and Conditions of Use
-                </Link>{' '}
-                and our{' '}
+                </Link>{" "}
+                and our{" "}
                 <Link href="/privacy" className="underline">
                   Privacy Policy
                 </Link>
