@@ -34,7 +34,6 @@ const totalSteps = 4;
 const Page: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
-
   const [formData, setFormData] = useState<FormData>({
     profileDetails: {
       fullName: '',

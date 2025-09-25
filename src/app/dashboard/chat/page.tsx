@@ -148,7 +148,7 @@ const Page = () => {
   }, [guestId, thread, search, newChat, creatingThread])
 
   return (
-    <div className='flex-1 flex flex-col items-center justify-center px-4 pb-8 text-black h-[80vh] overflow-hidden'>
+    <div className='flex-1 flex flex-col items-center justify-center px-4 text-black h-[80vh] overflow-hidden'>
       {messages.length === 0 ? (
         <div className='flex items-center gap-3'>
           <p className='text-2xl font-medium'>How can i be of help today?</p>
