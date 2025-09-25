@@ -15,7 +15,7 @@ const Page = () => {
   };
 
   return (
-      <div className="flex flex-1  h-[calc(100vh-60px)] overflow-hidden">
+      <div className="                                                                                                                                                                                                                                                                                                       h-[calc(100vh-60px)] overflow-hidden">
         {/* Consultation List - Always visible on desktop, conditional on mobile */}
         <div className={`${selectedChat ? 'hidden lg:block' : 'block'} w-full lg:w-96 border-r border-yellow-200 overflow-y-auto`}>
           <ConsultationDashboard onSelectChat={handleSelectChat} />
@@ -26,7 +26,7 @@ const Page = () => {
           <div className="flex-1 flex flex-col overflow-hidden">
             <ChatInterface 
               selectedChat={selectedChat}
-              onBack={handleBackToList}
+              onBack={handleBackToList}                                                                          
             />
           </div>
         )}

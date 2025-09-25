@@ -146,7 +146,7 @@ const Page = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-60px)] overflow-y-auto mb-3">
+    <div className="h-[calc(100vh-90px)] overflow-y-auto mb-3">
       {
         user.data.user_type === 'legal_practitioner'  ?
         (
