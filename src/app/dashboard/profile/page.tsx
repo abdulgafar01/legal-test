@@ -190,8 +190,7 @@ const Page = () => {
               Profile Account
             </h1>
           </div>
-
-          <div className="flex flex-col gap-4 p-3">
+    <div className="flex flex-col gap-4 p-3">
             {/* Profile Info */}
 
             <div className="max-w-md rounded-2xl border border-gray-200 bg-[#F6F6F6]">
