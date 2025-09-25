@@ -28,7 +28,6 @@ import { PractitionerDetail } from '@/lib/types';
 import { TimeSlot } from '@/lib/api/consultations';
 import TimeSlotModal from '@/components/booking/TimeSlotModal';
 import { toast } from 'sonner';
-import Image from 'next/image';
 
 // Local interface for the modal that extends the base PractitionerDetail
 interface PractitionerForModal extends Omit<PractitionerDetail, 'available_slots'> {
@@ -358,7 +357,7 @@ export default function PractitionerDetailPage() {
                   {practitioner.is_available_for_booking ? (
                     <Button 
                       onClick={handleBookConsultation}
-                      className="w-full md:w-auto bg-black text-white hover:bg-gray-800"
+                      className="w-full md:w-auto bg-black text-white hover:bg-gray-800 cursor-pointer"
                     >
                       <Calendar className="h-4 w-4 mr-2" />
                       Book Consultation

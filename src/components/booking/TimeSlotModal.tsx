@@ -240,7 +240,7 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
           {/* Practitioner Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              <div className="w-20 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
                 {practitioner.user_info.first_name[0]}{practitioner.user_info.last_name[0]}
               </div>
               <div>
@@ -274,7 +274,7 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
                   key={date}
                   variant={selectedDate === date ? "default" : "outline"}
                   onClick={() => handleDateSelect(date)}
-                  className="h-auto p-3 text-left"
+                  className="h-auto p-3 text-left cursor-pointer hover:bg-gray-300"
                 >
                   <div>
                     <div className="font-medium">
@@ -300,7 +300,7 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
                     variant={selectedTimeSlot?.id === slot.id ? "default" : "outline"}
                     onClick={() => handleTimeSlotSelect(slot)}
                     disabled={slot.is_booked}
-                    className="h-auto p-2"
+                    className="h-auto p-2 cursor-pointer hover:bg-gray-300"
                   >
                     <div className="text-center">
                       <div className="text-sm font-medium">
@@ -364,7 +364,7 @@ const TimeSlotModal: React.FC<TimeSlotModalProps> = ({
             <Button
               onClick={handleBooking}
               disabled={!selectedTimeSlot || isBooking}
-              className="flex-1"
+              className="flex-1 cursor-pointer"
             >
               {isBooking ? 'Booking...' : 'Confirm Booking'}
             </Button>
