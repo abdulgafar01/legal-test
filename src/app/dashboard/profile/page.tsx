@@ -14,7 +14,6 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { useCountries } from "@/hooks/useCountries";
 
