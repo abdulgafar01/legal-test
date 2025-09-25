@@ -96,7 +96,7 @@ const LawyerCard = ({ lawyer }: LawyerCardProps) => {
         <div className="flex flex-col items-end space-y-2">
           {lawyer.status === "available" ? (
             <Button 
-              className="bg-black text-white hover:bg-gray-800"
+              className="bg-black text-white hover:bg-gray-800 cursor-pointer"
               onClick={handleBookNow}
             >
               Book Now
