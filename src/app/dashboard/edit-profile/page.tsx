@@ -16,10 +16,11 @@ import {
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCurrentUser, useProfileImage } from "@/hooks/useCurrentUser";
 import { useUpdateUserProfile } from "@/hooks/useUpdateUserProfile";
 import { useCountries } from "@/hooks/useCountries";
 import { UploadPhotoModal } from "@/components/UploadPhotoModal";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface EditProfileForm {
   first_name: string;
@@ -39,6 +40,8 @@ const EditProfile = () => {
   const { mutate: updateProfile, isPending } = useUpdateUserProfile();
   const { data: countries = [] } = useCountries();
   const [open, setOpen] = useState<boolean>(false);
+  const { data: profileImage } = useProfileImage();
+  console.log("image: ", profileImage);
 
   const { register, setValue, watch, handleSubmit, reset } =
     useForm<EditProfileForm>({
@@ -113,9 +116,17 @@ const EditProfile = () => {
           >
             {/* Profile photo placeholder */}
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
-                {watch("first_name")?.charAt(0) || "?"}
-              </div>
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src={profileImage?.data.profile_image_url}
+                  alt="User avatar"
+                />
+                <AvatarFallback className="bg-amber-200 text-amber-900 font-medium p-2 text-lg">
+                  {user?.data?.first_name?.slice(0, 1).toUpperCase() || ""}
+                  {user?.data?.last_name?.slice(0, 1).toUpperCase() || ""}
+                </AvatarFallback>
+              </Avatar>
+
               <div>
                 <h2 className="text-sm font-semibold text-foreground">
                   {watch("first_name")} {watch("last_name")}

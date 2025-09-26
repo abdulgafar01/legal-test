@@ -170,6 +170,16 @@ export const getCurrentUser = async () => {
   return response.data;
 };
 
+export const getUserProfileImage = async () => {
+  const response = await instance.get(API_ENDPOINTS.profile_image, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return response.data;
+}
+
 // REFRESH TOKEN
 // This function is used to refresh the access token using the refresh token
 export const refreshToken = async (refresh: string) => {

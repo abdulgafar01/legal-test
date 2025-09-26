@@ -27,6 +27,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [fileName, setFileName] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -56,6 +57,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
 
   const handleFile = (file: File) => {
     setFileName(file.name);
+    setSelectedFile(file); // Store the file
     setUploadState("uploading");
     setUploadProgress(0);
 
@@ -83,21 +85,20 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
     setUploadState("idle");
     setUploadProgress(0);
     setFileName("");
+    setSelectedFile(null); // Clear the file
   };
 
   const { handleSubmit, setError } = useForm<DocumentUploadInterface>({
     mode: "onChange",
-    defaultValues: {
-      file: "",
-      description: "",
-    },
+    // defaultValues: {
+    //   profile_image: "",
+    // },
   });
 
   const uploadMutation = useMutation({
     mutationFn: async (formData: DocumentUploadInterface) => {
       const payload = {
-        file: formData.file,
-        description: formData.description,
+        profile_image: formData.profile_image,
       };
       return uploadDocument(payload);
     },
@@ -131,25 +132,12 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
           toast.error(detail);
         }
 
-        if (details?.email) {
-          const msg = Array.isArray(details.email)
-            ? details.email.join(" ")
-            : details.email;
+        if (details?.profile_image) {
+          const msg = Array.isArray(details.profile_image)
+            ? details.profile_image.join(" ")
+            : details.profile_image;
 
-          setError("file", {
-            type: "server",
-            message: msg,
-          });
-
-          toast.error(msg);
-        }
-
-        if (details?.password) {
-          const msg = Array.isArray(details.password)
-            ? details.password.join(" ")
-            : details.password;
-
-          setError("description", {
+          setError("profile_image", {
             type: "server",
             message: msg,
           });
@@ -158,34 +146,36 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
         }
 
         // Optional: catch-all if no specific message is shown
-        if (
-          !detail &&
-          !details?.email &&
-          !details?.password &&
-          !details?.confirm_password
-        ) {
+        if (!detail && !details?.profile_image) {
           toast.error("Server did not return a specific error message.");
         }
       }
     },
   });
 
-  const onSubmit = (data: DocumentUploadInterface) => {
-    uploadMutation.mutate(data, {
-      onSuccess: (res) => {
-        onOpenChange(false);
-        toast.success(res.message || "File upload successful");
-      },
-      onError: (error: unknown) => {
-        if (error instanceof AxiosError) {
-          toast.error("File upload failed");
-        } else if (error instanceof Error) {
-          toast.error(error.message);
-        } else {
-          toast.error("An unexpected error occurred");
-        }
-      },
-    });
+  const onSubmit = () => {
+    if (!selectedFile) {
+      toast.error("Please select a file to upload.");
+      return;
+    }
+    uploadMutation.mutate(
+      { profile_image: selectedFile },
+      {
+        onSuccess: (res) => {
+          onOpenChange(false);
+          toast.success(res.message || "File upload successful");
+        },
+        onError: (error: unknown) => {
+          if (error instanceof AxiosError) {
+            console.log("File upload failed");
+          } else if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error("An unexpected error occurred");
+          }
+        },
+      }
+    );
   };
 
   return (
@@ -216,7 +206,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 drop
               </p>
               <p className="text-xs text-gray-400 mb-4">
-                PDF, JPG, JPEG, PNG (max. 5MB)
+                JPG, JPEG, PNG (max. 5MB)
               </p>
               <p className="text-xs text-gray-400 mb-4">OR</p>
               <Button
@@ -231,7 +221,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 type="file"
                 className="hidden"
                 onChange={handleFileInput}
-                accept=".pdf,.jpg,.jpeg,.png"
+                accept=".jpg,.jpeg,.png"
               />
             </div>
           )}
@@ -280,11 +270,11 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
             <div className="flex justify-end">
               <Button
                 className={`bg-black hover:bg-gray-800 text-white ${
-                  uploadState === "success" || uploadMutation.isPending
+                  uploadMutation.isPending
                     ? "cursor-not-allowed"
                     : "cursor-pointer"
                 }`}
-                disabled={uploadState === "success" || uploadMutation.isPending}
+                disabled={uploadMutation.isPending}
                 type="submit"
               >
                 {uploadMutation.isPending ? "Uploading..." : "+ Upload File"}
