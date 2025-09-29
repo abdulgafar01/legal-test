@@ -146,4 +146,10 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: #000 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
-  
+
+/* Hide shadcn default dialog close button inside dialogs using .no-close */
+.no-close [data-dialog-close],
+.no-close [data-slot="dialog-close"],
+.no-close [aria-label="Close"] {
+  display: none !important;
+}

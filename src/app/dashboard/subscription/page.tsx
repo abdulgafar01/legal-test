@@ -81,7 +81,7 @@ export default function Subscription() {
 
         {/* Current subscription (if any) */}
         {currentSub && (
-          <div className="max-w-xl mx-auto mb-6">
+          <div className="max-w-xl mb-6">
             <div className="p-4 bg-white rounded-2xl shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
@@ -96,19 +96,19 @@ export default function Subscription() {
         )}
 
         {/* Premium / Upgrade card */}
-        <div className="bg-white max-w-3xl mx-auto rounded-2xl overflow-hidden mb-8">
-          <div className="p-6 bg-black text-white">
-            <div className="max-w-2xl mx-auto text-center">
-              <Crown className="w-12 h-12 mx-auto mb-4 text-legal-gold" />
+        <div className="bg-white max-w-xl  rounded-2xl overflow-hidden mb-8 h-[650px]">
+          <div className="p-6 bg-black text-white min-h-2/5">
+            <div className="max-w-xl mx-auto text-center ">
+              <Crown className="w-12 h-12 mx-auto mb-4 text-gray-200" />
               <h2 className="text-3xl font-bold mb-2">Go premium</h2>
               <p className="text-gray-300">Level up productivity and creativity with expanded access</p>
             </div>
           </div>
 
-          <div className="p-6">
+          <div className=" bg-[#F4F5F9] p-6 relative min-h-2/3">
             {/* Pricing plans */}
-            <div className="flex justify-center mb-8">
-              <div className="flex gap-4 p-2 bg-black/70 rounded-lg text-white">
+            <div className="flex justify-center  absolute left-1/2 -translate-x-1/2 -top-10">
+              <div className="flex gap-4 p-2 bg-white rounded-lg text-black">
                 {loadingPlans && <div className="text-sm px-4 py-2">Loading...</div>}
                 {plansError && <div className="text-sm px-4 py-2 text-red-300">Error loading plans: {plansError.message}</div>}
                 {!loadingPlans && !plansError && Array.isArray(plans) && plans
@@ -121,15 +121,15 @@ export default function Subscription() {
                     return (
                       <div
                         key={plan.id}
-                        className={`relative p-4 rounded-lg cursor-pointer transition-all min-w-[110px] ${active ? 'bg-white/30 text-legal-dark' : 'hover:bg-white/20'}`}
+                        className={`relative p-4 rounded-lg cursor-pointer transition-all lg:min-w-[110px] md:w-[95px] w-[80px] ${active ? 'bg-[#fce876] text-legal-dark' : 'hover:bg-black/20'}`}
                         onClick={() => handleSelectPlan(plan)}
                       >
                         {recommended && (
-                          <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-legal-gold text-legal-dark text-[10px] tracking-wide">RECOMMENDED</Badge>
+                          <Badge className="absolute top-0 left-1/2 -translate-x-1/2 bg-legal-gold text-legal-dark text-[10px] tracking-wide">RECOMMENDED</Badge>
                         )}
                         <div className="text-center">
                           <div className="text-xs font-medium mb-1 whitespace-nowrap">{label}</div>
-                          <div className="text-lg font-bold">{priceDisplay(plan)}</div>
+                          <div className="md:text-lg text-sm font-bold">{priceDisplay(plan)}</div>
                         </div>
                       </div>
                     );
@@ -144,7 +144,7 @@ export default function Subscription() {
             </div>
 
             {/* Features & Action */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-xl mt-20">
               <div className="space-y-4 mb-6">
                 {features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -170,18 +170,20 @@ export default function Subscription() {
                 )}
               </div>
             </div>
+
           </div>
+
         </div>
       </div>
 
       {/* Payment Summary Modal */}
       <Dialog open={showPaymentSummary} onOpenChange={setShowPaymentSummary}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-sm no-close">
           <DialogTitle className="sr-only">Payment Summary</DialogTitle>
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold">Payment Summary</h3>
-              <Button variant="ghost" size="icon" onClick={() => setShowPaymentSummary(false)}>
+              <Button variant="ghost" size="icon" onClick={() => setShowPaymentSummary(false)} className="rounded-full cursor-pointer">
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -213,10 +215,10 @@ export default function Subscription() {
 
       {/* Success Modal */}
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md no-close">
           <DialogTitle className="sr-only">Payment Successful</DialogTitle>
           <div className="p-6 text-center">
-            <Button variant="ghost" size="icon" className="absolute top-4 right-4" onClick={() => setShowSuccess(false)}>
+            <Button variant="ghost" size="icon" className="absolute top-4 right-4 cursor-pointer" onClick={() => setShowSuccess(false)}>
               <X className="w-5 h-5" />
             </Button>
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
