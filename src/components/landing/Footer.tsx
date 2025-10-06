@@ -1,9 +1,8 @@
-import Link from 'next/link';
 import MotionSection from './MotionSection';
 
 export default function Footer(){
   return (
-  <footer className="relative bg-[#FEF7D4] border-t border-gray-200 font-jost overflow-hidden">
+  <footer className="relative bg-[#FEF7D4] border-t border-gray-200 font-[family-name:var(--font-jost)] overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-[#FEF7D4] via-[#FEF7D4]/80 to-[#FEF7D4] opacity-60 pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-4 gap-10">
         <MotionSection>

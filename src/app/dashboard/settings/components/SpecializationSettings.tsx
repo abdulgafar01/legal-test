@@ -100,7 +100,7 @@ export const SpecializationSettings = ({ profile }: SpecializationSettingsProps)
   const availableSpecializations = safeSpecializations.filter((spec) => !used.has(spec.name));
 
   return (
-    <div className="h-full overflow-y-auto space-y-6 pr-2">
+    <div className="h-full overflow-y-auto space-y-6 pr-2 pt-4 pb-20">
       {/* Current Specializations */}
       <Card>
         <CardHeader>

@@ -90,9 +90,6 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
 
   const { handleSubmit, setError } = useForm<DocumentUploadInterface>({
     mode: "onChange",
-    // defaultValues: {
-    //   profile_image: "",
-    // },
   });
 
   const uploadMutation = useMutation({
