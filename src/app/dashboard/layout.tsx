@@ -48,13 +48,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           showMobileMenu={showMobileMenu}
           toggleSidebar={toggleSidebar}
         />
-        <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden">
+  <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden min-h-0">
           <Navbar
             isMobile={isMobile}
             showMobileMenu={showMobileMenu}
             toggleSidebar={toggleSidebar}
           />
-          <div>{children}</div>
+          <div className="flex-1 overflow-hidden">{children}</div>
         </main>
       </div>
     </AuthGuard>
