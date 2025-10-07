@@ -131,7 +131,7 @@ export default function Subscription() {
         )}
 
         {/* Premium / Upgrade card */}
-        <div className="bg-white max-w-xl  rounded-2xl overflow-hidden mb-8 h-[650px] mx-auto">
+        <div className="bg-white max-w-xl  rounded-2xl overflow-hidden mb-8 h-[650px]">
           <div className="p-6 bg-black text-white min-h-2/5">
             <div className="max-w-xl mx-auto text-center ">
               <Crown className="w-12 h-12 mx-auto mb-4 text-gray-200" />
