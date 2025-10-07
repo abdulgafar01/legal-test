@@ -84,7 +84,7 @@ export default function Pricing(){
   },[]);
 
   return (
-  <section id="pricing" className="relative py-28 bg-gradient-to-b from-white via-[#FEF7D4]/40 to-white font-[family-name:var(--font-jost)] border-t border-gray-100 overflow-hidden">
+  <section id="pricing" className="relative py-28 bg-gradient-to-b from-white via-[#FEF7D4]/40 to-white font-jost border-t border-gray-100 overflow-hidden">
       <DividerWave />
       <div className="relative max-w-7xl mx-auto px-6">
         <MotionSection className="text-center mb-14">

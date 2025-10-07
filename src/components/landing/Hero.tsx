@@ -6,7 +6,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 export default function Hero(){
   return (
-  <section id="home" className="relative bg-white pt-20 pb-32 overflow-hidden font-[family-name:var(--font-jost)]">
+  <section id="home" className="relative bg-white pt-20 pb-32 overflow-hidden font-jost">
       <div className="absolute inset-x-0 -top-40 -z-10 h-64 bg-gradient-to-b from-yellow-50 to-transparent" />
       <GradientBlob className="w-80 h-80 bg-[#BE9C05]/30 -top-10 -left-10" />
       <GradientBlob className="w-96 h-96 bg-[#FEF7D4] bottom-0 -right-10" />
