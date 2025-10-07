@@ -74,8 +74,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   );
 
   const toggleTooltipClass = clsx(
-    "absolute w-max opacity-0 group-hover:opacity-100 transition bg-amber-200 text-white text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none",
-    expand ? "left-1/2 -translate-x-1/2 top-12" : "-top-12 left-0"
+    "absolute w-max opacity-0 group-hover:opacity-100 transition bg-amber-200 text-black text-sm px-3 py-2 rounded-lg shadow-lg pointer-events-none",
+    expand ? "left-41 top-19" : "top-9 left-5"
   );
 
   return (
@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               "cursor-pointer transition-all duration-300 rounded-lg",
               isMobile
                 ? "p-2 hover:bg-amber-100"
-                : "group relative flex items-center justify-center hover:bg-gray-500/20 h-9 w-9"
+                : "group  flex items-center justify-center hover:bg-gray-500/20 h-9 w-9"
             )}
           >
             {isMobile ? (
