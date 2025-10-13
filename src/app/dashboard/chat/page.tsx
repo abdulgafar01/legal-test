@@ -199,8 +199,8 @@ const Page = () => {
   const showTrailingThinking = isAwaitingAssistant && !hasStreamingPlaceholder
 
   return (
-    <div className='flex h-full w-full justify-center px-4 pb-6 pt-6 text-black min-h-0'>
-      <div className='flex w-full max-w-2xl flex-1 flex-col min-h-0'>
+    <div className='flex h-full w-full justify-center px-4 pb-1 pt-6 text-black min-h-0'>
+      <div className='flex w-full max-w-3xl flex-1 flex-col min-h-0'>
         <div className='flex-1 overflow-y-auto pr-2'>
           {messages.length === 0 ? (
             <div className='flex h-full items-center justify-center'>
