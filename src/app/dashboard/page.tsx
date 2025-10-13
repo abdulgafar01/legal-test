@@ -250,7 +250,7 @@ const ExplorePage = () => {
 
   return (
     <div className="flex flex-1 mx-auto h-screen">
-      <div className="overflow-y-auto w-full h-full p-8">
+      <div className="overflow-y-auto w-full h-full px-8 pb-20 pt-8">
         <h1 className="text-3xl font-semibold text-gray-900 mb-6">Explore</h1>
         
         {/* Search Bar */}

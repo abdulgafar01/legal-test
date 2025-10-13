@@ -157,7 +157,7 @@ export default function ArticlePage() {
 
   return (
     <div className="h-[calc(100vh-60px)] overflow-y-auto">
-      <div className="max-w-4xl mx-auto p-8">
+      <div className="max-w-5xl mx-auto p-8 pb-20">
         {/* Back Button */}
         <Button
           variant="ghost"
