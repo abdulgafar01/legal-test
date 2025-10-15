@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ApiService } from '@/config/apiService';
-import { ChevronLeft, ChevronRight, Clock, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ApiService } from "@/config/apiService";
+import { ChevronLeft, ChevronRight, Clock, RefreshCcw, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface TimeSlot {
   id?: number;
@@ -39,46 +40,75 @@ const AvailabilityCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [availability, setAvailability] = useState<AvailabilityData>({
     specific_dates: [],
-    recurring: []
+    recurring: [],
   });
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [showAddSlot, setShowAddSlot] = useState(false);
   const [showAddRecurring, setShowAddRecurring] = useState(false);
-  const [newSlotTime, setNewSlotTime] = useState({ start: '', end: '' });
+  const [newSlotTime, setNewSlotTime] = useState({ start: "", end: "" });
 
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  // For managing multiple recurring slots for a selected day in the modal
+  const [recurringModalSlots, setRecurringModalSlots] = useState<
+    Array<{ id?: number; start: string; end: string }>
+  >([]);
+
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  useEffect(() => {
-    fetchAvailability();
-  }, []);
+  
 
-  const fetchAvailability = async () => {
+  const fetchAvailability = useCallback(async () => {
     try {
       setLoading(true);
+      setFetchError(null);
       const [availabilityRes, recurringRes] = await Promise.all([
         ApiService.getAvailability(),
-        ApiService.getRecurringAvailability()
+        ApiService.getRecurringAvailability(),
       ]);
-      
-      console.log('🔍 Availability API Response:', availabilityRes.data);
-      console.log('🔍 Recurring API Response:', recurringRes.data);
-      
+
+      console.log("🔍 Availability API Response:", availabilityRes.data);
+      console.log("🔍 Recurring API Response:", recurringRes.data);
+
       setAvailability({
         specific_dates: availabilityRes.data.results || [],
-        recurring: recurringRes.data.results || []
+        recurring: recurringRes.data.results || [],
       });
     } catch (error) {
-      console.error('Error fetching availability:', error);
+      console.error("Error fetching availability:", error);
+      toast.error("Error fetching availability");
+      setFetchError(String(getErrorMessage("Error: Failed to load availability.")));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAvailability()
+  }, [fetchAvailability])
 
   const getCalendarDays = () => {
     const year = currentDate.getFullYear();
@@ -88,7 +118,7 @@ const AvailabilityCalendar: React.FC = () => {
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    const days = [];
+    const days: Array<Date | null> = [];
 
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
@@ -104,15 +134,33 @@ const AvailabilityCalendar: React.FC = () => {
   };
 
   const formatDate = (date: Date): string => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
-    // Convert JavaScript day of week (0=Sunday) to Django day of week (0=Monday)
+  // Convert JavaScript day of week (0=Sunday) to Django day of week (0=Monday)
   const jsToDjangoDayOfWeek = (jsDay: number): number => {
     return jsDay === 0 ? 6 : jsDay - 1;
   };
 
-  // Convert Django day of week (0=Monday) to JavaScript day of week (0=Sunday)  
+  const getErrorMessage = (error: unknown, fallback = "An error occurred") => {
+    if (!error) return fallback;
+
+    if (typeof error === "string") return error;
+
+    if (typeof error === "object" && error !== null) {
+      const errObj = error as Record<string, unknown>;
+      const resp = errObj["response"] as Record<string, unknown> | undefined;
+      const message = errObj["message"] as string | undefined;
+      const data = resp?.["data"] as Record<string, unknown> | undefined;
+      const detail = data?.["detail"] as string | undefined;
+      const dataMessage = data?.["message"] as string | undefined;
+      return detail || dataMessage || message || fallback;
+    }
+
+    return fallback;
+  };
+
+  // Convert Django day of week (0=Monday) to JavaScript day of week (0=Sunday)
   const djangoToJsDayOfWeek = (djangoDay: number): number => {
     return djangoDay === 6 ? 0 : djangoDay + 1;
   };
@@ -120,50 +168,50 @@ const AvailabilityCalendar: React.FC = () => {
   const getAvailabilityForDate = (date: Date) => {
     // Use timezone-safe date string generation
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const dateStr = `${year}-${month}-${day}`;
-    
+
     const jsDay = date.getDay();
     const djangoDay = jsToDjangoDayOfWeek(jsDay);
     // Check specific date availability first
     const specificAvailability = availability.specific_dates.find(
       (slot: SpecificAvailability) => slot.date === dateStr
     );
-    
+
     if (specificAvailability) {
       return {
         hasAvailability: specificAvailability.is_available,
         isSpecific: true,
-        specificData: specificAvailability
+        specificData: specificAvailability,
       };
     }
-    
+
     // Check recurring availability using Django day numbering
     const recurringAvailability = availability.recurring.filter(
-      (slot: RecurringAvailability) => 
-      slot.day_of_week === djangoDay && slot.is_active
+      (slot: RecurringAvailability) =>
+        slot.day_of_week === djangoDay && slot.is_active
     );
-    
+
     if (recurringAvailability.length > 0) {
       // For recurring availability, assume available if time slots exist
       return {
         hasAvailability: true,
         isSpecific: false,
-        recurringData: recurringAvailability
+        recurringData: recurringAvailability,
       };
     }
-    
+
     return {
       hasAvailability: false,
-      isSpecific: false
+      isSpecific: false,
     };
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
+  const navigateMonth = (direction: "prev" | "next") => {
+    setCurrentDate((prev) => {
       const newDate = new Date(prev);
-      if (direction === 'prev') {
+      if (direction === "prev") {
         newDate.setMonth(prev.getMonth() - 1);
       } else {
         newDate.setMonth(prev.getMonth() + 1);
@@ -173,6 +221,11 @@ const AvailabilityCalendar: React.FC = () => {
   };
 
   const handleDateClick = (date: Date) => {
+    if (fetchError) {
+      toast.warning("Cannot open editor until availability is loaded. Please retry.");
+      return;
+    }
+
     setSelectedDate(formatDate(date));
     setShowAddSlot(true);
   };
@@ -185,25 +238,26 @@ const AvailabilityCalendar: React.FC = () => {
         date: selectedDate,
         is_available: true,
         is_all_day: false,
-        notes: '',
+        notes: "",
         time_slots: [
           {
-            start_time: newSlotTime.start + ':00', // Add seconds
-            end_time: newSlotTime.end + ':00',     // Add seconds
-            booking_notes: ''
-          }
-        ]
+            start_time: newSlotTime.start + ":00", // Add seconds
+            end_time: newSlotTime.end + ":00", // Add seconds
+            booking_notes: "",
+          },
+        ],
       };
 
-      console.log('🔍 Sending availability data:', slotData);
+      console.log("🔍 Sending availability data:", slotData);
       await ApiService.updateAvailability(slotData);
       await fetchAvailability();
-      
+
       setShowAddSlot(false);
-      setNewSlotTime({ start: '', end: '' });
+      setNewSlotTime({ start: "", end: "" });
       setSelectedDate(null);
     } catch (error) {
-      console.error('Error adding time slot:', error);
+      console.error("Error adding time slot:", error);
+      toast.error("Error: Failed to add time slot.");
     }
   };
 
@@ -212,68 +266,114 @@ const AvailabilityCalendar: React.FC = () => {
       await ApiService.deleteAvailability(slotId);
       await fetchAvailability();
     } catch (error) {
-      console.error('Error deleting time slot:', error);
+      console.error("Error deleting time slot:", error);
+      toast.error("Error: Failed to delete time slot.");
     }
   };
 
   const toggleRecurringAvailability = async (day: number) => {
+    // Open the recurring modal for the day to allow managing multiple slots
     try {
-      const existing = availability.recurring.find(slot => slot.day_of_week === day);
-      
-      if (existing) {
-        await ApiService.deleteRecurringAvailability(existing.id!);
-        await fetchAvailability();
-      } else {
-        // Open modal for time selection
-        setSelectedDay(day);
-        setNewSlotTime({ start: '09:00', end: '17:00' });
-        setShowAddRecurring(true);
+      if (fetchError) {
+        toast.warning("Cannot open recurring editor until availability is loaded. Please retry.");
+        return;
       }
+      setSelectedDay(day);
+
+      const slotsForDay = availability.recurring
+        .filter((s) => s.day_of_week === day)
+        .map((s) => ({
+          id: s.id,
+          start: (s.default_start_time || s.start_time || "09:00").slice(0, 5),
+          end: (s.default_end_time || s.end_time || "17:00").slice(0, 5),
+        }));
+
+      // If no existing slots, provide one default slot to start with
+      if (slotsForDay.length === 0) {
+        setRecurringModalSlots([{ start: "09:00", end: "17:00" }]);
+      } else {
+        setRecurringModalSlots(slotsForDay);
+      }
+
+      setShowAddRecurring(true);
     } catch (error) {
-      console.error('Error toggling recurring availability:', error);
+      console.error("Error opening recurring modal:", error);
+      toast.error("Error: Failed to open recurring editor.");
     }
   };
 
   const addRecurringAvailability = async () => {
-    if (selectedDay === null || !newSlotTime.start || !newSlotTime.end) return;
+    if (selectedDay === null) return;
 
     try {
       setLoading(true);
-      const recurringData = {
-        day_of_week: selectedDay!,
-        is_available: true,
-        is_all_day: false,
-        default_start_time: newSlotTime.start + ':00',
-        default_end_time: newSlotTime.end + ':00',
-        is_active: true
-      };
-      
-      await ApiService.updateRecurringAvailability(recurringData);
+
+      // Create any new slots (those without an id)
+      const newSlots = recurringModalSlots.filter((s) => !s.id);
+
+      await Promise.all(
+        newSlots.map((slot) =>
+          ApiService.updateRecurringAvailability({
+            day_of_week: selectedDay!,
+            is_available: true,
+            is_all_day: false,
+            default_start_time: slot.start + ":00",
+            default_end_time: slot.end + ":00",
+            is_active: true,
+          })
+        )
+      );
+
       await fetchAvailability();
-      
+
       setShowAddRecurring(false);
       setSelectedDay(null);
-      setNewSlotTime({ start: '', end: '' });
+      setRecurringModalSlots([]);
     } catch (error) {
-      console.error('Error adding recurring availability:', error);
+      console.error("Error adding recurring availability:", error);
+      toast.error("Failed to save recurring availability.");
     } finally {
       setLoading(false);
     }
   };
 
+  const addLocalRecurringSlot = () => {
+    setRecurringModalSlots((prev) => [
+      ...prev,
+      { start: "09:00", end: "17:00" },
+    ]);
+  };
+
+  const removeLocalRecurringSlot = async (index: number) => {
+    const slot = recurringModalSlots[index];
+    // If the slot exists on server (has id), delete it immediately
+    if (slot?.id) {
+      try {
+        await ApiService.deleteRecurringAvailability(slot.id);
+        await fetchAvailability();
+      } catch (error) {
+        console.error("Error deleting recurring slot:", error);
+        toast.error("Error: Failed to delete recurring slot.");
+        return;
+      }
+    }
+
+    setRecurringModalSlots((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const formatTime = (timeStr: string | undefined | null) => {
     if (!timeStr) {
-      return 'N/A';
+      return "N/A";
     }
-    
-    const timeParts = timeStr.split(':');
+
+    const timeParts = timeStr.split(":");
     if (timeParts.length < 2) {
       return timeStr; // Return as-is if not in expected format
     }
-    
+
     const [hours, minutes] = timeParts;
     const hour = parseInt(hours);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? "PM" : "AM";
     const displayHour = hour % 12 || 12;
     return `${displayHour}:${minutes} ${ampm}`;
   };
@@ -283,7 +383,7 @@ const AvailabilityCalendar: React.FC = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400"></div>
           </div>
         </CardContent>
       </Card>
@@ -291,7 +391,24 @@ const AvailabilityCalendar: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 h-full overflow-y-auto pb-32">
+    <div className="space-y-6 h-full overflow-y-auto pb-16">
+      {/* Error banners */}
+      {fetchError && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-red-700">{fetchError}</div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => fetchAvailability()}>
+                  Retry
+                  <RefreshCcw/>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Calendar Header */}
       <Card>
         <CardHeader>
@@ -304,7 +421,7 @@ const AvailabilityCalendar: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigateMonth('prev')}
+                onClick={() => navigateMonth("prev")}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -314,7 +431,7 @@ const AvailabilityCalendar: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigateMonth('next')}
+                onClick={() => navigateMonth("next")}
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -325,19 +442,22 @@ const AvailabilityCalendar: React.FC = () => {
           {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1 mb-4">
             {/* Day headers */}
-            {daysOfWeek.map(day => (
-              <div key={day} className="p-2 text-center text-sm font-medium text-gray-500">
+            {daysOfWeek.map((day) => (
+              <div
+                key={day}
+                className="p-2 text-center text-sm font-medium text-gray-500"
+              >
                 {day.slice(0, 3)}
               </div>
             ))}
-            
+
             {/* Calendar days */}
             {getCalendarDays().map((date, index) => {
               if (!date) {
                 return <div key={index} className="p-2"></div>;
               }
 
-              const availability = getAvailabilityForDate(date);
+              const availabilityForDay = getAvailabilityForDate(date);
               const isToday = formatDate(date) === formatDate(new Date());
               const isPast = date < new Date();
 
@@ -347,14 +467,26 @@ const AvailabilityCalendar: React.FC = () => {
                   onClick={() => !isPast && handleDateClick(date)}
                   disabled={isPast}
                   className={`
-                    p-2 text-center text-sm border rounded-md transition-colors relative
-                    ${isToday ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}
-                    ${availability.hasAvailability ? 'bg-green-50 border-green-200' : ''}
-                    ${isPast ? 'text-gray-400 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}
-                  `}
+                      p-2 text-center text-sm border rounded-md transition-colors relative
+                      ${
+                        isToday
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200"
+                      }
+                      ${
+                        availabilityForDay.hasAvailability
+                          ? "bg-green-50 border-green-200"
+                          : ""
+                      }
+                      ${
+                        isPast
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "hover:bg-gray-50 cursor-pointer"
+                      }
+                    `}
                 >
                   <span>{date.getDate()}</span>
-                  {availability.hasAvailability && (
+                  {availabilityForDay.hasAvailability && (
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-green-500 rounded-full"></div>
                   )}
                 </button>
@@ -386,24 +518,49 @@ const AvailabilityCalendar: React.FC = () => {
             {daysOfWeek.map((day, index) => {
               // Convert JS day index to Django day index
               const djangoDayIndex = jsToDjangoDayOfWeek(index);
-              const recurringSlot = availability.recurring.find(slot => slot.day_of_week === djangoDayIndex);
-              
+              const recurringSlotsForDay = availability.recurring.filter(
+                (slot) => slot.day_of_week === djangoDayIndex && slot.is_active
+              );
+
               return (
-                <div key={day} className="flex items-center justify-between p-3 border rounded-lg">
+                <div
+                  key={day}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
                   <div className="flex items-center gap-3">
                     <span className="font-medium min-w-[100px]">{day}</span>
-                    {recurringSlot && (
-                      <Badge variant="secondary">
-                        {formatTime((recurringSlot.default_start_time || recurringSlot.start_time || '09:00'))} - {formatTime((recurringSlot.default_end_time || recurringSlot.end_time || '17:00'))}
-                      </Badge>
-                    )}
+                    <div className="flex gap-2 flex-wrap">
+                      {recurringSlotsForDay.length > 0 ? (
+                        recurringSlotsForDay.map((rs) => (
+                          <Badge key={rs.id} variant="secondary">
+                            {formatTime(
+                              rs.default_start_time || rs.start_time || "09:00"
+                            )}{" "}
+                            -{" "}
+                            {formatTime(
+                              rs.default_end_time || rs.end_time || "17:00"
+                            )}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          No availability
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Button
-                    variant={recurringSlot ? "destructive" : "default"}
+                    variant={
+                      recurringSlotsForDay.length > 0
+                        ? "destructive"
+                        : "default"
+                    }
                     size="sm"
                     onClick={() => toggleRecurringAvailability(djangoDayIndex)}
                   >
-                    {recurringSlot ? 'Remove' : 'Add Availability'}
+                    {recurringSlotsForDay.length > 0
+                      ? "Manage"
+                      : "Add Availability"}
                   </Button>
                 </div>
               );
@@ -414,47 +571,56 @@ const AvailabilityCalendar: React.FC = () => {
 
       {/* Add Time Slot Modal */}
       {showAddSlot && selectedDate && (
-        <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 border border-black">
           <CardContent className="bg-white p-6 rounded-lg w-96">
             <h3 className="text-lg font-semibold mb-4">
               Add Time Slot for {new Date(selectedDate).toLocaleDateString()}
             </h3>
-            
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Start Time</label>
+                <label className="block text-sm font-medium mb-1">
+                  Start Time
+                </label>
                 <input
                   type="time"
                   value={newSlotTime.start}
-                  onChange={(e) => setNewSlotTime(prev => ({ ...prev, start: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSlotTime((prev) => ({
+                      ...prev,
+                      start: e.target.value,
+                    }))
+                  }
                   className="w-full p-2 border rounded-md"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-1">End Time</label>
+                <label className="block text-sm font-medium mb-1">
+                  End Time
+                </label>
                 <input
                   type="time"
                   value={newSlotTime.end}
-                  onChange={(e) => setNewSlotTime(prev => ({ ...prev, end: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSlotTime((prev) => ({ ...prev, end: e.target.value }))
+                  }
                   className="w-full p-2 border rounded-md"
                 />
               </div>
-              
+
               <div className="flex gap-2 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => {
                     setShowAddSlot(false);
                     setSelectedDate(null);
-                    setNewSlotTime({ start: '', end: '' });
+                    setNewSlotTime({ start: "", end: "" });
                   }}
                 >
                   Cancel
                 </Button>
-                <Button onClick={addTimeSlot}>
-                  Add Slot
-                </Button>
+                <Button onClick={addTimeSlot}>Add Slot</Button>
               </div>
             </div>
           </CardContent>
@@ -464,45 +630,88 @@ const AvailabilityCalendar: React.FC = () => {
       {/* Add Recurring Availability Modal */}
       {showAddRecurring && selectedDay !== null && (
         <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <CardContent className="bg-white p-6 rounded-lg w-96">
+          <CardContent className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">
-              Add Weekly Availability for {daysOfWeek[djangoToJsDayOfWeek(selectedDay)]}
+              Manage Weekly Availability for{" "}
+              {daysOfWeek[djangoToJsDayOfWeek(selectedDay)]}
             </h3>
-            
+
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Start Time</label>
-                <input
-                  type="time"
-                  value={newSlotTime.start}
-                  onChange={(e) => setNewSlotTime(prev => ({ ...prev, start: e.target.value }))}
-                  className="w-full p-2 border rounded-md"
-                />
+              <div className="space-y-2">
+                {recurringModalSlots.map((slot, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium mb-1">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={slot.start}
+                        onChange={(e) =>
+                          setRecurringModalSlots((prev) =>
+                            prev.map((s, i) =>
+                              i === idx ? { ...s, start: e.target.value } : s
+                            )
+                          )
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium mb-1">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={slot.end}
+                        onChange={(e) =>
+                          setRecurringModalSlots((prev) =>
+                            prev.map((s, i) =>
+                              i === idx ? { ...s, end: e.target.value } : s
+                            )
+                          )
+                        }
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+
+                    <div className="pt-6">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeLocalRecurringSlot(idx)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-1">End Time</label>
-                <input
-                  type="time"
-                  value={newSlotTime.end}
-                  onChange={(e) => setNewSlotTime(prev => ({ ...prev, end: e.target.value }))}
-                  className="w-full p-2 border rounded-md"
-                />
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={addLocalRecurringSlot}
+                >
+                  Add Another Slot
+                </Button>
               </div>
-              
+
               <div className="flex gap-2 justify-end">
                 <Button
                   variant="outline"
                   onClick={() => {
                     setShowAddRecurring(false);
                     setSelectedDay(null);
-                    setNewSlotTime({ start: '', end: '' });
+                    setRecurringModalSlots([]);
                   }}
                 >
                   Cancel
                 </Button>
                 <Button onClick={addRecurringAvailability} disabled={loading}>
-                  {loading ? 'Adding...' : 'Add Weekly Availability'}
+                  {loading ? "Saving..." : "Save Weekly Availability"}
                 </Button>
               </div>
             </div>
@@ -514,17 +723,26 @@ const AvailabilityCalendar: React.FC = () => {
       {selectedDate && (
         <Card>
           <CardHeader>
-            <CardTitle>Specific Availability for {new Date(selectedDate).toLocaleDateString()}</CardTitle>
+            <CardTitle>
+              Specific Availability for{" "}
+              {new Date(selectedDate).toLocaleDateString()}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {availability.specific_dates
-                .filter(avail => avail.date === selectedDate && avail.is_available)
-                .flatMap((avail, availIndex) => 
+                .filter(
+                  (avail) => avail.date === selectedDate && avail.is_available
+                )
+                .flatMap((avail, availIndex) =>
                   (avail.time_slots || []).map((slot, slotIndex) => (
-                    <div key={`${availIndex}-${slotIndex}`} className="flex items-center justify-between p-2 border rounded">
+                    <div
+                      key={`${availIndex}-${slotIndex}`}
+                      className="flex items-center justify-between p-2 border rounded"
+                    >
                       <Badge variant="secondary">
-                        {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
+                        {formatTime(slot.start_time)} -{" "}
+                        {formatTime(slot.end_time)}
                       </Badge>
                       {slot.id && (
                         <Button
