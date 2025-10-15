@@ -242,7 +242,7 @@ const Page = () => {
             </div>
           )}
         </div>
-        <div className='mt-6 shrink-0'>
+        <div className='mt-2 shrink-0'>
           <PromptBox onSubmit={handleSubmit} />
           <p className='mt-3 text-center text-xs text-gray-500'>Legal Ai can make mistakes, kindly check important information</p>
         </div>
