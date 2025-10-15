@@ -11,7 +11,7 @@ const services = [
 
 export default function Services(){
   return (
-  <section id="services" className="relative py-24 bg-white font-[family-name:var(--font-jost)] overflow-hidden">
+  <section id="services" className="relative py-24 bg-white font-jost overflow-hidden">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-[#FEF7D4]/20 to-transparent" />
       <div className="relative max-w-7xl mx-auto px-6">
         <MotionSection className="text-center mb-14">

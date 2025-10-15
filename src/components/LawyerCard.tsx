@@ -46,7 +46,7 @@ const LawyerCard = ({ lawyer, isSubscribed = false }: LawyerCardProps) => {
     if (!isSubscribed) {
       // safety: should never be called when not subscribed because button is disabled,
       // but keep fallback to navigate to subscribe
-      router.push("/dashboard/subscribe");
+      router.push("/dashboard/subscription");
       return;
     }
 
@@ -67,7 +67,7 @@ const LawyerCard = ({ lawyer, isSubscribed = false }: LawyerCardProps) => {
   const handleSubscribe = (e: React.MouseEvent) => {
     e.stopPropagation();
     // navigate to subscription/pricing flow
-    router.push("/dashboard/subscribe");
+    router.push("/dashboard/subscription");
   };
 
   return (

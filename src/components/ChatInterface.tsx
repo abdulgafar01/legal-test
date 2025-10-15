@@ -1,45 +1,20 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import {
-  ArrowLeft,
-  MoreVertical,
-  Smile,
-  Paperclip,
-  Mic,
-  Send,
-  Play,
-  FileText,
-  Clock,
-  Calendar,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  getConsultationById,
-  isConsultationTimeReady,
-  getTimeUntilConsultation,
-  startConsultation,
-  debugSetConsultationNow,
-  completeConsultation,
-  type Consultation,
-} from "@/lib/api/consultations";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { getChatMessages, type ChatMessage } from "@/lib/api/chat";
-import { useChatStore } from "@/stores/useChatStore";
-import { openChatSocket } from "@/lib/ws";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useAccountTypeStore } from "@/stores/useAccountTypeStore";
-import { format, parseISO } from "date-fns";
-import { getCurrentUserId } from "@/lib/auth";
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { getConsultationById, isConsultationTimeReady, getTimeUntilConsultation, startConsultation, debugSetConsultationNow, completeConsultation, type Consultation } from '@/lib/api/consultations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { getChatMessages, type ChatMessage } from '@/lib/api/chat';
+import MarkdownMessage from '@/components/chat/MarkdownMessage';
+import { useChatStore } from '@/stores/useChatStore';
+import { openChatSocket } from '@/lib/ws';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
+import { format, parseISO } from 'date-fns';
+import { getCurrentUserId } from '@/lib/auth';
 
 interface ChatInterfaceProps {
   selectedChat: string | null;
@@ -73,6 +48,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const initialScrolledRef = useRef<boolean>(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const openedViaDebugRef = useRef<boolean>(false);
+  // Configurable artificial delay (previously hard-coded 80ms) – set NEXT_PUBLIC_CHAT_SCROLL_DELAY=0 to disable.
+  const SCROLL_DELAY = Number(process.env.NEXT_PUBLIC_CHAT_SCROLL_DELAY ?? '0');
   const queueInitialScroll = () => {
     const run = () => {
       const el = scrollRef.current;
@@ -87,7 +64,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
       initialScrolledRef.current = true;
     };
     requestAnimationFrame(() => requestAnimationFrame(run));
-    setTimeout(run, 80);
+    if (SCROLL_DELAY > 0) setTimeout(run, SCROLL_DELAY);
   };
   const setScrollEl = (el: HTMLDivElement | null) => {
     scrollRef.current = el;
@@ -765,25 +742,11 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
                 } catch {}
               };
               return (
-                <div
-                  key={msg.id}
-                  ref={refCb}
-                  className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      isMine
-                        ? "bg-yellow-100 text-gray-900"
-                        : "bg-gray-100 text-gray-900"
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap break-words">
-                      {msg.content}
-                    </p>
+                <div key={msg.id} ref={refCb} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`prose prose-sm dark:prose-invert max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isMine ? 'bg-yellow-100 text-gray-900' : 'bg-gray-100 text-gray-900'}`}>
+                    <MarkdownMessage content={msg.content} />
                     <div className="flex items-center justify-end mt-1 space-x-1">
-                      <span className="text-xs text-gray-500">
-                        {format(parseISO(msg.created_at), "HH:mm")}
-                      </span>
+                      <span className="text-xs text-gray-500">{format(parseISO(msg.created_at), 'HH:mm')}</span>
                     </div>
                   </div>
                 </div>

@@ -8,7 +8,7 @@ const testimonials = [
 
 export default function Testimonials(){
   return (
-  <section className="py-28 bg-white font-[family-name:var(--font-jost)] relative overflow-hidden" id="reviews">
+  <section className="py-28 bg-white font-jost relative overflow-hidden" id="reviews">
       <div className="absolute inset-0 bg-gradient-to-b from-white via-[#FEF7D4]/30 to-white" />
       <div className="relative max-w-6xl mx-auto px-6">
         <MotionSection className="text-center mb-14">

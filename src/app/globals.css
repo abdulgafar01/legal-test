@@ -122,7 +122,7 @@
 
   .font-nunito { font-family: 'Nunito', sans-serif; }
   .font-ttcommons { font-family: var(--ttcommons-font-stack); }
-  .font-jost { font-family: 'Jost', 'Inter', system-ui, sans-serif; }
+  .font-jost { font-family: var(--font-jost), 'Jost Fallback', system-ui, sans-serif; }
   .text-gradient-gold { background: linear-gradient(90deg,#BE9C05,#d4b139); -webkit-background-clip: text; color: transparent; }
   .btn-primary { @apply inline-flex items-center justify-center px-6 py-3 rounded-md bg-[var(--primary)] text-white font-semibold shadow-sm hover:brightness-110 transition; }
   .btn-secondary { @apply inline-flex items-center justify-center px-6 py-3 rounded-md bg-[var(--secondary)] text-black font-semibold shadow-sm hover:bg-yellow-100 transition; }
