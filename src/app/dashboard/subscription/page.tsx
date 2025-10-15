@@ -318,7 +318,6 @@ export default function Subscription() {
               </div>
             )}
             <Button
-              variant="ghost"
               size="lg"
               className="w-full"
               onClick={handlePayment}
