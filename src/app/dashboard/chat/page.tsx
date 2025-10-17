@@ -215,6 +215,7 @@ const Page = () => {
         <div className="flex items-center gap-3">
           <p className="text-2xl font-medium">How can i be of help today?</p>
         </div>
+<<<<<<< HEAD
       ) : (
         <div className="w-full max-w-2xl flex-1 overflow-auto mt-6 space-y-4">
           {messages.map((m) => (
@@ -236,6 +237,11 @@ const Page = () => {
             </div>
           ))}
           <div ref={bottomRef} />
+=======
+        <div className='mt-2 shrink-0'>
+          <PromptBox onSubmit={handleSubmit} />
+          <p className='mt-3 text-center text-xs text-gray-500'>Legal Ai can make mistakes, kindly check important information</p>
+>>>>>>> enhancement/landing-page
         </div>
       )}
 

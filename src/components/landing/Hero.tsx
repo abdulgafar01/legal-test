@@ -3,6 +3,7 @@ import MotionSection from './MotionSection';
 import { GradientBlob } from './Decorative';
 import Image from 'next/image';
 import { FaCheckCircle } from 'react-icons/fa';
+import Iphone from '../mock-up/Iphone';
 
 export default function Hero(){
   return (
@@ -36,10 +37,11 @@ export default function Hero(){
           </ul>
         </MotionSection>
         <MotionSection delay={0.15} className="relative flex items-center justify-center overflow-visible">
-          <div className="relative w-full overflow-visible -mr-8 lg:-mr-16">
+          {/* <div className="relative w-full overflow-visible -mr-8 lg:-mr-16">
             <Image src="/landing-page-laptop.png" alt="Platform preview" width={2200} height={1350} priority className="w-full max-w-4xl md:max-w-[70rem] lg:max-w-[85rem] xl:max-w-[92rem] mx-auto h-auto select-none pointer-events-none" />
             <div className="absolute -z-10 inset-0 bg-gradient-radial from-[#FEF7D4]/70 via-transparent to-transparent" />
-          </div>
+          </div> */}
+          <Iphone/>
         </MotionSection>
       </div>
     </section>
