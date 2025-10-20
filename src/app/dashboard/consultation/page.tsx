@@ -15,7 +15,7 @@ const Page = () => {
   };
 
   return (
-      <div className="                                                                                                                                                                                                                                                                                                       h-[calc(100vh-60px)] overflow-hidden">
+      <div className="flex h-[calc(100vh-60px)] overflow-hidden">
         {/* Consultation List - Always visible on desktop, conditional on mobile */}
         <div className={`${selectedChat ? 'hidden lg:block' : 'block'} w-full lg:w-96 border-r border-yellow-200 overflow-y-auto`}>
           <ConsultationDashboard onSelectChat={handleSelectChat} />

@@ -70,6 +70,28 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+// Zoom types
+export interface ZoomMeeting {
+  id: number;
+  consultation: number;
+  meeting_id: string;
+  topic: string;
+  scheduled_at: string;
+  duration_minutes: number;
+  join_url: string;
+  passcode?: string;
+  status: 'scheduled' | 'started' | 'ended' | 'canceled';
+  host_email?: string;
+}
+
+export interface ZoomSignaturePayload {
+  signature: string;
+  sdk_key: string;
+  meeting_number: string;
+  passcode?: string;
+  user_name: string;
+}
+
 export type PaginatedResponse<T> =
   | {
       success: true;
@@ -334,4 +356,49 @@ export const getTimeUntilConsultation = (consultation: Consultation): {
   const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
   
   return { days, hours, minutes, isReady: false };
+};
+
+/**
+ * Create or reuse Zoom meeting for a consultation
+ */
+export const createOrGetZoomMeeting = async (
+  consultationId: number,
+  payload?: { scheduled_at?: string; duration_minutes?: number; topic?: string }
+): Promise<ApiResponse<ZoomMeeting>> => {
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+  if (!token) throw new Error('Authentication token not found');
+  const response = await axios.post(
+    buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/zoom/meetings/`),
+    payload || {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+/**
+ * Fetch attendee signature to join Zoom Meeting SDK
+ */
+export const getZoomSignature = async (
+  consultationId: number,
+  meetingId: string,
+  role: 'attendee' = 'attendee'
+): Promise<ApiResponse<ZoomSignaturePayload>> => {
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('authToken');
+  if (!token) throw new Error('Authentication token not found');
+  const response = await axios.post(
+    buildApiUrl(`${API_ENDPOINTS.consultations.detail}${consultationId}/zoom/meetings/${meetingId}/signature/`),
+    { role },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
 };

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from './ui/badge';
 import { getMyConsultations, isConsultationTimeReady, getTimeUntilConsultation, type Consultation } from '@/lib/api/consultations';
+import JoinVideoButton from './JoinVideoButton';
 import { format, parseISO } from 'date-fns';
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
 import { getCurrentUserId } from '@/lib/auth';
@@ -182,9 +183,14 @@ const ConsultationDashboard = ({ onSelectChat }: ConsultationDashboardProps) => 
           </div>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600 truncate">{getConsultationMessage(consultation)}</p>
-            <Badge className={`text-xs ${getStatusColor(consultation.status_info.name)}`}>
-              {consultation.status_info.name}
-            </Badge>
+            <div className="flex items-center gap-2">
+              {canAccess && (
+                <JoinVideoButton consultationId={consultation.id} />
+              )}
+              <Badge className={`text-xs ${getStatusColor(consultation.status_info.name)}`}>
+                {consultation.status_info.name}
+              </Badge>
+            </div>
           </div>
         </div>
       </div>
