@@ -103,16 +103,9 @@ export default function Page() {
         </div>
         
         {/* Bottom Actions */}
-        <div className="flex flex-col md:flex-row items-center  justify-between max-w-md mx-auto">
-    
-          <Link href='/chat'
-            className='text-gray-400' 
-            onClick={() => setAccountType('guest')}      
-            >
-           Continue As Guest
-          </Link>
+        <div className="flex flex-col md:flex-row items-center justify-center max-w-md mx-auto">
           <Link href='/login'
-            className='text-gray-100'       
+            className='hover:text-amber-400/50 hover:underline  text-gray-100'       
             >
            Login
           </Link>
