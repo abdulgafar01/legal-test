@@ -8,7 +8,7 @@ type Props = {
 // IPhoneFramePro.tsx
 export default function IPhoneFramePro({ children }: Props) {
   return (
-   <div className="min-h-screen p-10">
+   <div>
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}

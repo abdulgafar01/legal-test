@@ -90,7 +90,7 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
       } `}
     >
       <textarea
-        className="outline-none w-full resize-none overflow-hidden break-words bg-transparent bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_-2px_4px_-2px_rgba(0,0,0,0.1)] drop-shadow-xl p-4 rounded-3xl mt-4 transition-all"
+        className="outline-none w-full resize-none overflow-hidden break-words  bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_-2px_4px_-2px_rgba(0,0,0,0.1)] drop-shadow-xl p-4 rounded-3xl mt-4 transition-all"
         rows={2}
         placeholder={placeholder}
         required

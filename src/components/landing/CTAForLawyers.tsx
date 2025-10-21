@@ -4,7 +4,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 
 export default function CTAForLawyers(){
   return (
-  <section className="py-24 bg-[#FEF7D4] font-jost border-y border-gray-200 relative overflow-hidden">
+  <section className="py-16 md:mx-10 md:rounded-3xl bg-[#FEF7D4] font-jost   relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-[#FEF7D4] via-white/40 to-[#FEF7D4]" />
       <div className="relative max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
         <MotionSection className="flex-1">
