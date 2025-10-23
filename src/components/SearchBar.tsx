@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
-import { exploreApi, ArticleSearchRequest, Article } from '@/lib/api/explore';
+import { useState, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
+import { exploreApi, ArticleSearchRequest, Article } from "@/lib/api/explore";
+import { Input } from "./ui/input";
 
 interface SearchBarProps {
   onSearchResults?: (results: Article[], searchQuery: string) => void;
@@ -11,14 +12,19 @@ interface SearchBarProps {
   initialSearchTerm?: string;
 }
 
-export default function SearchBar({ onSearchResults, onClearResults, selectedCategory, initialSearchTerm }: SearchBarProps) {
-  const [searchQuery, setSearchQuery] = useState(initialSearchTerm || '');
+export default function SearchBar({
+  onSearchResults,
+  onClearResults,
+  selectedCategory,
+  initialSearchTerm,
+}: SearchBarProps) {
+  const [searchQuery, setSearchQuery] = useState(initialSearchTerm || "");
   const [isSearching, setIsSearching] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Update searchQuery when initialSearchTerm changes
   useEffect(() => {
-    setSearchQuery(initialSearchTerm || '');
+    setSearchQuery(initialSearchTerm || "");
   }, [initialSearchTerm]);
 
   const handleSearch = async (query: string) => {
@@ -29,11 +35,11 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
 
     try {
       setIsSearching(true);
-      console.log('Searching for:', query);
-      
+      console.log("Searching for:", query);
+
       const searchRequest: ArticleSearchRequest = {
         query: query.trim(),
-        page_size: 20
+        page_size: 20,
       };
 
       // Only include category filter if a category is actually selected
@@ -41,12 +47,12 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
         searchRequest.category = selectedCategory;
       }
 
-      console.log('Search request:', searchRequest);
+      console.log("Search request:", searchRequest);
       const results = await exploreApi.searchArticles(searchRequest);
-      console.log('Search results:', results);
+      console.log("Search results:", results);
       onSearchResults?.(results.results, query);
     } catch (error) {
-      console.error('Error searching articles:', error);
+      console.error("Error searching articles:", error);
       onClearResults?.(); // Clear results on error
     } finally {
       setIsSearching(false);
@@ -56,12 +62,12 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    
+
     // Clear previous timeout
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
-    
+
     // Set new timeout for debounced search
     debounceTimeoutRef.current = setTimeout(() => {
       handleSearch(value);
@@ -69,7 +75,7 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
   };
 
   const handleClear = () => {
-    setSearchQuery('');
+    setSearchQuery("");
     // Clear timeout if exists
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
@@ -90,13 +96,15 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <input
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
           type="text"
-          placeholder={selectedCategory ? "Search articles..." : "Search all articles..."}
+          placeholder={
+            selectedCategory ? "Search articles..." : "Search all articles..."
+          }
           value={searchQuery}
           onChange={handleInputChange}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none"
+          className="pl-12 h-12 bg-background border-border/60 focus:border-primary/40"
         />
         {searchQuery && (
           <button
@@ -107,7 +115,7 @@ export default function SearchBar({ onSearchResults, onClearResults, selectedCat
           </button>
         )}
       </div>
-      
+
       {isSearching && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-sm p-3 z-10">
           <div className="flex items-center space-x-2">
