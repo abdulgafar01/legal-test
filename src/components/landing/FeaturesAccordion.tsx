@@ -8,7 +8,7 @@ import {
   FileSearch,
   Upload,
 } from "lucide-react";
-import { ImageWithFallback } from "./ImageWithFallBack";
+import { ImageWithFallback } from "./ImageWithFallback";
 
 interface Feature {
   id: string;
