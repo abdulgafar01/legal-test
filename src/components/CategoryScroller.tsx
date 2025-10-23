@@ -86,7 +86,7 @@ const CategoryScroller = ({
       {showScrollButtons.left && (
         <button
           onClick={() => handleScroll("left")}
-          className="absolute left-0 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+          className="absolute left-0 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50 cursor-pointer"
           aria-label="Scroll categories left"
         >
           <ChevronLeft className="h-4 w-4 text-gray-600" />
@@ -128,7 +128,7 @@ const CategoryScroller = ({
       {showScrollButtons.right && (
         <button
           onClick={() => handleScroll("right")}
-          className="absolute right-0 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50"
+          className="absolute right-0 z-10 bg-white shadow-md rounded-full p-2 hover:bg-gray-50 cursor-pointer"
           aria-label="Scroll categories right"
         >
           <ChevronRight className="h-4 w-4 text-gray-600" />
