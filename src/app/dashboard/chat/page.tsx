@@ -210,7 +210,7 @@ const Page = () => {
   }, [guestId, thread, search, newChat, creatingThread]);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 text-black h-[80vh] overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-between px-4 text-black h-[calc(100vh-60px)] mt-2 overflow-hidden">
       {messages.length === 0 ? (
         <div className="flex items-center gap-3">
           <p className="text-2xl font-medium">How can i be of help today?</p>
@@ -241,7 +241,7 @@ const Page = () => {
 
       <PromptBox onSubmit={handleSubmit} />
 
-      <p className="text-xs absolute bottom-1 text-gray-500">
+      <p className="text-xs mb-2 py-2 text-gray-500">
         Legal Ai can make mistakes, kindly check important information
       </p>
     </div>

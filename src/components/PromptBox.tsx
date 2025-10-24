@@ -4,6 +4,9 @@ import { Mic, Paperclip, Plus, Send } from "lucide-react";
 import React, { useState } from "react";
 import UploadFileModal from "./Documents/UploadFileModal";
 import RecordVoiceModal from "./Documents/RecordVoiceModal";
+// import { record } from "zod";
+import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 type Attachment = {
   id: string;
@@ -23,6 +26,45 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
+  // Voice dictation logic
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition;
+      const recog = new SpeechRecognition();
+      recog.continuous = false;
+      recog.interimResults = true;
+      recog.lang = "en-US";
+      setRecognition(recog);
+    }
+  }, []);
+
+  const handleMicClick = () => {
+    if (!recognition) return toast("Speech recognition not supported in this browser.");
+    setIsRecording(true);
+    recognition.start();
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; ++i) {
+        transcript += event.results[i][0].transcript;
+      }
+      setPrompt(transcript);
+    };
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+    recognition.onerror = () => {
+      setIsRecording(false);
+    };
+  };
+
+  const handleStopRecording = () => {
+    if (recognition) {
+      recognition.stop();
+      setIsRecording(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -85,12 +127,11 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`w-full ${
-        false ? "max-w-3xl" : "max-w-2xl"
-      } `}
+      className={`w-full ${false ? "max-w-3xl" : "max-w-2xl"}`}
     >
+      <div className=" bg-white shadow-[0_-2px_6px_-1px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.08)]  rounded-3xl px-3 py-2">
       <textarea
-        className="outline-none w-full resize-none overflow-hidden break-words  bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1),0_-2px_4px_-2px_rgba(0,0,0,0.1)] drop-shadow-xl p-4 rounded-3xl mt-4 transition-all"
+        className="outline-none w-full resize-none overflow-hidden break-words mt-2 transition-all"
         rows={2}
         placeholder={placeholder}
         required
@@ -99,24 +140,51 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
         value={prompt}
       />
 
+
       <div className="flex items-center justify-between text-sm">
         <button
           type="button"
           onClick={() => setUploadOpen(true)}
           title="Upload files"
-          className="cursor-pointer p-1 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
+          className="cursor-pointer px-1 py-1.5 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
         >
           <Plus className="h-5" />
         </button>
+  <div className="flex items-center justify-center w-20 h-8">
+       {isRecording && (
+         <div className="flex items-end gap-[2px]">
+           {/* Five animated sound bars */}
+           {[0.3, 0.6, 0.9, 0.6, 0.3].map((d, i) => (
+             <motion.div
+               key={i}
+               initial={{ height: 6 }}
+               animate={{
+                 height: [6, 6 + 18 * d, 6,3],
+               }}
+               transition={{
+                 duration: 0.6,
+                 repeat: Infinity,
+                 ease: "easeInOut",
+                 delay: i * 0.1,
+               }}
+               className="w-[3px] bg-[var(--primary)] rounded-full"
+             />
+           ))}
+         </div>
+       )}
+     </div>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setRecordOpen(true)}
-            title="Record voice"
-            className="cursor-pointer p-1 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
+            onClick={isRecording ? handleStopRecording : handleMicClick}
+            title={isRecording ? "Stop recording" : "Record voice"}
+            className={`cursor-pointer p-1 hover:opacity-80 rounded-full bg-[var(--primary)] text-white relative`}
           >
-            <Mic className="w-6" />
+            <Mic className={`w-6 ${isRecording ? "animate-pulse" : ""}`} />
+            {isRecording && (
+              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+            )}
           </button>
           <button
             type="button"
@@ -130,6 +198,8 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
           </button>
         </div>
       </div>
+      </div>
+
       {/* attachments list */}
       {attachments.length > 0 && (
         <div className="mt-3 max-h-32 overflow-auto p-4 flex gap-2 flex-wrap">
@@ -164,6 +234,7 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
         onOpenChange={setRecordOpen}
         onAttach={handleAttach}
       />
+      {/* Voice recording animation indicator (optional, already shown on button) */}
     </form>
   );
 };

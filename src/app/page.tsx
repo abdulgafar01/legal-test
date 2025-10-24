@@ -6,6 +6,7 @@ import CTAForLawyers from '@/components/landing/CTAForLawyers';
 import Testimonials from '@/components/landing/Testimonials';
 import Footer from '@/components/landing/Footer';
 import Hero from '@/components/landing/Hero';
+import { LexisAISection } from '@/components/landing/lexis-ai-section';
 
 export default function LandingPage(){
   return (
@@ -14,6 +15,7 @@ export default function LandingPage(){
   <VideoBanner />
       <Hero/>
       <Services />
+      <LexisAISection />
       <Pricing />
       <CTAForLawyers />
       <Testimonials />
