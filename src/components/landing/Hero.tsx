@@ -50,7 +50,7 @@ export default function Hero(){
           </motion.div>
         </MotionSection>
 
-        <MotionSection delay={0.12} className="relative ">
+        <MotionSection delay={0.12} className="relative">
           <motion.div
             initial={{ scale: 0.98, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
