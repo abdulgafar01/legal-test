@@ -66,25 +66,26 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const text = prompt.trim();
-    if (!text) return;
-    onSubmit?.(text);
-    setPrompt("");
-    setAttachments([]);
-  };
+const sendMessage = () => {
+  const text = prompt.trim();
+  if (!text && attachments.length === 0) return;
+  onSubmit?.(text);
+  setPrompt("");
+  setAttachments([]);
+};
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      const text = prompt.trim();
-      if (!text && attachments.length === 0) return;
-      onSubmit?.(text);
-      setPrompt("");
-      setAttachments([]);
-    }
-  };
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  sendMessage();
+};
+
+const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+};
+
 
   const handleAttach = (attachment: Attachment) => {
     setAttachments((prev) => {
@@ -186,16 +187,20 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
             )}
           </button>
+          
           <button
             type="button"
+            onClick={sendMessage}
+            disabled={!prompt.trim() && attachments.length === 0}
             className={`${
-              prompt
+              prompt.trim() || attachments.length
                 ? "bg-primary shadow-md cursor-pointer"
-                : "bg-[#71717a] shadow-sm disabled"
+                : "bg-[#71717a] opacity-60 cursor-not-allowed"
             } rounded-full p-2 hover:shadow-lg transition-shadow -rotate-45`}
           >
             <Send className="text-white w-6" />
           </button>
+
         </div>
       </div>
       </div>
