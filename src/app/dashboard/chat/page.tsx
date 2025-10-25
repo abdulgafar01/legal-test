@@ -10,6 +10,10 @@ import {
 } from "@/lib/api/chatbot";
 import { buildWsUrl } from "@/config/ws";
 import { useSearchParams, useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+
 
 type Msg = ChatbotMessageDTO & { temp_id?: string };
 
@@ -231,7 +235,12 @@ const Page = () => {
                     : "bg-gray-100 text-black"
                 }`}
               >
+                 <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                className="prose prose-sm max-w-none text-inherit"
+              >
                 {m.content}
+              </ReactMarkdown>
               </div>
             </div>
           ))}
