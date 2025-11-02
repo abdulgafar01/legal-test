@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -85,6 +85,9 @@ const MeetingPage = () => {
   const [isIsolated, setIsIsolated] = useState<boolean | null>(null);
 
   const meetingRootRef = useRef<HTMLDivElement>(null);
+  const meetingContainerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [meetingHeight, setMeetingHeight] = useState<number | null>(null);
   const clientRef = useRef<any>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
   const fetchedRef = useRef(false);
@@ -138,6 +141,29 @@ const MeetingPage = () => {
     }
   }, [joinUrl]);
 
+  useLayoutEffect(() => {
+    const computeHeight = () => {
+      const nav = document.querySelector('[data-navbar-root]') as HTMLElement | null;
+      const header = headerRef.current;
+      const navHeight = nav?.offsetHeight ?? 0;
+      const headerHeight = header?.offsetHeight ?? 0;
+      const available = window.innerHeight - navHeight - headerHeight;
+      setMeetingHeight(available > 0 ? available : 0);
+    };
+
+    computeHeight();
+    window.addEventListener("resize", computeHeight);
+    const ro = new ResizeObserver(computeHeight);
+    const nav = document.querySelector('[data-navbar-root]');
+    if (nav instanceof HTMLElement) ro.observe(nav);
+    if (headerRef.current) ro.observe(headerRef.current);
+    return () => {
+      window.removeEventListener("resize", computeHeight);
+      ro.disconnect();
+    };
+  }, []);
+
+
   useEffect(() => {
     try {
       setIsIsolated(typeof crossOriginIsolated !== "undefined" ? !!crossOriginIsolated : false);
@@ -189,6 +215,39 @@ const MeetingPage = () => {
       const displayName =
         (typeof window !== "undefined" && localStorage.getItem("displayName")) || "Guest";
 
+      // Ensure the embedded window always fills the container
+      const applyFullSize = () => {
+        if (!rootElement) return;
+        const setSize = (el: HTMLElement) => {
+          el.style.width = "100%";
+          el.style.height = "100%";
+          el.style.maxWidth = "unset";
+          el.style.maxHeight = "unset";
+        };
+        const child = rootElement.firstElementChild as HTMLElement | null;
+        if (child) setSize(child);
+        // Also try one more nesting level (Zoom often nests the actual window)
+        if (child?.firstElementChild instanceof HTMLElement) setSize(child.firstElementChild);
+        // As a fallback, expand any sizable direct descendants
+        Array.from(rootElement.querySelectorAll(':scope > div > div'))
+          .slice(0, 3)
+          .forEach((el) => setSize(el as HTMLElement));
+      };
+
+      // Observe container resizes so the meeting grows to the bottom of the screen
+      const resizeObserver = new ResizeObserver(() => applyFullSize());
+      resizeObserver.observe(rootElement);
+      // Observe DOM mutations inside Zoom root to re-apply sizing when Zoom mounts nodes
+      const mutationObserver = new MutationObserver(() => applyFullSize());
+      mutationObserver.observe(rootElement, { childList: true, subtree: true });
+      // add to cleanup
+      const previousCleanup = cleanupRef.current;
+      cleanupRef.current = () => {
+        resizeObserver.disconnect();
+        mutationObserver.disconnect();
+        previousCleanup?.();
+      };
+
       await client.init({
         zoomAppRoot: rootElement,
         language: "en-US",
@@ -199,6 +258,11 @@ const MeetingPage = () => {
           },
         },
       });
+
+      // Apply sizing once Zoom mounts its DOM
+      applyFullSize();
+      // Re-apply after join as Zoom may re-render
+      setTimeout(applyFullSize, 250);
 
       await client.join({
         sdkKey,
@@ -243,8 +307,8 @@ const MeetingPage = () => {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="border-b p-4">
+    <div className="flex flex-col h-full min-h-0 w-full">
+      <div ref={headerRef} className="border-b p-4 flex-none">
         <h1 className="text-lg font-semibold">Video Consultation</h1>
         {consultation && (
           <p className="text-sm text-gray-600">
@@ -258,20 +322,24 @@ const MeetingPage = () => {
           </p>
         )}
       </div>
-      <div className="relative flex-1">
+      <div
+        ref={meetingContainerRef}
+        style={meetingHeight !== null ? { height: meetingHeight } : undefined}
+        className="relative flex-1 min-h-0 w-full overflow-hidden"
+      >
         <div
           ref={meetingRootRef}
           id="zoom-meeting-root"
-          className="h-full w-full"
+          className="absolute inset-0 w-full h-full"
         />
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+          <div className="absolute inset-0 flex items-center justify-center bg-white/60 z-10">
             <div className="animate-pulse text-gray-700">Preparing meeting…</div>
           </div>
         )}
       </div>
       {sdkError && (
-        <div className="border-t border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="border-t border-red-200 bg-red-50 p-4 text-sm text-red-700 flex-shrink-0">
           {sdkError}. Please retry in a supported desktop browser or contact support.
         </div>
       )}

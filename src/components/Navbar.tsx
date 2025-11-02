@@ -24,7 +24,10 @@ const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
     hasPractitionerProfile;
 
   return (
-    <header className="w-full sticky top-0 z-20 bg-orange-50 border-b border-l border-gray-200 px-6 py-3">
+    <header
+      data-navbar-root
+      className="w-full sticky top-0 z-20 bg-orange-50 border-b border-l border-gray-200 px-6 py-3"
+    >
       <div className="flex items-center max-w-7xl mx-auto">
         {/* Mobile Menu Button - only shown on mobile */}
         {isMobile && (

@@ -43,21 +43,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthGuard>
-      <div className="flex max-h-screen">
-        <Sidebar
-          expand={expand}
-          // setExpand={setExpand}
-          isMobile={isMobile}
-          showMobileMenu={showMobileMenu}
-          toggleSidebar={toggleSidebar}
-        />
-  <main className={`flex-1 flex flex-col pb-8 bg-white text-black relative ${isMeetingPage ? "overflow-visible" : "overflow-hidden"} min-h-0`}>
+      <div className={`flex ${isMeetingPage ? "h-screen" : "max-h-screen"}`}>
+        {!isMeetingPage && (
+          <Sidebar
+            expand={expand}
+            isMobile={isMobile}
+            showMobileMenu={showMobileMenu}
+            toggleSidebar={toggleSidebar}
+          />
+        )}
+        <main className={`flex-1 flex flex-col ${isMeetingPage ? "pb-0" : "pb-8"} bg-white text-black relative overflow-hidden min-h-0`}>
           <Navbar
             isMobile={isMobile}
             showMobileMenu={showMobileMenu}
             toggleSidebar={toggleSidebar}
           />
-          <div className="flex-1 overflow-hidden">{children}</div>
+          <div className="flex-1 overflow-hidden min-h-0">{children}</div>
         </main>
       </div>
     </AuthGuard>
