@@ -37,6 +37,7 @@ const MeetingPage = () => {
   const [sdkKey, setSdkKey] = useState("");
   const [passcode, setPasscode] = useState<string | undefined>();
   const [sdkError, setSdkError] = useState<string | null>(null);
+  const [isIsolated, setIsIsolated] = useState<boolean | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const fetchedRef = useRef(false);
@@ -90,6 +91,16 @@ const MeetingPage = () => {
   }, [joinUrl]);
 
   useEffect(() => {
+    // Check cross-origin isolation for Gallery View support
+    try {
+      // @ts-ignore - crossOriginIsolated is global
+      setIsIsolated(typeof crossOriginIsolated !== "undefined" ? !!crossOriginIsolated : false);
+    } catch {
+      setIsIsolated(false);
+    }
+  }, []);
+
+  useEffect(() => {
     if (loading || !signature || !containerRef.current || joiningRef.current) return;
 
     const ensureCss = (href: string) => {
@@ -123,6 +134,8 @@ const MeetingPage = () => {
     joiningRef.current = true;
     setSdkError(null);
 
+    let resizeHandler: (() => void) | null = null;
+
     (async () => {
       try {
         const cdnBase = `https://source.zoom.us/${ZOOM_SDK_VERSION}`;
@@ -153,12 +166,55 @@ const MeetingPage = () => {
           (typeof window !== "undefined" && localStorage.getItem("displayName")) ||
           "Guest";
 
+        const measure = () => {
+          const parent = root.parentElement as HTMLElement | null;
+          const width = parent?.clientWidth || window.innerWidth;
+          const height = parent?.clientHeight || window.innerHeight;
+          return {
+            width,
+            height: Math.max(height, 320),
+          };
+        };
+
+        const applySizing = () => {
+          const dimensions = measure();
+          root.style.width = "100%";
+          root.style.height = `${dimensions.height}px`;
+          root.style.maxHeight = `${dimensions.height}px`;
+          root.style.display = "flex";
+          root.style.flex = "1 1 auto";
+          root.style.minHeight = "0";
+          root.style.minWidth = "100%";
+          root.style.position = "relative";
+          root.style.overflow = "hidden";
+          console.info("[zoom-layout] apply sizing", dimensions);
+          return dimensions;
+        };
+
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+        const { width: viewportWidth, height: viewportHeight } = applySizing();
+
+        resizeHandler = () => {
+          applySizing();
+        };
+
+        window.addEventListener("resize", resizeHandler);
+
         await client.init({
           zoomAppRoot: root,
           language: "en-US",
           patchJsMedia: true,
           customize: {
-            video: { isResizable: true },
+            video: {
+              isResizable: true,
+              defaultViewType: "gallery",
+              viewSizes: {
+                default: {
+                  width: viewportWidth,
+                  height: viewportHeight,
+                },
+              },
+            },
           },
         });
 
@@ -170,6 +226,10 @@ const MeetingPage = () => {
           userName: name,
         });
       } catch (err: any) {
+        if (resizeHandler) {
+          window.removeEventListener("resize", resizeHandler);
+          resizeHandler = null;
+        }
         console.error("Zoom Embedded SDK error", err);
         const message = err?.message || "Zoom SDK failed to load";
         setSdkError(message);
@@ -179,6 +239,10 @@ const MeetingPage = () => {
     })();
 
     return () => {
+      if (resizeHandler) {
+        window.removeEventListener("resize", resizeHandler);
+        resizeHandler = null;
+      }
       joiningRef.current = false;
       if (client) {
         try {
@@ -202,7 +266,7 @@ const MeetingPage = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-60px)] flex flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="p-4 border-b">
         <h1 className="text-lg font-semibold">Video Consultation</h1>
         {consultation && (
@@ -211,8 +275,20 @@ const MeetingPage = () => {
             {consultation.practitioner_info.last_name}
           </p>
         )}
+        {isIsolated === false && (
+          <p className="mt-2 text-xs text-amber-700 bg-amber-50 inline-block px-2 py-1 rounded">
+            Gallery View may be limited in this browser. Use a desktop Chromium browser for best results.
+          </p>
+        )}
       </div>
-      <div ref={containerRef} id="zmmtg-root" className="flex-1 overflow-hidden" />
+      <div className="relative flex-1 min-h-0 overflow-hidden">
+        <div
+          ref={containerRef}
+          id="zmmtg-root"
+          className="absolute inset-0"
+          style={{ width: "100%", height: "100%", minHeight: 0, minWidth: 0, overflow: "hidden" }}
+        />
+      </div>
       {sdkError && (
         <div className="p-4 bg-red-50 text-red-700 text-sm border-t border-red-200">
           {sdkError}. Please retry in a supported desktop browser or contact support.
