@@ -8,8 +8,8 @@ import Footer from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import { FeaturesAccordion } from "@/components/landing/FeaturesAccordion";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { LexisAISection } from "@/components/landing/lexis-ai-section";
-import InvertedRadiusCard from "@/components/landing/InvertedRadiusCard";
+import { ResponsibleAISection } from "@/components/landing/ResponsibleAISection";
+import { BlogCarouselSection } from "@/components/landing/BlogCarouselSection";
 
 export default function LandingPage() {
   return (
@@ -23,6 +23,8 @@ export default function LandingPage() {
       {/* <FeaturesAccordion/> */}
       <Pricing />
       <CTAForLawyers />
+      <ResponsibleAISection/>
+      <BlogCarouselSection/>
       <Testimonials />
       <Footer />
       <ScrollToTop/>

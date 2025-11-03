@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Smile, Paperclip, Mic, Send, Play, FileText, Clock, Calendar, MessageSquare, CheckCircle2, Video } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,6 +29,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
   const [loading, setLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [joining, setJoining] = useState(false);
   const [timeUntil, setTimeUntil] = useState({
     days: 0,
     hours: 0,
@@ -624,6 +626,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     }
   };
 
+
   return (
     <div
       className="flex-1 flex flex-col bg-white"
@@ -655,6 +658,21 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {consultation && (autoInProgress || isConsultationTimeReady(consultation)) && (
+            <button
+              type="button"
+              disabled={joining}
+              onClick={() => {
+                if (joining) return;
+                setJoining(true);
+                window.location.assign(`/meeting/${consultation.id}`);
+                setTimeout(() => setJoining(false), 3000);
+              }}
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md ${joining ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white text-sm`}
+            >
+              <Video className="w-4 h-4" /> {joining ? 'Opening…' : 'Join Video'}
+            </button>
+          )}
           {consultation &&
             consultation.status_info.name !== "in_progress" &&
             (debugEnabled || accountType === "professional") && (

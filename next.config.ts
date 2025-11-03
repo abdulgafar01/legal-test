@@ -23,6 +23,17 @@ const nextConfig: NextConfig = {
     // Ignore ESLint errors during production builds as requested
     ignoreDuringBuilds: true,
   },
+  async headers() {
+    return [
+      {
+        source: "/dashboard/consultation/:id/meeting",
+        headers: [
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     const apiBaseUrl = getApiBaseUrl();
     
