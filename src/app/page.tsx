@@ -8,6 +8,8 @@ import Footer from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import { FeaturesAccordion } from "@/components/landing/FeaturesAccordion";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { LexisAISection } from "@/components/landing/lexis-ai-section";
+import InvertedRadiusCard from "@/components/landing/InvertedRadiusCard";
 
 export default function LandingPage() {
   return (
@@ -16,7 +18,9 @@ export default function LandingPage() {
       <VideoBanner />
       <Hero />
       <Services />
-      <FeaturesAccordion/>
+      <LexisAISection />
+      <InvertedRadiusCard/>
+      {/* <FeaturesAccordion/> */}
       <Pricing />
       <CTAForLawyers />
       <Testimonials />

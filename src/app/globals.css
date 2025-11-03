@@ -153,3 +153,44 @@ input:-webkit-autofill:active {
 .no-close [aria-label="Close"] {
   display: none !important;
 }
+
+/* Inverted Border Radius Style */
+.inverted-radius {
+  --r: 20px; /* corner radius */
+  --s: 30px; /* size of inner curve */
+  --x: 20px; /* horizontal offset */
+  --y: 10px; /* vertical offset */
+
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--r);
+  background: #3FB8AF;
+
+  /* Create the inverted (concave) corners */
+  --_m: /calc(2 * var(--r)) calc(2 * var(--r))
+    radial-gradient(#000 70%, #0000 72%);
+  --_g: conic-gradient(
+    from 180deg at var(--r) calc(100% - var(--r)),
+    #0000 25%,
+    #000 0
+  );
+  --_d: (var(--s) + var(--r));
+
+  mask:
+    calc(var(--_d) + var(--x)) 100% var(--_m),
+    0 calc(100% - var(--_d) - var(--y)) var(--_m),
+    radial-gradient(
+        var(--s) at 0 100%,
+        #0000 99%,
+        #000 calc(100% + 1px)
+      )
+      calc(var(--r) + var(--x))
+      calc(-1 * var(--r) - var(--y)),
+    var(--_g) calc(var(--_d) + var(--x)) 0,
+    var(--_g) 0 calc(-1 * var(--_d) - var(--y));
+  mask-repeat: no-repeat;
+  -webkit-mask: var(--mask);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+}
