@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function JoinVideoButton({ consultationId }: { consultationId: number }) {
-  const href = useMemo(() => `/dashboard/consultation/${consultationId}/meeting`, [consultationId]);
+  const href = useMemo(() => `/meeting/${consultationId}`, [consultationId]);
   const [pending, setPending] = useState(false);
   const router = useRouter();
   return (

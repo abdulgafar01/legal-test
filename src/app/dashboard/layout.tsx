@@ -3,14 +3,11 @@ import Sidebar from "@/components/Sidebar";
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import AuthGuard from "@/components/AuthGuard";
-import { usePathname } from "next/navigation";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [expand, setExpand] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const pathname = usePathname();
-  const isMeetingPage = pathname?.includes("/dashboard/consultation/") && pathname?.includes("/meeting");
 
   useEffect(() => {
     const checkIfMobile = () => {
@@ -43,16 +40,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthGuard>
-      <div className={`flex ${isMeetingPage ? "h-screen" : "max-h-screen"}`}>
-        {!isMeetingPage && (
-          <Sidebar
-            expand={expand}
-            isMobile={isMobile}
-            showMobileMenu={showMobileMenu}
-            toggleSidebar={toggleSidebar}
-          />
-        )}
-        <main className={`flex-1 flex flex-col ${isMeetingPage ? "pb-0" : "pb-8"} bg-white text-black relative overflow-hidden min-h-0`}>
+      <div className="flex max-h-screen">
+        <Sidebar
+          expand={expand}
+          isMobile={isMobile}
+          showMobileMenu={showMobileMenu}
+          toggleSidebar={toggleSidebar}
+        />
+        <main className="flex-1 flex flex-col pb-8 bg-white text-black relative overflow-hidden min-h-0">
           <Navbar
             isMobile={isMobile}
             showMobileMenu={showMobileMenu}

@@ -555,7 +555,7 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               onClick={() => {
                 if (joining) return;
                 setJoining(true);
-                window.location.assign(`/dashboard/consultation/${consultation.id}/meeting`);
+                window.location.assign(`/meeting/${consultation.id}`);
                 setTimeout(() => setJoining(false), 3000);
               }}
               className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md ${joining ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white text-sm`}
