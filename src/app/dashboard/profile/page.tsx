@@ -156,7 +156,7 @@ const Page = () => {
     {
       icon: Shield,
       title: "Privacy Policy",
-      href: "/dashboard/privacy-policy",
+      href: "/privacy",
       showArrow: true,
     },
     {
