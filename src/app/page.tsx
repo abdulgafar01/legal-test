@@ -18,9 +18,7 @@ export default function LandingPage() {
       <VideoBanner />
       <Hero />
       <Services />
-      <LexisAISection />
-      <InvertedRadiusCard/>
-      {/* <FeaturesAccordion/> */}
+      <FeaturesAccordion/>
       <Pricing />
       <CTAForLawyers />
       <ResponsibleAISection/>
