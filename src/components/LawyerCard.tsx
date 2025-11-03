@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useCurrentSubscription } from "@/hooks/useSubscriptions";
 
 interface LawyerCardProps {
   lawyer: {
@@ -27,6 +28,7 @@ const LawyerCard = ({ lawyer, isSubscribed = false }: LawyerCardProps) => {
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const { data: sub, isLoading } = useCurrentSubscription();
 
   const handleViewProfile = () => {
     router.push(`/dashboard/professionals/${lawyer.id}`);
@@ -184,7 +186,7 @@ const LawyerCard = ({ lawyer, isSubscribed = false }: LawyerCardProps) => {
                 />
               </label>
 
-              {!isSubscribed && (
+              {!sub && (
                 <div className="p-3 bg-red-50 border border-red-100 rounded text-sm text-red-700">
                   You need an active subscription to confirm a consultation.{" "}
                   <button
