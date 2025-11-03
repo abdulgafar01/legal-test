@@ -24,7 +24,7 @@ const accordionItems = [
     title: "Draft in Moments",
     description:
       "Generate high-quality legal documents in seconds with AI-powered drafting that understands context and legal requirements.",
-    image: "/legal-document-drafting-ai-interface.jpg",
+    image: "/placeholderImage.png",
     userMessage: "Draft a non-disclosure agreement for tech startups",
     aiResponse:
       "I'll create a comprehensive NDA template tailored for tech startups with standard confidentiality clauses.",
@@ -33,7 +33,7 @@ const accordionItems = [
     id: "summarization",
     title: "Accurate Summarization",
     description: "Get concise, accurate summaries of complex legal documents and case law to save time on research.",
-    image: "/document-summarization-legal-research.jpg",
+    image: "/placeholderImage.png",
     userMessage: "Summarize the key holdings in this contract",
     aiResponse:
       "The contract establishes mutual obligations, liability limitations, and dispute resolution procedures.",
@@ -42,7 +42,7 @@ const accordionItems = [
     id: "upload",
     title: "Upload Your Documents",
     description: "Upload any legal document and let AI analyze, summarize, or extract key information instantly.",
-    image: "/document-upload-interface-legal.jpg",
+    image: "/placeholderImage.png",
     userMessage: "Analyze this document for compliance issues",
     aiResponse: "Analysis complete: Document meets current regulatory requirements with minor recommendations.",
   },
@@ -112,81 +112,87 @@ export function LexisAISection() {
           </div>
 
           {/* Right Column - Image Card with Chat */}
-          <div className="relative flex items-center justify-center">
-            <AnimatePresence mode="wait">
-              {currentItem && (
-                <motion.div
-                  key={currentItem.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="relative w-full max-w-md"
-                >
-                  <div className="relative overflow-visible">
-                    <div
-                      className="relative overflow-hidden bg-white shadow-2xl"
-                      style={{
-                        borderRadius: "24px 24px 24px 0",
-                      }}
-                    >
-                      <div
-                        className="absolute bottom-0 left-0 h-16 w-16 bg-gradient-to-br from-[#efe9fb] via-[#f6f2fb] to-[#faf8fc]"
-                        style={{
-                          borderRadius: "10px 0 0 0",
-                          zIndex: 10,
-                        }}
-                      />
+<div className="relative flex items-center justify-center">
+  <AnimatePresence mode="wait">
+    {currentItem && (
+      <motion.div
+        key={currentItem.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className="relative w-full max-w-md"
+      >
+        <div className="relative overflow-visible">
+          {/* Container with inverted border radius */}
+          <div
+            className="relative overflow-hidden bg-white shadow-2xl inverted-radius"
+            style={{
+              borderRadius: "24px", // still gives outer roundness
+            }}
+          >
+            {/* Image with inverted border mask */}
+            <Image
+              width={100}
+              height={384}
+              src={currentItem.image || "/placeholderimage.png"}
+              alt={currentItem.title}
+              className="h-96 w-full object-cover inverted-radius"
+            />
 
-                      {/* Image */}
-                      <Image
-                        width={100}
-                        height={384}
-                        src={currentItem.image || "/placeholderimage.png"}
-                        alt={currentItem.title}
-                        className="h-96 w-full object-cover"
-                      />
-
-                      {/* Chat Container */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.3 }}
-                        className="absolute right-4 top-8 flex max-w-xs flex-col gap-3"
-                      >
-                        {/* User Message with Loading */}
-                        {userMessageLoading ? (
-                          <ChatBubble message="" isUser={true} isLoading={true} />
-                        ) : (
-                          showUserMessage && <ChatBubble message={currentItem.userMessage} isUser={true} />
-                        )}
-
-                        {/* AI Response with Loading */}
-                        {aiMessageLoading ? (
-                          <ChatBubble message="" isUser={false} isLoading={true} />
-                        ) : (
-                          showAiResponse && <ChatBubble message={currentItem.aiResponse} isUser={false} />
-                        )}
-                      </motion.div>
-
-                      {/* Purple Icon Button */}
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.3, duration: 0.3 }}
-                        className="absolute bottom-2 left-2 z-20"
-                      >
-                        <Button size="icon" className="h-12 w-12 rounded-full bg-purple-600 hover:bg-purple-700">
-                          <MessageCircle className="h-6 w-6" />
-                        </Button>
-                      </motion.div>
-                    </div>
-                  </div>
-                </motion.div>
+            {/* Chat Container */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+              className="absolute right-4 top-8 flex max-w-xs flex-col gap-3"
+            >
+              {/* User Message with Loading */}
+              {userMessageLoading ? (
+                <ChatBubble message="" isUser={true} isLoading={true} />
+              ) : (
+                showUserMessage && (
+                  <ChatBubble
+                    message={currentItem.userMessage}
+                    isUser={true}
+                  />
+                )
               )}
-              
-            </AnimatePresence>
+
+              {/* AI Response with Loading */}
+              {aiMessageLoading ? (
+                <ChatBubble message="" isUser={false} isLoading={true} />
+              ) : (
+                showAiResponse && (
+                  <ChatBubble
+                    message={currentItem.aiResponse}
+                    isUser={false}
+                  />
+                )
+              )}
+            </motion.div>
+
+            {/* Purple Icon Button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+              className="absolute bottom-2 left-2 z-20"
+            >
+              <Button
+                size="icon"
+                className="h-12 w-12 rounded-full bg-purple-600 hover:bg-purple-700"
+              >
+                <MessageCircle className="h-6 w-6" />
+              </Button>
+            </motion.div>
           </div>
+        </div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</div>
+
         </div>
       </div>
     </section>
