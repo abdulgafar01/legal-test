@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import LanguageSwitcher from "../LanguageSwitcher";
 
 const navItems = [
   { href: "#home", label: "Home" },
@@ -33,6 +34,7 @@ export default function Header() {
         >
           TheYAS<span className="text-gradient-gold">Law</span>
         </Link>
+        <LanguageSwitcher />
         <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-700">
           {navItems.map((item) => (
             <a

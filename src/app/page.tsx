@@ -10,17 +10,18 @@ import { FeaturesAccordion } from "@/components/landing/FeaturesAccordion";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ResponsibleAISection } from "@/components/landing/ResponsibleAISection";
 import { BlogCarouselSection } from "@/components/landing/BlogCarouselSection";
+// import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LandingPage() {
+
   return (
     <main className="bg-white min-h-screen text-gray-900 font-nunito">
+       {/* <LanguageSwitcher /> */}
       <Header />
       <VideoBanner />
       <Hero />
       <Services />
-      <LexisAISection />
-      <InvertedRadiusCard/>
-      {/* <FeaturesAccordion/> */}
+      <FeaturesAccordion/>
       <Pricing />
       <CTAForLawyers />
       <ResponsibleAISection/>
