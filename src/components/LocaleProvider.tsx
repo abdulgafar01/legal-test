@@ -3,7 +3,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { IntlProvider } from "next-intl";
 import { Locale } from "@/i18n";
-// import { setCookie } from "cookies-next";
 
 interface LocaleContextType {
   locale: Locale;

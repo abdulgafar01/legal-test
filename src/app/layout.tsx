@@ -37,7 +37,7 @@ export default async function RootLayout({
   const locale = await getUserLocale(); 
   const messages = await getMessages(locale);
   return (
-    <html lang="ar">
+    <html lang={locale}>
       <head>
       </head>
       <body
