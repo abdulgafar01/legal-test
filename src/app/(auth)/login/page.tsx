@@ -335,7 +335,7 @@ const LoginContent = () => {
                   You do not have an account?{" "}
                 </span>
                 <Link
-                  href="/account"
+                  href="/signup/seeker"
                   className="text-blue-600 hover:underline font-medium"
                 >
                   Sign up

@@ -53,8 +53,11 @@ export default function Header() {
               >
                 Login
               </Link>
-              <Link href="/account" className="btn-primary text-sm">
+              <Link href="/signup/seeker" className="btn-primary text-sm">
                 Get Started
+              </Link>
+              <Link href="/signup/practitioner" className="btn-secondary text-sm">
+                For Lawyers
               </Link>
             </>
           ) : (
@@ -130,11 +133,18 @@ export default function Header() {
                     Login
                   </Link>
                   <Link
-                    href="/account"
+                    href="/signup/seeker"
                     onClick={() => setOpen(false)}
-                    className="w-full text-center py-3 rounded-xl btn-secondary text-smtransition-all"
+                    className="w-full text-center py-3 rounded-xl btn-primary text-sm transition-all"
                   >
                     Get Started
+                  </Link>
+                  <Link
+                    href="/signup/practitioner"
+                    onClick={() => setOpen(false)}
+                    className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all"
+                  >
+                    For Lawyers
                   </Link>
                 </>
               ) : (

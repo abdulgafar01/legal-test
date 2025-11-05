@@ -110,7 +110,7 @@ export default function Pricing(){
                     </li>
                   ))}
                 </ul>
-                <a href={t.practitioner? '/account?type=lawyer':'/account'} className={`text-center ${t.highlight? 'btn-primary':'btn-secondary'} text-sm`}>{t.cta}</a>
+                <a href={t.practitioner? '/signup/practitioner':'/signup/seeker'} className={`text-center ${t.highlight? 'btn-primary':'btn-secondary'} text-sm`}>{t.cta}</a>
               </MotionSection>
             ))}
           </div>

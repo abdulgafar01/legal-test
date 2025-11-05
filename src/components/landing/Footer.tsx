@@ -13,8 +13,10 @@ export default function Footer(){
           <h4 className="text-sm font-bold text-black mb-3 uppercase tracking-wide">Navigation</h4>
           <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600">
             <a href="#home" className="hover:text-black">Home</a>
-            <a href="#services" className="hover:text-black">Services</a>
+            <a href="/signup/seeker" className="hover:text-black">Sign Up</a>
+            <a href="/signup/practitioner" className="hover:text-black">For Lawyers</a>
             <a href="#features" className="hover:text-black">Features</a>
+            <a href="#services" className="hover:text-black">Services</a>
             <a href="#pricing" className="hover:text-black">Pricing</a>
             {/* <a href="#contact" className="hover:text-black">Contact</a> */}
           </div>

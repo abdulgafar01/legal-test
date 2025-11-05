@@ -23,7 +23,7 @@ export default function CTAForLawyers(){
               </li>
             ))}
           </ul>
-          <Link href="/account?type=lawyer" className="btn-primary text-sm">Register as a Lawyer</Link>
+          <Link href="/signup/practitioner" className="btn-primary text-sm">Register as a Lawyer</Link>
         </MotionSection>
         <MotionSection delay={0.15} className="flex-1 grid grid-cols-2 gap-4 w-full">
           {['1200+ AI sessions monthly','48h avg lawyer response','30% lower client acquisition cost','Global compliance ready'].map(m => (

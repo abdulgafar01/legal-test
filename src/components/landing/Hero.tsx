@@ -30,7 +30,7 @@ export default function Hero(){
             TheYAS Law blends a smart AI legal assistant with a verified network of human legal practitioners. Get instant clarity on contracts, compliance, startups, immigration and more — then engage a professional when you need deeper help.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/account" className="btn-primary text-sm">Start Free</Link>
+            <Link href="/signup/seeker" className="btn-primary text-sm">Start Free</Link>
             <a href="#services" className="btn-secondary text-sm">Explore Services</a>
           </div>
 

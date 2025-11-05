@@ -39,8 +39,11 @@ export default function VideoBanner() {
             Enterprise-grade AI for contracts, compliance reviews and corporate workflows, backed by verified lawyers when you need human review.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/account" className="btn-primary">
+            <Link href="/signup/seeker" className="btn-primary">
               Get Started
+            </Link>
+            <Link href="/signup/practitioner" className="btn-secondary">
+              For Lawyers
             </Link>
             <a href="#services" className="btn-secondary">
               See How It Works

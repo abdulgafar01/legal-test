@@ -29,7 +29,7 @@ export function ResponsibleAISection() {
             <p className="text-gray-600 mb-8 leading-relaxed">
               At TheYas Law, we adhere to globally recognized Responsible AI Principles — ensuring every AI solution is developed with human and legal oversight, transparency, and accountability, while actively mitigating bias and safeguarding integrity.
             </p>
-            <Button className="bg-[var(--primary)] hover:opacity-80 text-white px-6 py-6 group" onClick={() => router.push("/account")}>
+            <Button className="bg-[var(--primary)] hover:opacity-80 text-white px-6 py-6 group" onClick={() => router.push("/signup/seeker")}>
               Explore our AI assistant
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
