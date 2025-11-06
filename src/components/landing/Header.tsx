@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import LanguageSwitcher from "../LanguageSwitcher";
+import LanguageSwitcher from "../../provider/LanguageSwitcher";
 
 const navItems = [
   { href: "#home", label: "Home" },

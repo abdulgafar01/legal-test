@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "@/components/LocaleProvider";
+import { useLocale } from "@/provider/LocaleProvider";
 
 export default function LanguageSwitcher() {
   const { locale, setLocale } = useLocale();

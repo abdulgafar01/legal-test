@@ -4,9 +4,7 @@ import "./globals.css";
 import "../styles/consultation-animations.css";
 import Providers from "@/lib/providers";
 import { Toaster } from "sonner";
-import { getUserLocale } from "@/lib/getUserLocale";
-import { getMessages } from "@/i18n";
-import { LocaleProvider } from "@/components/LocaleProvider";
+import { LocaleProvider } from "@/provider/LocaleProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,16 +32,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const locale = await getUserLocale(); 
-  const messages = await getMessages(locale);
   return (
-    <html lang={locale}>
+    <html lang="en">
       <head>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${jost.variable} ${jost.className} antialiased`}
       >
-        <LocaleProvider initialLocale={locale} messages={messages}>
+        <LocaleProvider>
         <Providers>
           {children}
           <Toaster richColors position="top-right" />
