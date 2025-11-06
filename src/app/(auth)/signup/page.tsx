@@ -8,13 +8,16 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { registerUser } from '@/lib/api/auth';
-import { toast } from 'sonner'; 
+import { registerUser, requestPhoneOtp } from '@/lib/api/auth';
+import { toast } from 'sonner';
 import axios from 'axios';
 import { useAccountTypeStore } from '@/stores/useAccountTypeStore';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 type FormValues = {
   email: string;
+  phone_number: string;
   password: string;
   confirmPassword: string;
 };
@@ -26,6 +29,15 @@ const Page = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
+  const [usePhone, setUsePhone] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  // Clear any existing auth tokens when visiting signup page
+  useEffect(() => {
+    // Clear old/invalid tokens to prevent authentication errors on public endpoints
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }, []);
 
   // Redirect to account selection if no account type is selected
   useEffect(() => {
@@ -71,12 +83,89 @@ const Page = () => {
 
   const email = watch('email');
   const password = watch('password');
-  // const confirm_password = watch('confirmPassword');
 
   // Mutation for user registration
   // Using react-query for better state management and error handling
 
-      const mutation = useMutation({
+  // Phone OTP registration mutation
+  const phoneOtpMutation = useMutation({
+    mutationFn: async (phone_number: string) => {
+      const accountType = localStorage.getItem('accountType');
+      const payload = {
+        phone_number,
+        user_type: (accountType === 'professional'
+          ? 'legal_practitioner'
+          : 'service_seeker') as 'legal_practitioner' | 'service_seeker',
+        is_signup: true,  // This is a signup attempt, not login
+      };
+      return requestPhoneOtp(payload);
+    },
+    onSuccess: (data, phone_number) => {
+      toast.success('OTP sent successfully!');
+      localStorage.setItem('userPhone', phone_number);
+      localStorage.setItem('authMethod', 'phone');
+      
+      // Store user type for routing after OTP verification
+      const accountType = localStorage.getItem('accountType');
+      localStorage.setItem('pendingUserType', accountType === 'professional' ? 'legal_practitioner' : 'service_seeker');
+      
+      // Check if debug mode is enabled and store debug OTP
+      const responseData = data?.data;
+      if (responseData?.debug_mode && responseData?.debug_otp) {
+        localStorage.setItem('debugOtp', responseData.debug_otp);
+        localStorage.setItem('debugMode', 'true');
+      } else {
+        localStorage.removeItem('debugOtp');
+        localStorage.removeItem('debugMode');
+      }
+      
+      router.push('/verifyPhone');
+    },
+    onError: (err: unknown) => {
+      if (!axios.isAxiosError(err)) {
+        toast.error('Unexpected error occurred. Please try again.');
+        return;
+      }
+      if (axios.isAxiosError(err)) {
+        if (err.message === 'Network Error') {
+          toast.error('Network error - please check your internet connection');
+          return;
+        }
+
+        const responseData = err.response?.data as {
+          error?: {
+            details?: Record<string, string | string[]>;
+          };
+          message?: string;
+        };
+
+        const apiError = responseData?.error;
+        const details = apiError?.details || {};
+        
+        // Check for phone_number specific error first
+        const phoneError = details?.phone_number;
+        if (phoneError) {
+          const msg = Array.isArray(phoneError) ? phoneError[0] : phoneError;
+          toast.error(msg);
+          return;
+        }
+        
+        // Then check for general detail error
+        const detail = details?.detail;
+        if (detail) {
+          toast.error(detail);
+          return;
+        }
+
+        // Fallback error message
+        const errorMessage = responseData?.message || 'Failed to send OTP. Please try again.';
+        toast.error(errorMessage);
+      }
+    },
+  });
+
+  // Email registration mutation
+  const mutation = useMutation({
         mutationFn: async (formData: FormValues) => {
 
           const accountType = localStorage.getItem('accountType');
@@ -105,6 +194,7 @@ const Page = () => {
 
           if (variables.email) {
               localStorage.setItem('userEmail', variables.email);
+              localStorage.setItem('authMethod', 'email');
             }
 
             
@@ -189,26 +279,42 @@ const Page = () => {
 
 
 // Function to handle form submission
-  // This will be called when the user clicks "Sign Up" after entering their email
+  // This will be called when the user clicks "Sign Up" after entering their email or phone
 
-      const onSubmit = async (data: FormValues) => {
-        // If the email field is not valid, we don't proceed to show password fields
-        
-         const isEmailValid = await trigger('email');
-          if (!isEmailValid || errors.email) return;
-          
-        if (!showPasswordField) {
-          setShowPasswordField(true);
-          return;
-        }
+  const onSubmit = async (data: FormValues) => {
+    // Validate that at least one of email or phone is provided
+    if (!email && !phoneNumber) {
+      toast.error('Please provide either an email or phone number');
+      return;
+    }
 
-        try {
-          await mutation.mutateAsync(data);
-        } catch (error) {
-          // Error is already handled in the mutation's onError
-          console.error('Registration error:', error);
-        }
-      };
+    // If using phone number, skip password and go straight to OTP
+    if (usePhone && phoneNumber) {
+      try {
+        await phoneOtpMutation.mutateAsync(phoneNumber);
+      } catch (error) {
+        console.error('Phone OTP error:', error);
+      }
+      return;
+    }
+
+    // If using email, validate and show password field
+    if (email && !usePhone) {
+      const isEmailValid = await trigger('email');
+      if (!isEmailValid || errors.email) return;
+
+      if (!showPasswordField) {
+        setShowPasswordField(true);
+        return;
+      }
+
+      try {
+        await mutation.mutateAsync(data);
+      } catch (error) {
+        console.error('Registration error:', error);
+      }
+    }
+  };
 
   return (
     <div
@@ -265,25 +371,74 @@ const Page = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    {...register('email', {
-                      required: 'Email is required',
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Invalid email address',
-                      },
-                    })}
-                    onBlur={() => trigger('email')}
-                    className={`w-full ${errors.email ? 'border-red-500' : 'border-yellow-400'}`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-                  )}
-                </div>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email (optional)
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...register('email', {
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: 'Invalid email address',
+                        },
+                        validate: (value) => {
+                          if (!value && !phoneNumber) {
+                            return 'Please provide either an email or phone number';
+                          }
+                          return true;
+                        },
+                      })}
+                      onBlur={() => trigger('email')}
+                      onChange={(e) => {
+                        if (e.target.value) setUsePhone(false);
+                      }}
+                      disabled={usePhone && !!phoneNumber}
+                      className={`w-full ${errors.email ? 'border-red-500' : 'border-yellow-400'}`}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">OR</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number (optional)
+                    </label>
+                    <div className="relative">
+                      <PhoneInput
+                        international
+                        defaultCountry="KW"
+                        value={phoneNumber}
+                        onChange={(value: string | undefined) => {
+                          setPhoneNumber(value || '');
+                          if (value) setUsePhone(true);
+                        }}
+                        disabled={!usePhone && !!email}
+                        placeholder="Enter phone number"
+                        style={{
+                          width: '100%',
+                        }}
+                      />
+                    </div>
+                    {usePhone && !phoneNumber && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Please provide either an email or phone number
+                      </p>
+                    )}
+                  </div>
+                </>
               ) : (
                 <p className="text-sm font-medium text-gray-700 mb-1">{email}</p>
               )}
@@ -350,10 +505,12 @@ const Page = () => {
               <Button
                 type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-4xl font-medium"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || phoneOtpMutation.isPending}
               >
-                {mutation.isPending
+                {mutation.isPending || phoneOtpMutation.isPending
                   ? 'Loading...'
+                  : usePhone && phoneNumber
+                  ? 'Send OTP'
                   : showPasswordField
                   ? 'Sign Up'
                   : 'Continue'}

@@ -17,7 +17,11 @@ import { Icon } from "@iconify/react";
 import { CountryCombobox } from "@/components/CountryCombobox"
 import { useCountries } from "@/hooks/useCountries"
 
-const SeekerInfo = () => {
+interface SeekerInfoProps {
+  isPhoneAuth?: boolean;
+}
+
+const SeekerInfo = ({ isPhoneAuth = false }: SeekerInfoProps) => {
   const {
     register,
     getValues,
@@ -121,7 +125,8 @@ const { data: countries = [] } = useCountries()
   
 
 
-    {/* Phone Number Input with Flag + Dial Code */}
+    {/* Phone Number Input with Flag + Dial Code - Hidden if phone auth */}
+    {!isPhoneAuth && (
       <div>
      <label className="block text-sm font-medium mb-1">Phone Number</label>
       <div className="flex gap-2">
@@ -207,6 +212,7 @@ const { data: countries = [] } = useCountries()
           </p>
         )}
       </div>
+    )}
 
 
 

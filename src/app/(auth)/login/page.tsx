@@ -8,14 +8,17 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { loginUser } from "@/lib/api/auth";
+import { loginUser, requestPhoneOtp } from "@/lib/api/auth";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 type FormValues = {
   email: string;
   password: string;
+  phone_number: string;
 };
 
 const LoginContent = () => {
@@ -25,6 +28,8 @@ const LoginContent = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
+  const [usePhone, setUsePhone] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   // Check for application submitted message
   useEffect(() => {
@@ -47,6 +52,80 @@ const LoginContent = () => {
 
   const email = watch("email");
 
+  // Phone OTP login mutation
+  const phoneOtpMutation = useMutation({
+    mutationFn: async (phone_number: string) => {
+      return requestPhoneOtp({ 
+        phone_number,
+        is_signup: false  // This is a login attempt, not signup
+      });
+    },
+    onSuccess: (data, phone_number) => {
+      toast.success('OTP sent successfully!');
+      localStorage.setItem('userPhone', phone_number);
+      localStorage.setItem('authMethod', 'phone');
+      
+      // Check if debug mode is enabled and store debug OTP
+      const responseData = data?.data;
+      if (responseData?.debug_mode && responseData?.debug_otp) {
+        localStorage.setItem('debugOtp', responseData.debug_otp);
+        localStorage.setItem('debugMode', 'true');
+      } else {
+        localStorage.removeItem('debugOtp');
+        localStorage.removeItem('debugMode');
+      }
+      
+      router.push('/verifyPhone');
+    },
+    onError: (err: unknown) => {
+      if (!axios.isAxiosError(err)) {
+        toast.error('Unexpected error occurred. Please try again.');
+        return;
+      }
+      if (axios.isAxiosError(err)) {
+        if (err.message === 'Network Error') {
+          toast.error('Network error - please check your internet connection');
+          return;
+        }
+
+        const status = err.response?.status;
+        const responseData = err.response?.data as {
+          error?: {
+            details?: Record<string, string | string[]>;
+          };
+          message?: string;
+        };
+
+        const apiError = responseData?.error;
+        const details = apiError?.details || {};
+        
+        // Check for phone_number specific error first
+        const phoneError = details?.phone_number;
+        if (phoneError) {
+          const msg = Array.isArray(phoneError) ? phoneError[0] : phoneError;
+          toast.error(msg);
+          return;
+        }
+        
+        // Then check for detail error
+        const detail = details?.detail;
+        if (detail) {
+          toast.error(detail);
+          return;
+        }
+
+        // Finally check for message
+        if (responseData?.message) {
+          toast.error(responseData.message);
+          return;
+        }
+
+        // Fallback
+        toast.error('Failed to send OTP. Please try again.');
+      }
+    },
+  });
+
   // Mutation for user registration
   // Using react-query for better state management and error handling
 
@@ -61,6 +140,7 @@ const LoginContent = () => {
     onSuccess: (data, variables) => {
       if (variables.email) {
         localStorage.setItem("userEmail", variables.email);
+        localStorage.setItem('authMethod', 'email');
       }
 
       const { tokens, user } = data.data;
@@ -190,23 +270,40 @@ const LoginContent = () => {
   });
 
   // Function to handle form submission
-  // This will be called when the user clicks "Sign Up" after entering their email
+  // This will be called when the user clicks "Sign in" after entering their email or phone
 
   const onSubmit = async (data: FormValues) => {
-    // If the email field is not valid, we don't proceed to show password fields
-
-    const isEmailValid = await trigger("email");
-    if (!isEmailValid || errors.email) return;
-
-    if (!showPasswordField) {
-      setShowPasswordField(true);
+    // Validate that at least one of email or phone is provided
+    if (!email && !phoneNumber) {
+      toast.error('Please provide either an email or phone number');
       return;
     }
 
-    try {
-      await mutation.mutateAsync(data);
-    } catch (error) {
-      console.error(error);
+    // If using phone number
+    if (usePhone && phoneNumber) {
+      try {
+        await phoneOtpMutation.mutateAsync(phoneNumber);
+      } catch (error) {
+        console.error('Phone OTP error:', error);
+      }
+      return;
+    }
+
+    // If using email
+    if (email) {
+      const isEmailValid = await trigger("email");
+      if (!isEmailValid || errors.email) return;
+
+      if (!showPasswordField) {
+        setShowPasswordField(true);
+        return;
+      }
+
+      try {
+        await mutation.mutateAsync(data);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -247,31 +344,78 @@ const LoginContent = () => {
             <p className="text-gray-600 mb-4">Your legal access starts here.</p>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    onBlur={() => trigger("email")}
-                    className={`w-full ${
-                      errors.email ? "border-red-500" : "border-yellow-400"
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
-                </div>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email (optional)
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      {...register("email", {
+                        pattern: {
+                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                          message: "Invalid email address",
+                        },
+                        validate: (value) => {
+                          if (!value && !phoneNumber) {
+                            return 'Please provide either an email or phone number';
+                          }
+                          return true;
+                        },
+                      })}
+                      onBlur={() => trigger("email")}
+                      onChange={(e) => {
+                        if (e.target.value) setUsePhone(false);
+                      }}
+                      disabled={usePhone && !!phoneNumber}
+                      className={`w-full ${
+                        errors.email ? "border-red-500" : "border-yellow-400"
+                      }`}
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">OR</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number (optional)
+                    </label>
+                    <div className="relative">
+                      <PhoneInput
+                        international
+                        defaultCountry="KW"
+                        value={phoneNumber}
+                        onChange={(value: string | undefined) => {
+                          setPhoneNumber(value || '');
+                          if (value) setUsePhone(true);
+                        }}
+                        disabled={!usePhone && !!email}
+                        placeholder="Enter phone number"
+                        style={{
+                          width: '100%',
+                        }}
+                      />
+                    </div>
+                    {usePhone && !phoneNumber && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Please provide either an email or phone number
+                      </p>
+                    )}
+                  </div>
+                </>
               ) : (
                 <p className="text-sm font-medium text-gray-700 mb-1">
                   {email}
@@ -321,10 +465,12 @@ const LoginContent = () => {
               <Button
                 type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-4xl font-medium cursor-pointer"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || phoneOtpMutation.isPending}
               >
-                {mutation.isPending
+                {mutation.isPending || phoneOtpMutation.isPending
                   ? "Loading..."
+                  : usePhone && phoneNumber
+                  ? 'Send OTP'
                   : showPasswordField
                   ? "Sign in"
                   : "Continue"}

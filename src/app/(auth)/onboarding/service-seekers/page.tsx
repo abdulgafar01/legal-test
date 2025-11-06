@@ -11,12 +11,19 @@ import { toast } from 'sonner'
 import axios from 'axios'
 
 const Page = () => {
+  const router = useRouter()
+  
+  // Check authentication method
+  const authMethod = typeof window !== 'undefined' ? localStorage.getItem('authMethod') : null
+  const userPhone = typeof window !== 'undefined' ? localStorage.getItem('userPhone') : null
+  const isPhoneAuth = authMethod === 'phone'
+  
   const methods = useForm<seekerSchemaType>({
     resolver: zodResolver(seekerSchema),
     defaultValues: {
       first_name: '',
       last_name: '',
-      phone_number: '',
+      phone_number: isPhoneAuth ? userPhone || '' : '',
       country: '',
       state: '',
       city: '',
@@ -27,7 +34,6 @@ const Page = () => {
   })
 
   const { mutate, isPending } = useCompleteProfile()
-    const router = useRouter()
 
   const {
     handleSubmit,
@@ -142,7 +148,7 @@ const Page = () => {
               </div>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <SeekerInfo />
+            <SeekerInfo isPhoneAuth={isPhoneAuth} />
 
             <button
               type="submit"
