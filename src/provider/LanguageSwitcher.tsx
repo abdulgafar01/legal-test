@@ -5,14 +5,16 @@ import { useLocale } from "@/provider/LocaleProvider";
 export default function LanguageSwitcher() {
   const { locale, setLocale } = useLocale();
 
+  const toggleLocale = () => {
+    setLocale(locale === "en" ? "ar" : "en");
+  };
+
   return (
-      <select
-      value={locale}
-      onChange={(e) => setLocale(e.target.value as "en" | "ar")}
-      className="border rounded px-2 py-1 text-sm"
+    <button
+      onClick={toggleLocale}
+      className="px-3 py-1 rounded-md border text-sm bg-amber-200 shadow-sm hover:bg-amber-100 transition cursor-pointer"
     >
-      <option value="en">English</option>
-      <option value="ar">العربية</option>
-    </select>
+      {locale === "en" ? "العربية" : "en"}
+    </button>
   );
 }
