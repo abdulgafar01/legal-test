@@ -1,0 +1,22 @@
+{
+  "home": {
+    "title": "Welcome to our platform",
+    "description": "Explore great content and opportunities"
+  },  
+  "hero": {
+    "headline": "AI Powered Legal Guidance meets Real Lawyers",
+    "title": "Welcome to TheYAS Law Platform",
+    "description": "TheYAS Law blends a smart AI legal assistant with a verified network of human legal practitioners. Get instant clarity on contracts, compliance, startups, immigration and more — then engage a professional when you need deeper help.",
+    "ctaStart": "Start Free",
+    "ctaExplore": "Explore Services",
+    "features": [
+      "AI trained on legal scenarios",
+      "Book vetted lawyers instantly",
+      "Secure chat & file sharing",
+      "Transparent pricing"
+    ]
+
+}
+
+}
+

@@ -4,6 +4,7 @@ import "./globals.css";
 import "../styles/consultation-animations.css";
 import Providers from "@/lib/providers";
 import { Toaster } from "sonner";
+import { LocaleProvider } from "@/provider/LocaleProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   keywords: ["Legal AI", "Artificial Intelligence", "Legal Practitioner", "Consultations", "Kuwait", "AI"]
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -38,10 +39,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${jost.variable} ${jost.className} antialiased`}
       >
+        <LocaleProvider>
         <Providers>
           {children}
           <Toaster richColors position="top-right" />
         </Providers>
+
+        </LocaleProvider>
       </body>
     </html>
   );
