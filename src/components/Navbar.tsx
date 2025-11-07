@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCurrentUser, useProfileImage } from "@/hooks/useCurrentUser";
 import { useState } from "react";
 import Notifications from "./Notifications";
+import { useTranslations } from "next-intl";
 
 interface NavbarProps {
   isMobile: boolean;
@@ -25,6 +26,7 @@ const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
     userType === "professional" ||
     hasPractitionerProfile;
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const t = useTranslations("settingsSeeker");
 
   return (
     <>
@@ -61,7 +63,7 @@ const Navbar = ({ isMobile, showMobileMenu, toggleSidebar }: NavbarProps) => {
           {!isPractitioner && (
             <Link href="/dashboard/professionals">
               <Button className="bg-amber-200 rounded-xl text-black hover:bg-amber-100 cursor-pointer ml-2">
-                Get a professional
+                {t("CTA")}
               </Button>
             </Link>
           )}
