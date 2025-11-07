@@ -17,12 +17,15 @@ import enLogin from "@/messages/login/en.json";
 import arLogin from "@/messages/login/ar.json";
 import enVerifyPhone from "@/messages/verifyPhone/en.json";
 import arVerifyPhone from "@/messages/verifyPhone/ar.json";
+import enSettingsSeeker from "@/messages/dashboard/settings-seeker/en.json";
+import arSettingsSeeker from "@/messages/dashboard/settings-seeker/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
   ...enMessagesSignup,
   ...enLogin,
   ...enVerifyPhone,
+  ...enSettingsSeeker,
 };
 
 const arMessages = {
@@ -30,6 +33,7 @@ const arMessages = {
   ...arMessagesSignup,
   ...arLogin,
   ...arVerifyPhone,
+  ...arSettingsSeeker,
 };
 
 const messagesMap = {

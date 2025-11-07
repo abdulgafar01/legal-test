@@ -483,7 +483,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
                 disabled={mutation.isPending || phoneOtpMutation.isPending}
               >
                 {mutation.isPending || phoneOtpMutation.isPending
-                  ? t("Loading...")
+                  ? t("Loading")
                   : usePhone && phoneNumber
                   ? t("Send OTP")
                   : showPasswordField
