@@ -15,17 +15,21 @@ import enMessagesSignup from "@/messages/signup/en.json";
 import arMessagesSignup from "@/messages/signup/ar.json";
 import enLogin from "@/messages/login/en.json";
 import arLogin from "@/messages/login/ar.json";
+import enVerifyPhone from "@/messages/verifyPhone/en.json";
+import arVerifyPhone from "@/messages/verifyPhone/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
   ...enMessagesSignup,
   ...enLogin,
+  ...enVerifyPhone,
 };
 
 const arMessages = {
   ...arMessagesLanding,
   ...arMessagesSignup,
   ...arLogin,
+  ...arVerifyPhone,
 };
 
 const messagesMap = {

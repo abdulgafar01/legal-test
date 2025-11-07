@@ -15,7 +15,7 @@
   "Password is required": "كلمة المرور مطلوبة",
   "Password must be at least 8 characters": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
   "Enter your password": "أدخل كلمة المرور الخاصة بك",
-  "Loading...": "جارٍ التحميل...",
+  "Loading": "جارٍ التحميل...",
   "Send OTP": "إرسال رمز التحقق",
   "Sign in": "تسجيل الدخول",
   "Continue": "متابعة",

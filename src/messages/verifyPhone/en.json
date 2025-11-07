@@ -1,0 +1,13 @@
+{
+  "verifyPhone": {
+    "pageTitle": "Verify Your Phone Number 📱",
+    "enterCode": "Enter the 6-digit code sent to",
+    "otpResent": "OTP resent successfully to your phone.",
+    "resendIn": "Resend OTP in {resendTimer} seconds",
+    "Verifying": "Verifying...",
+    "Verify Phone Number": "Verify Phone Number",
+    "Resending": "Resending...",
+    "Resend OTP": "Resend OTP",
+    "Wrong number? Go back to signup": "Wrong number? Go back to signup"
+  }
+}
