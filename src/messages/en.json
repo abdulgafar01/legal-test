@@ -97,5 +97,16 @@
     "heading": "Responsibly developed AI, shaped by legal professionals to uphold fairness and accountability",
     "description": "At TheYas Law, we adhere to globally recognized Responsible AI Principles — ensuring every AI solution is developed with human and legal oversight, transparency, and accountability, while actively mitigating bias and safeguarding integrity.",
     "button": "Explore our AI assistant"
+  },
+  "featuresAccordion": {
+    "heading": "Legal AI streamlines and enhances legal work—now with advanced AI capabilities",
+    "title": "Conversational Legal Search",
+    "description": "Interact with the AI assistant within Legal AI like you would a trusted colleague who intelligently and conversationally responds to your requests.",
+    "title2": "Draft in Moments",
+    "description2": "Go from blank page to first draft in moments. Easily adjust tone, length, or positioning. Generate winning arguments and quality contract clauses with remarkable speed, ease, and precision.",
+    "title3": "Accurate Summarization",
+    "description3": "Get the legal summary you need in seconds without clicking into a single search result. Quickly understand complex legal documents and case law with AI-powered analysis.",
+    "title4": "Upload Your Documents",
+    "description4": "Upload contracts, agreements, or legal documents for instant AI-powered analysis and review. Get detailed feedback, risk assessment, and actionable insights in minutes."
   }
 }

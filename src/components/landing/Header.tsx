@@ -8,13 +8,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import LanguageSwitcher from "../../provider/LanguageSwitcher";
 import { useTranslations } from "next-intl";
 
-
-
-
-
 export default function Header() {
   const t = useTranslations("header");
-  
+
   const navItems = [
     { href: "#home", label: t("home") },
     { href: "#services", label: t("services") },
@@ -26,7 +22,6 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
-  
 
   const handleLogout = () => {
     logout();
@@ -35,7 +30,10 @@ export default function Header() {
   };
   return (
     <header className="w-full bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-40 font-nunito">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8">
+      <div
+        className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8"
+        dir="ltr"
+      >
         <Link
           href="#home"
           className="text-2xl font-extrabold tracking-tight text-black"
@@ -61,13 +59,16 @@ export default function Header() {
                 href="/login"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                 {t("login")}
+                {t("login")}
               </Link>
               <Link href="/signup/seeker" className="btn-primary text-sm">
                 {t("getStarted")}
               </Link>
-              <Link href="/signup/practitioner" className="btn-secondary text-sm">
-                 {t("forLawyers")}
+              <Link
+                href="/signup/practitioner"
+                className="btn-secondary text-sm"
+              >
+                {t("forLawyers")}
               </Link>
             </>
           ) : (
@@ -76,10 +77,10 @@ export default function Header() {
                 href="/dashboard"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                 {t("dashboard")}
+                {t("dashboard")}
               </Link>
               <button onClick={handleLogout} className="btn-secondary text-sm">
-                 {t("logout")}
+                {t("logout")}
               </button>
             </>
           )}
@@ -96,8 +97,8 @@ export default function Header() {
           )}
         </button>
       </div>
-        {/* Mobile menu */}
-      <AnimatePresence >
+      {/* Mobile menu */}
+      <AnimatePresence>
         {open && (
           <motion.div
             key="mobile-menu"
@@ -140,21 +141,21 @@ export default function Header() {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition-all font-medium"
                   >
-                     {t("login")}
+                    {t("login")}
                   </Link>
                   <Link
                     href="/signup/seeker"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-primary text-sm transition-all"
                   >
-                     {t("getStarted")}
+                    {t("getStarted")}
                   </Link>
                   <Link
                     href="/signup/practitioner"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                     {t("forLawyers")}
+                    {t("forLawyers")}
                   </Link>
                 </>
               ) : (
@@ -164,7 +165,7 @@ export default function Header() {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all font-medium"
                   >
-                     {t("dashboard")}
+                    {t("dashboard")}
                   </Link>
                   <button
                     onClick={() => {
@@ -173,7 +174,7 @@ export default function Header() {
                     }}
                     className="w-full py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                     {t("logout")}
+                    {t("logout")}
                   </button>
                 </>
               )}

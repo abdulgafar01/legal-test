@@ -9,6 +9,7 @@ import {
   Upload,
 } from "lucide-react";
 import { ImageWithFallback } from "./ImageWithFallback";
+import { useTranslations } from "next-intl";
 
 interface Feature {
   id: string;
@@ -19,39 +20,40 @@ interface Feature {
 }
 
 export function FeaturesAccordion() {
+  const t = useTranslations("featuresAccordion");
   const features: Feature[] = [
     {
       id: "conversational",
-      title: "Conversational Legal Search",
+      title: t("title"),
       description:
-        "Interact with the AI assistant within Legal AI like you would a trusted colleague who intelligently and conversationally responds to your requests.",
+        t("description"),
       icon: MessageSquare,
       image:
         "https://images.unsplash.com/photo-1743865318581-2e0e59e7292e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMHdvcmtpbmclMjBsYXB0b3B8ZW58MXx8fHwxNzYxMjE3NTYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
     },
     {
       id: "draft",
-      title: "Draft in Moments",
+      title: t("title2"),
       description:
-        "Go from blank page to first draft in moments. Easily adjust tone, length, or positioning. Generate winning arguments and quality contract clauses with remarkable speed, ease, and precision.",
+        t("description2"),
       icon: FileEdit,
       image:
         "https://images.unsplash.com/photo-1758518727077-ffb66ffccced?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHBlb3BsZSUyMG1lZXRpbmclMjBkaXNjdXNzaW9ufGVufDF8fHx8MTc2MTIxNzU2MXww&ixlib=rb-4.1.0&q=80&w=1080",
     },
     {
       id: "summarization",
-      title: "Accurate Summarization",
+      title: t("title3"),
       description:
-        "Get the legal summary you need in seconds without clicking into a single search result. Quickly understand complex legal documents and case law with AI-powered analysis.",
+        t("description3"),
       icon: FileSearch,
       image:
         "https://images.unsplash.com/photo-1713947503486-0e3916611517?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjByZWFkaW5nJTIwZG9jdW1lbnRzJTIwb2ZmaWNlfGVufDF8fHx8MTc2MTIxNzU2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
     },
     {
       id: "upload",
-      title: "Upload Your Documents",
+      title: t("title4"),
       description:
-        "Upload contracts, agreements, or legal documents for instant AI-powered analysis and review. Get detailed feedback, risk assessment, and actionable insights in minutes.",
+        t("description4"),
       icon: Upload,
       image:
         "https://images.unsplash.com/photo-1728302732935-421062dcd60f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2N1bWVudCUyMHVwbG9hZCUyMHRlY2hub2xvZ3l8ZW58MXx8fHwxNzYxMjE3NTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -66,18 +68,17 @@ export function FeaturesAccordion() {
     features.find((f) => f.id === selectedFeature) || features[0];
 
   return (
-    <section className="py-20 lg:py-32 bg-muted/20" id='features'>
+    <section className="py-20 lg:py-32 bg-muted/20" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-3xl mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">
-            Legal AI streamlines and enhances legal work—now with advanced AI
-            capabilities
+            {t("heading")}
           </h2>
         </div>
 
         {/* Interactive Content */}
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 items-start" dir="ltr">
           {/* Features List */}
           <div className="space-y-3">
             {features.map((feature) => {
