@@ -12,8 +12,10 @@ import { loginUser, requestPhoneOtp } from "@/lib/api/auth";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import LanguageSwitcher from "@/provider/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 type FormValues = {
   email: string;
@@ -25,11 +27,11 @@ const LoginContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
-
+  const t = useTranslations("login");
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [usePhone, setUsePhone] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   // Check for application submitted message
   useEffect(() => {
@@ -55,36 +57,36 @@ const LoginContent = () => {
   // Phone OTP login mutation
   const phoneOtpMutation = useMutation({
     mutationFn: async (phone_number: string) => {
-      return requestPhoneOtp({ 
+      return requestPhoneOtp({
         phone_number,
-        is_signup: false  // This is a login attempt, not signup
+        is_signup: false, // This is a login attempt, not signup
       });
     },
     onSuccess: (data, phone_number) => {
-      toast.success('OTP sent successfully!');
-      localStorage.setItem('userPhone', phone_number);
-      localStorage.setItem('authMethod', 'phone');
-      
+      toast.success("OTP sent successfully!");
+      localStorage.setItem("userPhone", phone_number);
+      localStorage.setItem("authMethod", "phone");
+
       // Check if debug mode is enabled and store debug OTP
       const responseData = data?.data;
       if (responseData?.debug_mode && responseData?.debug_otp) {
-        localStorage.setItem('debugOtp', responseData.debug_otp);
-        localStorage.setItem('debugMode', 'true');
+        localStorage.setItem("debugOtp", responseData.debug_otp);
+        localStorage.setItem("debugMode", "true");
       } else {
-        localStorage.removeItem('debugOtp');
-        localStorage.removeItem('debugMode');
+        localStorage.removeItem("debugOtp");
+        localStorage.removeItem("debugMode");
       }
-      
-      router.push('/verifyPhone');
+
+      router.push("/verifyPhone");
     },
     onError: (err: unknown) => {
       if (!axios.isAxiosError(err)) {
-        toast.error('Unexpected error occurred. Please try again.');
+        toast.error("Unexpected error occurred. Please try again.");
         return;
       }
       if (axios.isAxiosError(err)) {
-        if (err.message === 'Network Error') {
-          toast.error('Network error - please check your internet connection');
+        if (err.message === "Network Error") {
+          toast.error("Network error - please check your internet connection");
           return;
         }
 
@@ -98,7 +100,7 @@ const LoginContent = () => {
 
         const apiError = responseData?.error;
         const details = apiError?.details || {};
-        
+
         // Check for phone_number specific error first
         const phoneError = details?.phone_number;
         if (phoneError) {
@@ -106,7 +108,7 @@ const LoginContent = () => {
           toast.error(msg);
           return;
         }
-        
+
         // Then check for detail error
         const detail = details?.detail;
         if (detail) {
@@ -121,7 +123,7 @@ const LoginContent = () => {
         }
 
         // Fallback
-        toast.error('Failed to send OTP. Please try again.');
+        toast.error("Failed to send OTP. Please try again.");
       }
     },
   });
@@ -140,7 +142,7 @@ const LoginContent = () => {
     onSuccess: (data, variables) => {
       if (variables.email) {
         localStorage.setItem("userEmail", variables.email);
-        localStorage.setItem('authMethod', 'email');
+        localStorage.setItem("authMethod", "email");
       }
 
       const { tokens, user } = data.data;
@@ -275,7 +277,7 @@ const LoginContent = () => {
   const onSubmit = async (data: FormValues) => {
     // Validate that at least one of email or phone is provided
     if (!email && !phoneNumber) {
-      toast.error('Please provide either an email or phone number');
+      toast.error(t("Please provide either an email or phone number"));
       return;
     }
 
@@ -284,7 +286,7 @@ const LoginContent = () => {
       try {
         await phoneOtpMutation.mutateAsync(phoneNumber);
       } catch (error) {
-        console.error('Phone OTP error:', error);
+        console.error("Phone OTP error:", error);
       }
       return;
     }
@@ -310,6 +312,7 @@ const LoginContent = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
+      dir="ltr"
       style={{
         backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
@@ -324,42 +327,45 @@ const LoginContent = () => {
         <div className="flex-1 text-center lg:text-left max-w-xl">
           <Scale className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Welcome Back.
+            {t("welcomeBack")}
             <br />
-            Access Legal Services
+            {t("Access Legal Services")}
             <br />
-            Seamlessly.
+            {t("Seamlessly")}.
           </h1>
           <p className="text-xl text-gray-200 max-w-lg">
-            Login to your account and connect with legal professionals
-            instantly.
+            {t("subText")}
           </p>
         </div>
 
         <div className="flex-1 max-w-md w-full">
           <div className="bg-white rounded-2xl py-6 px-8 shadow-2xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Login to your account
+              {t("Login to your account")}
             </h2>
-            <p className="text-gray-600 mb-4">Your legal access starts here.</p>
+            <p className="text-gray-600 mb-4">
+              {t("legalAccessStart")}
+            </p>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email (optional)
+                      {t("Email (optional)")}
                     </label>
                     <Input
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder={t("Enter your email")}
                       {...register("email", {
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email address",
+                          message: t("Invalid email address"),
                         },
                         validate: (value) => {
                           if (!value && !phoneNumber) {
-                            return 'Please provide either an email or phone number';
+                            return t(
+                              "Please provide either an email or phone number"
+                            );
                           }
                           return true;
                         },
@@ -391,7 +397,7 @@ const LoginContent = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number (optional)
+                      {t("Phone Number (optional)")}
                     </label>
                     <div className="relative">
                       <PhoneInput
@@ -399,19 +405,19 @@ const LoginContent = () => {
                         defaultCountry="KW"
                         value={phoneNumber}
                         onChange={(value: string | undefined) => {
-                          setPhoneNumber(value || '');
+                          setPhoneNumber(value || "");
                           if (value) setUsePhone(true);
                         }}
                         disabled={!usePhone && !!email}
-                        placeholder="Enter phone number"
+                        placeholder={t("Enter phone number")}
                         style={{
-                          width: '100%',
+                          width: "100%",
                         }}
                       />
                     </div>
                     {usePhone && !phoneNumber && (
                       <p className="text-red-500 text-sm mt-1">
-                        Please provide either an email or phone number
+                        {t("Please provide either an email or phone number")}
                       </p>
                     )}
                   </div>
@@ -426,17 +432,19 @@ const LoginContent = () => {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password
+                      {t("Password")}
                     </label>
                     <div className="relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
+                        placeholder={t("Enter your password")}
                         {...register("password", {
-                          required: "Password is required",
+                          required: t("Password is required"),
                           minLength: {
                             value: 8,
-                            message: "Password must be at least 8 characters",
+                            message: t(
+                              "Password must be at least 8 characters"
+                            ),
                           },
                         })}
                         className="w-full pr-10"
@@ -468,23 +476,23 @@ const LoginContent = () => {
                 disabled={mutation.isPending || phoneOtpMutation.isPending}
               >
                 {mutation.isPending || phoneOtpMutation.isPending
-                  ? "Loading..."
+                  ? t("Loading")
                   : usePhone && phoneNumber
-                  ? 'Send OTP'
+                  ? t("Send OTP")
                   : showPasswordField
-                  ? "Sign in"
-                  : "Continue"}
+                  ? t("Sign in")
+                  : t("Continue")}
               </Button>
 
               <div className="text-center">
                 <span className="text-gray-500">
-                  You do not have an account?{" "}
+                  {t("Do you have an account?")}{" "}
                 </span>
                 <Link
                   href="/signup/seeker"
                   className="text-blue-600 hover:underline font-medium"
                 >
-                  Sign up
+                  {t("Sign up")}
                 </Link>
               </div>
 
@@ -517,13 +525,13 @@ const LoginContent = () => {
               </div> */}
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                By signing up, you agree to our{" "}
+                {t("By signing up, you agree to our")}{" "}
                 <Link href="/terms" className="underline">
-                  Terms and Conditions of Use
+                  {t("Terms and Conditions of Use")}
                 </Link>{" "}
-                and our{" "}
+                {t("and our")}{" "}
                 <Link href="/privacy" className="underline">
-                  Privacy Policy
+                  {t("Privacy Policy")}
                 </Link>
               </p>
             </form>
@@ -542,6 +550,7 @@ const LoginContent = () => {
 
 const Page = () => (
   <Suspense fallback={null}>
+    <LanguageSwitcher isAbsolute={true} />
     <LoginContent />
   </Suspense>
 );

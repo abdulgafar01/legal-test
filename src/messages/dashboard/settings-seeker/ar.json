@@ -1,0 +1,22 @@
+{
+  "settingsSeeker": {
+    "heading": "الإعدادات",
+    "Appearance": "المظهر",
+    "System": "النظام",
+    "Language": "اللغة",
+    "Notifications": "الإشعارات",
+    "Notification": "إشعار",
+    "Responses": "الردود",
+    "Push": "دفع",
+    "Notification about tasks": "إشعار حول المهام",
+    "notificationsDescription": "احصل على إشعار عند استجابة الذكاء الاصطناعي القانوني للطلبات التي تستغرق وقتًا أو عند تلقي ردود الاستشارات أثناء عدم اتصالك بالإنترنت",
+    "Email": "البريد الإلكتروني",
+    "Delete Account": "حذف الحساب",
+    "English": "الإنجليزية",
+    "Arabic": "العربية",
+    "CTA": "احصل على محترف",
+    "Explore": "استكشف",
+    "Legal AI": "الذكاء الاصطناعي القانوني",
+    "Consultation": "استشارة"
+  }
+}

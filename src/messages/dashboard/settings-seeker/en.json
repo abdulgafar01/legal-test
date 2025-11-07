@@ -1,0 +1,22 @@
+{
+  "settingsSeeker": {
+    "heading": "Settings",
+    "Appearance": "Appearance",
+    "System": "System",
+    "Language": "Language",
+    "Notifications": "Notifications",
+    "Notification": "Notification",
+    "Responses": "Responses",
+    "Push": "Push",
+    "Notification about tasks": "Notification about tasks",
+    "notificationsDescription": "Get response when legal AI response to requests that take time or consultation responses when you are offline",
+    "Email": "Email",
+    "Delete Account": "Delete Account",
+    "English": "English",
+    "Arabic": "Arabic",
+    "CTA": "Get a professional",
+    "Explore": "Explore",
+    "Legal AI": "Legal AI",
+    "Consultation": "Consultation"
+  }
+}

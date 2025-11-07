@@ -8,6 +8,7 @@ import {
 } from "../ui/carousel";
 import { useState, useEffect } from "react";
 import { ImageWithFallback } from "./ImageWithFallback";
+import { useTranslations } from "next-intl";
 
 interface BlogPost {
   id: number;
@@ -54,6 +55,7 @@ export function BlogCarouselSection() {
   const [count, setCount] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
+  const t = useTranslations();
 
   useEffect(() => {
     if (!api) {
@@ -111,8 +113,8 @@ export function BlogCarouselSection() {
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">The Latest</h2>
-          <div className="flex gap-2">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">{t("blogCarousel.heading")}</h2>
+          <div className="flex gap-2" dir="ltr">
             <button
               onClick={() => {
                 api?.scrollPrev();
@@ -141,6 +143,7 @@ export function BlogCarouselSection() {
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          dir="ltr"
         >
           <Carousel
             setApi={setApi}
