@@ -112,5 +112,8 @@
   "pricing": {
     "heading": "Simple, transparent pricing",
     "subHeading": "No trial tier — guests can explore the AI assistant with limited daily queries before upgrading."
+  },
+  "blogCarousel": {
+    "heading": "The Latest"
   }
 }
