@@ -115,5 +115,18 @@
   },
   "blogCarousel": {
     "heading": "The Latest"
+  },
+  "footer": {
+    "subHeading": "Hybrid AI + human legal network delivering faster clarity and better outcomes for modern businesses & professionals.",
+    "heading1": "Navigation",
+    "heading2": "Legal",
+    "link1_1": "Home",
+    "link1_2": "Sign Up",
+    "link1_3": "For Lawyers",
+    "link1_4": "Features",
+    "link1_5": "Services",
+    "link2_1": "Privacy Policy",
+    "link2_2": "Terms & Conditions",
+    "copyMessage": "All rights reserved"
   }
 }
