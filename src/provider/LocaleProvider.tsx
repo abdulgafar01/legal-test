@@ -1,11 +1,28 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { IntlProvider } from "next-intl";
 import { Locale, detectLocale } from "@/i18n";
-import enMessages from "@/messages/en.json";
-import arMessages from "@/messages/ar.json";
+import enMessagesLanding from "@/messages/en.json";
+import arMessagesLanding from "@/messages/ar.json";
+import enMessagesSignup from "@/messages/signup/en.json";
+import arMessagesSignup from "@/messages/signup/ar.json";
 
+const enMessages = {
+  ...enMessagesLanding,
+  ...enMessagesSignup,
+};
+
+const arMessages = {
+  ...arMessagesLanding,
+  ...arMessagesSignup,
+};
 const messagesMap = {
   en: enMessages,
   ar: arMessages,
@@ -52,7 +69,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
-      <IntlProvider locale={locale} messages={messagesMap[locale]}  timeZone="UTC">
+      <IntlProvider
+        locale={locale}
+        messages={messagesMap[locale]}
+        timeZone="UTC"
+      >
         {children}
       </IntlProvider>
     </LocaleContext.Provider>
