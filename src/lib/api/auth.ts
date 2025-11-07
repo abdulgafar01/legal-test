@@ -194,3 +194,83 @@ export const refreshToken = async (refresh: string) => {
   );
   return response.data;
 };
+
+// ============================================
+// PHONE OTP AUTHENTICATION
+// ============================================
+
+// Request OTP for phone number
+export const requestPhoneOtp = async (data: {
+  phone_number: string;
+  user_type?: 'service_seeker' | 'legal_practitioner';
+  is_signup?: boolean;
+}) => {
+  const response = await instance.post(
+    API_ENDPOINTS.auth.phoneAuth.requestOtp,
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+// Verify phone OTP
+export const verifyPhoneOtp = async (data: {
+  phone_number: string;
+  otp_code: string;
+}) => {
+  const response = await instance.post(
+    API_ENDPOINTS.auth.phoneAuth.verifyOtp,
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+// Resend phone OTP
+export const resendPhoneOtp = async (phone_number: string) => {
+  const response = await instance.post(
+    API_ENDPOINTS.auth.phoneAuth.resendOtp,
+    { phone_number },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+// Check if phone number is registered
+export const checkPhoneNumber = async (phone_number: string) => {
+  const response = await instance.get(
+    `${API_ENDPOINTS.auth.phoneAuth.checkPhone}?phone_number=${encodeURIComponent(phone_number)}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+// Complete phone profile after verification
+export const completePhoneProfile = async (data: seekerSchemaType) => {
+  const response = await instance.post(
+    API_ENDPOINTS.auth.phoneAuth.completeProfile,
+    data,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};

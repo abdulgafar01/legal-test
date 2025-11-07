@@ -9,10 +9,31 @@ const instance = axios.create({
 
 // Request interceptor to add token to headers
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  // List of endpoints that should NOT include auth headers (public endpoints)
+  const publicEndpoints = [
+    '/api/v1/phone-auth/request_otp',
+    '/api/v1/phone-auth/verify_otp',
+    '/api/v1/phone-auth/resend_otp',
+    '/api/v1/phone-auth/check_phone',
+    '/api/v1/auth/register',
+    '/api/v1/auth/login',
+    '/api/v1/auth/verify-email',
+    '/api/v1/auth/resend-verification',
+  ];
+
+  // Check if the request URL matches any public endpoint
+  const isPublicEndpoint = publicEndpoints.some(endpoint => 
+    config.url?.includes(endpoint)
+  );
+
+  // Only add token if it's not a public endpoint
+  if (!isPublicEndpoint) {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
+  
   return config;
 });
 
@@ -21,6 +42,12 @@ instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Suppress console errors for expected 404 on phone-auth endpoints (user not found during login)
+    if (error.response?.status === 404 && originalRequest.url?.includes('phone-auth')) {
+      // This is an expected error (user not registered), don't log to console
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;

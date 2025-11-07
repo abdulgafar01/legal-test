@@ -12,6 +12,13 @@ interface ApiConfig {
       completeProfile: string;
       practitionerCompleteProfile: string;
       tokenRefresh: string;
+      phoneAuth: {
+        requestOtp: string;
+        verifyOtp: string;
+        resendOtp: string;
+        checkPhone: string;
+        completeProfile: string;
+      };
     };
     chatbot?: {
       threads: string;
@@ -82,6 +89,13 @@ export const API_CONFIG: ApiConfig = {
       practitionerCompleteProfile:
         "/api/v1/auth/practitioner_complete_profile/",
       tokenRefresh: "/api/v1/auth/token/refresh/",
+      phoneAuth: {
+        requestOtp: "/api/v1/phone-auth/request_otp/",
+        verifyOtp: "/api/v1/phone-auth/verify_otp/",
+        resendOtp: "/api/v1/phone-auth/resend_otp/",
+        checkPhone: "/api/v1/phone-auth/check_phone/",
+        completeProfile: "/api/v1/phone-auth/complete_phone_profile/",
+      },
     },
     profile: {
       me: "/api/v1/profile/me/",
