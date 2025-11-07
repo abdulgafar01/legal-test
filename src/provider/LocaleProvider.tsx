@@ -13,16 +13,21 @@ import enMessagesLanding from "@/messages/en.json";
 import arMessagesLanding from "@/messages/ar.json";
 import enMessagesSignup from "@/messages/signup/en.json";
 import arMessagesSignup from "@/messages/signup/ar.json";
+import enLogin from "@/messages/login/en.json";
+import arLogin from "@/messages/login/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
   ...enMessagesSignup,
+  ...enLogin,
 };
 
 const arMessages = {
   ...arMessagesLanding,
   ...arMessagesSignup,
+  ...arLogin,
 };
+
 const messagesMap = {
   en: enMessages,
   ar: arMessages,
