@@ -1,8 +1,29 @@
 {
+  "header": {
+    "home": "Home",
+    "services": "Services",
+    "features": "Features",
+    "pricing": "Pricing",
+    "contact": "Contact",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "forLawyers": "For Lawyers",
+    "dashboard": "Go to Dashboard",
+    "logout": "Logout"
+  },
   "home": {
     "title": "Welcome to our platform",
     "description": "Explore great content and opportunities"
-  },  
+  },
+   "videoBanner": {
+    "title_main": "TheYas",
+    "title_highlight": "Law",
+    "title_tagline": "Legal AI Trusted, Compliant, Ready",
+    "description": "Enterprise-grade AI for contracts, compliance reviews and corporate workflows, backed by verified lawyers when you need human review.",
+    "get_started": "Get Started",
+    "for_lawyers": "For Lawyers",
+    "see_how": "See How It Works"
+  },
   "hero": {
     "headline": "AI Powered Legal Guidance meets Real Lawyers",
     "title": "Welcome to TheYAS Law Platform",
@@ -15,8 +36,66 @@
       "Secure chat & file sharing",
       "Transparent pricing"
     ]
-
+  },
+  "iphone": {
+    "status_time": "9:41 am",
+    "chat_header_action": "Get a professional",
+    "ai_welcome": "Hello! I'm Amani, your legal assistant. What would you like to know?",
+    "ai_typing_question": "What is a civil case?",
+    "ai_answer": "A civil case is a legal dispute between individuals or organizations, usually over rights, contracts, or property.",
+    "input_placeholder": "Type your message...",
+    "disclaimer": "Legal AI can make mistakes, kindly check important information"
+  },
+  "services": {
+    "heading": "Services we power",
+    "subheading": "AI gives you instant direction. Human experts finalize strategy & execution. A hybrid legal workflow built for speed, accuracy and affordability.",
+    "items": {
+      "startup": {
+        "title": "Startup & Company",
+        "desc": "Entity setup, shareholder agreements, fundraising docs."
+      },
+      "contracts": {
+        "title": "Contracts & Reviews",
+        "desc": "AI pre-scan plus expert redlines for key agreements."
+      },
+      "immigration": {
+        "title": "Immigration & Global Mobility",
+        "desc": "Guidance for founders, expats & remote teams."
+      },
+      "ip": {
+        "title": "Intellectual Property",
+        "desc": "Protect branding, code, data & proprietary algorithms."
+      },
+      "compliance": {
+        "title": "Regulatory & Compliance",
+        "desc": "Policy drafting, risk analysis, governance alignment."
+      },
+      "dispute": {
+        "title": "Dispute Strategy",
+        "desc": "Early case assessment & practitioner escalation."
+      }
+    }
+  },
+   "ctaLawyers": {
+    "heading": "Legal Practitioner? <gold>Grow your practice</gold> with integrated AI.",
+    "subheading": "Join a modern legal network. Respond to qualified client matters, leverage AI copilots for faster drafting, and build recurring advisory relationships.",
+    "points": {
+      "p1": "Verified profile & domain-specific tagging",
+      "p2": "Smart proposal + billing workflow",
+      "p3": "AI assisted contract & policy generation",
+      "p4": "Global clients seeking remote counsel"
+    },
+    "button": "Register as a Lawyer",
+    "stats": {
+      "s1": "1200+ AI sessions monthly",
+      "s2": "48h avg lawyer response",
+      "s3": "30% lower client acquisition cost",
+      "s4": "Global compliance ready"
+    }
+  },
+  "responsibleAI": {
+    "heading": "Responsibly developed AI, shaped by legal professionals to uphold fairness and accountability",
+    "description": "At TheYas Law, we adhere to globally recognized Responsible AI Principles — ensuring every AI solution is developed with human and legal oversight, transparency, and accountability, while actively mitigating bias and safeguarding integrity.",
+    "button": "Explore our AI assistant"
+  }
 }
-
-}
-

@@ -1,9 +1,11 @@
 "use client";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function VideoBanner() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const t = useTranslations("videoBanner");
 
   return (
     <section className="relative  w-full h-screen overflow-hidden">
@@ -33,20 +35,20 @@ export default function VideoBanner() {
             <span className="text-[#C48A06]">
               Law
             </span> &nbsp;
-             Legal AI Trusted, Compliant, Ready
+             {t("title_tagline")}
           </h1>
           <p className="text-white/90 text-lg md:text-xl mb-6">
-            Enterprise-grade AI for contracts, compliance reviews and corporate workflows, backed by verified lawyers when you need human review.
+           {t("description")}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/signup/seeker" className="btn-primary">
-              Get Started
+              {t("get_started")}
             </Link>
             <Link href="/signup/practitioner" className="btn-secondary">
-              For Lawyers
+              {t("for_lawyers")}
             </Link>
             <a href="#services" className="btn-secondary">
-              See How It Works
+              {t("see_how")}
             </a>
           </div>
         </div>
