@@ -5,6 +5,7 @@ import { DividerWave } from './Decorative';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS, buildApiUrl } from '@/config/api';
 import axios from 'axios';
+import { useTranslations } from 'next-intl';
 
 interface Plan {
   id: string;
@@ -26,6 +27,7 @@ export default function Pricing(){
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations("pricing");
 
   useEffect(()=>{
     let cancelled = false;
@@ -88,8 +90,8 @@ export default function Pricing(){
       <DividerWave />
       <div className="relative max-w-7xl mx-auto px-6">
         <MotionSection className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">Simple, transparent pricing</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">No trial tier — guests can explore the AI assistant with limited daily queries before upgrading.</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">{t("heading")}</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">{t("subHeading")}</p>
           {error && <p className="text-xs text-amber-600 mt-2">{error}</p>}
         </MotionSection>
         {loading ? (

@@ -15,7 +15,7 @@
     "title": "Welcome to our platform",
     "description": "Explore great content and opportunities"
   },
-   "videoBanner": {
+  "videoBanner": {
     "title_main": "TheYas",
     "title_highlight": "Law",
     "title_tagline": "Legal AI Trusted, Compliant, Ready",
@@ -76,7 +76,7 @@
       }
     }
   },
-   "ctaLawyers": {
+  "ctaLawyers": {
     "heading": "Legal Practitioner? <gold>Grow your practice</gold> with integrated AI.",
     "subheading": "Join a modern legal network. Respond to qualified client matters, leverage AI copilots for faster drafting, and build recurring advisory relationships.",
     "points": {
@@ -108,5 +108,9 @@
     "description3": "Get the legal summary you need in seconds without clicking into a single search result. Quickly understand complex legal documents and case law with AI-powered analysis.",
     "title4": "Upload Your Documents",
     "description4": "Upload contracts, agreements, or legal documents for instant AI-powered analysis and review. Get detailed feedback, risk assessment, and actionable insights in minutes."
+  },
+  "pricing": {
+    "heading": "Simple, transparent pricing",
+    "subHeading": "No trial tier — guests can explore the AI assistant with limited daily queries before upgrading."
   }
 }
