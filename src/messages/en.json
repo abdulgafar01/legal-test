@@ -114,7 +114,44 @@
     "subHeading": "No trial tier — guests can explore the AI assistant with limited daily queries before upgrading."
   },
   "blogCarousel": {
-    "heading": "The Latest"
+    "heading": "Latest News",
+    "posts": [
+      {
+        "title": "Top 8 Legal Areas Impacted by Generative AI",
+        "readTime": "4 min read"
+      },
+      {
+        "title": "Emergence of AI-Related Legislation",
+        "readTime": "3 min read"
+      },
+      {
+        "title": "LexisNexis Introduces Lexis+ AI Protégé, Personal Legal Assistant with AI",
+        "readTime": "4 min read"
+      },
+      {
+        "title": "The Future of Legal Research with AI Technology",
+        "readTime": "5 min read"
+      }
+    ]
+  },
+  "testimonials": {
+    "heading": "What clients say",
+    "subheading": "Trusted by founders, operators and remote professionals solving real legal matters daily.",
+   "testimonial1": {
+    "quote": "We validated a funding term sheet in hours, not days. AI clarified the basics, the lawyer polished the final edits.",
+    "name": "Startup Founder",
+    "country": "Estonia"
+  },
+  "testimonial2": {
+    "quote": "Contract review flow is brilliant. The hybrid model saves both budget and internal time.",
+    "name": "Operations Lead",
+    "country": "Portugal"
+  },
+  "testimonial3": {
+    "quote": "Clear AI guidance first, then a specialist lawyer who handled everything seamlessly.",
+    "name": "Immigration Client",
+    "country": "UAE"
+  }
   },
   "footer": {
     "subHeading": "Hybrid AI + human legal network delivering faster clarity and better outcomes for modern businesses & professionals.",

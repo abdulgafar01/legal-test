@@ -9,7 +9,9 @@ export function ResponsibleAISection() {
   const  t  = useTranslations();
     const router = useRouter();
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
+    dir="rtl"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image */}
@@ -32,8 +34,8 @@ export function ResponsibleAISection() {
               {t("responsibleAI.description")}
             </p>
             <Button className="bg-[var(--primary)] hover:opacity-80 text-white px-6 py-6 group" onClick={() => router.push("/signup/seeker")}>
-              {t("responsibleAI.button")}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t("responsibleAI.button")}
             </Button>
           </div>
         </div>
