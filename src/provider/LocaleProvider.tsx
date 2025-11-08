@@ -23,6 +23,8 @@ import enDashboard from "@/messages/dashboard/en.json";
 import arDashboard from "@/messages/dashboard/ar.json";
 import enChat from "@/messages/dashboard/chat/en.json";
 import arChat from "@/messages/dashboard/chat/ar.json";
+import enProfile from "@/messages/dashboard/profile/en.json";
+import arProfile from "@/messages/dashboard/profile/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -31,7 +33,8 @@ const enMessages = {
   ...enVerifyPhone,
   ...enSettingsSeeker,
   ...enDashboard,
-  ...enChat
+  ...enChat,
+  ...enProfile
 };
 
 const arMessages = {
@@ -41,7 +44,8 @@ const arMessages = {
   ...arVerifyPhone,
   ...arSettingsSeeker,
   ...arDashboard,
-  ...arChat
+  ...arChat,
+  ...arProfile
 };
 
 const messagesMap = {
