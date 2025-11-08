@@ -21,6 +21,8 @@
     "Conversations": "Conversations",
     "New": "New",
     "Loading": "Loading...",
-    "Load more": "Load more"
+    "Load more": "Load more",
+    "Your Notifications": "Your Notifications",
+    "noNotifications": "You don't have any notifications."
   }
 }
