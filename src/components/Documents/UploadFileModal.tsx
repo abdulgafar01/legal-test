@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/Progress";
 import { Upload, CheckCircle, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Attachment {
   id: string;
@@ -36,6 +37,7 @@ export function UploadFileModal({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [fileName, setFileName] = useState("");
   const [dragActive, setDragActive] = useState(false);
+  const t = useTranslations("chat");
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -115,9 +117,7 @@ export function UploadFileModal({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            Upload file
-          </DialogTitle>
+          <DialogTitle className="my-4">{t("Upload file")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -135,8 +135,8 @@ export function UploadFileModal({
                 <Upload className="h-6 w-6 text-gray-400" />
               </div>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-medium">Click to upload</span> or drag and
-                drop
+                <span className="font-medium">{t("Click to upload")}</span>{" "}
+                {t("or drag and drop")}
               </p>
               <p className="text-xs text-gray-400 mb-4">
                 PDF, JPG, JPEG, PNG, WEBP, DOCX (max. 5MB)
@@ -147,7 +147,7 @@ export function UploadFileModal({
                 onClick={() => document.getElementById("file-input")?.click()}
                 type="button"
               >
-                Browse Files
+                {t("Browse Files")}
               </Button>
               <input
                 id="file-input"
@@ -171,7 +171,7 @@ export function UploadFileModal({
                 <Progress value={uploadProgress} className="w-full mt-2" />
               </div>
               <p className="text-sm font-medium text-gray-700">
-                Uploading Document...
+                {t("Uploading Document")}
               </p>
               <p className="text-xs text-gray-400">({fileName})</p>
             </div>
@@ -183,7 +183,7 @@ export function UploadFileModal({
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <p className="text-sm font-medium text-gray-700 mb-1">
-                Document Attached
+                {t("Document Attached")}
               </p>
               <p className="text-xs text-gray-400 mb-4">({fileName})</p>
               <Button
@@ -193,14 +193,14 @@ export function UploadFileModal({
                 className="text-gray-500 hover:text-gray-700 bg-[#ddd] hover:bg-[#ccc]"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                Clear Upload
+                {t("Clear Upload")}
               </Button>
             </div>
           )}
 
           <div className="flex justify-end">
             <Button onClick={handleClose} className="bg-black text-white">
-              Close
+              {t("Close")}
             </Button>
           </div>
         </div>

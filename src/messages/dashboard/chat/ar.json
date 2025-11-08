@@ -1,0 +1,15 @@
+{
+  "chat": {
+    "helpText": "كيف يمكنني مساعدتك اليوم؟",
+    "chatDisclaimer": "قد يرتكب الذكاء الاصطناعي القانوني أخطاء، يرجى التحقق من المعلومات المهمة",
+    "promptPlaceholder": "اسألني...",
+    "Upload file": "رفع ملف",
+    "Click to upload": "انقر للرفع",
+    "or drag and drop": "أو اسحب الملف وأفلته",
+    "Browse Files": "تصفح الملفات",
+    "Uploading Document": "جارٍ رفع المستند...",
+    "Document Attached": "تم إرفاق المستند",
+    "Clear Upload": "مسح التحميل",
+    "Close": "إغلاق"
+  }
+}
