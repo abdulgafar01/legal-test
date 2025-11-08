@@ -1,0 +1,23 @@
+{
+    "dashboard": {
+  "heading": "استكشف",
+  "searchArticles": "ابحث عن مقالات...",
+  "searchAllArticles": "ابحث في جميع المقالات...",
+  "Searching": "جارٍ البحث...",
+  "searchResults": "نتائج البحث",
+  "found": "تم العثور على",
+  "articlesIn": "مقالات في",
+  "noCategorySelected": "لم يتم اختيار فئة",
+  "frequentlyVisitedArticles": "المقالات التي تتم زيارتها بشكل متكرر",
+  "Trending": "الشائع",
+  "No Search Results": "لا توجد نتائج بحث",
+  "No Articles Found": "لم يتم العثور على مقالات",
+  "No Category Selected": "لم يتم اختيار فئة",
+  "No Frequently Visited Articles": "لا توجد مقالات تمت زيارتها بشكل متكرر",
+  "Try adjusting your search terms or browse by category": "حاول تعديل مصطلحات البحث أو التصفح حسب الفئة",
+  "noPublishedArticles": "لا توجد مقالات منشورة بعد في فئة {selectedCategory}",
+  "selectACategory": "يرجى اختيار فئة أعلاه لعرض المقالات أو استخدام شريط البحث للعثور على محتوى محدد",
+  "noArticlesViewed": "لم يتم عرض أي مقالات بعد. استكشف الفئات أعلاه لاكتشاف محتوى رائع!"
+}
+
+}
