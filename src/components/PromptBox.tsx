@@ -21,7 +21,7 @@ type Props = {
   placeholder?: string;
 };
 
-const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
+const PromptBox = ({ onSubmit, placeholder }: Props) => {
   const [prompt, setPrompt] = useState("");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
@@ -30,7 +30,7 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
   const [recognition, setRecognition] = useState<any>(null);
   // Voice dictation logic
   React.useEffect(() => {
-    if (typeof window !== "undefined" && 'webkitSpeechRecognition' in window) {
+    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition;
       const recog = new SpeechRecognition();
       recog.continuous = false;
@@ -41,7 +41,8 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
   }, []);
 
   const handleMicClick = () => {
-    if (!recognition) return toast("Speech recognition not supported in this browser.");
+    if (!recognition)
+      return toast("Speech recognition not supported in this browser.");
     setIsRecording(true);
     recognition.start();
     recognition.onresult = (event: any) => {
@@ -66,26 +67,25 @@ const PromptBox = ({ onSubmit, placeholder = "Ask me..." }: Props) => {
     }
   };
 
-const sendMessage = () => {
-  const text = prompt.trim();
-  if (!text && attachments.length === 0) return;
-  onSubmit?.(text);
-  setPrompt("");
-  setAttachments([]);
-};
+  const sendMessage = () => {
+    const text = prompt.trim();
+    if (!text && attachments.length === 0) return;
+    onSubmit?.(text);
+    setPrompt("");
+    setAttachments([]);
+  };
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  sendMessage();
-};
-
-const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  if (e.key === "Enter" && !e.shiftKey) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     sendMessage();
-  }
-};
+  };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
   const handleAttach = (attachment: Attachment) => {
     setAttachments((prev) => {
@@ -131,78 +131,76 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       className={`w-full ${false ? "max-w-3xl" : "max-w-2xl"}`}
     >
       <div className=" bg-white shadow-[0_-2px_6px_-1px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.08)]  rounded-3xl px-3 py-2">
-      <textarea
-        className="outline-none w-full resize-none overflow-hidden break-words mt-2 transition-all"
-        rows={2}
-        placeholder={placeholder}
-        required
-        onChange={(e) => setPrompt(e.target.value)}
-        onKeyDown={handleKeyDown}
-        value={prompt}
-      />
+        <textarea
+          className="outline-none w-full resize-none overflow-hidden break-words mt-2 transition-all"
+          rows={2}
+          placeholder={placeholder}
+          required
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={handleKeyDown}
+          value={prompt}
+        />
 
-
-      <div className="flex items-center justify-between text-sm">
-        <button
-          type="button"
-          onClick={() => setUploadOpen(true)}
-          title="Upload files"
-          className="cursor-pointer px-1 py-1.5 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
-        >
-          <Plus className="h-5" />
-        </button>
-  <div className="flex items-center justify-center w-20 h-8">
-       {isRecording && (
-         <div className="flex items-end gap-[2px]">
-           {/* Five animated sound bars */}
-           {[0.3, 0.6, 0.9, 0.6, 0.3].map((d, i) => (
-             <motion.div
-               key={i}
-               initial={{ height: 6 }}
-               animate={{
-                 height: [6, 6 + 18 * d, 6,3],
-               }}
-               transition={{
-                 duration: 0.6,
-                 repeat: Infinity,
-                 ease: "easeInOut",
-                 delay: i * 0.1,
-               }}
-               className="w-[3px] bg-[var(--primary)] rounded-full"
-             />
-           ))}
-         </div>
-       )}
-     </div>
-
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between text-sm">
           <button
             type="button"
-            onClick={isRecording ? handleStopRecording : handleMicClick}
-            title={isRecording ? "Stop recording" : "Record voice"}
-            className={`cursor-pointer p-1 hover:opacity-80 rounded-full bg-[var(--primary)] text-white relative`}
+            onClick={() => setUploadOpen(true)}
+            title="Upload files"
+            className="cursor-pointer px-1 py-1.5 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
           >
-            <Mic className={`w-6 ${isRecording ? "animate-pulse" : ""}`} />
+            <Plus className="h-5" />
+          </button>
+          <div className="flex items-center justify-center w-20 h-8">
             {isRecording && (
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+              <div className="flex items-end gap-[2px]">
+                {/* Five animated sound bars */}
+                {[0.3, 0.6, 0.9, 0.6, 0.3].map((d, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ height: 6 }}
+                    animate={{
+                      height: [6, 6 + 18 * d, 6, 3],
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.1,
+                    }}
+                    className="w-[3px] bg-[var(--primary)] rounded-full"
+                  />
+                ))}
+              </div>
             )}
-          </button>
-          
-          <button
-            type="button"
-            onClick={sendMessage}
-            disabled={!prompt.trim() && attachments.length === 0}
-            className={`${
-              prompt.trim() || attachments.length
-                ? "bg-primary shadow-md cursor-pointer"
-                : "bg-[#71717a] opacity-60 cursor-not-allowed"
-            } rounded-full p-2 hover:shadow-lg transition-shadow -rotate-45`}
-          >
-            <Send className="text-white w-6" />
-          </button>
+          </div>
 
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={isRecording ? handleStopRecording : handleMicClick}
+              title={isRecording ? "Stop recording" : "Record voice"}
+              className={`cursor-pointer p-1 hover:opacity-80 rounded-full bg-[var(--primary)] text-white relative`}
+            >
+              <Mic className={`w-6 ${isRecording ? "animate-pulse" : ""}`} />
+              {isRecording && (
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={sendMessage}
+              disabled={!prompt.trim() && attachments.length === 0}
+              className={`${
+                prompt.trim() || attachments.length
+                  ? "bg-primary shadow-md cursor-pointer"
+                  : "bg-[#71717a] opacity-60 cursor-not-allowed"
+              } rounded-full p-2 hover:shadow-lg transition-shadow -rotate-45`}
+            >
+              <Send className="text-white w-6" />
+            </button>
+          </div>
         </div>
-      </div>
       </div>
 
       {/* attachments list */}
@@ -213,9 +211,7 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
               key={a.id}
               className="flex items-center gap-2 bg-gray-400 text-black rounded-full px-3 py-1 text-xs"
             >
-              <span>
-                {a.type === "file" ? <Paperclip/> : <Mic/>}
-              </span>
+              <span>{a.type === "file" ? <Paperclip /> : <Mic />}</span>
               <span className="max-w-[200px] truncate font-bold">{a.name}</span>
               <button
                 onClick={() => handleRemoveAttachment(a.id)}

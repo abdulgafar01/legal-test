@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Bell } from "lucide-react";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { useTranslations } from "next-intl";
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,7 +15,9 @@ interface NotificationProps {
 }
 
 const Notifications: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+  const t = useTranslations("settingsSeeker");
   const [notifications, setNotifications] = useState<{ text: string; timeStamp: Date }[]>([]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm mx-auto text-center border-0 shadow-lg max-h-80 overflow-y-auto">
@@ -25,7 +28,7 @@ const Notifications: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
         </div>
-        <DialogTitle>Your Notifications</DialogTitle>
+        <DialogTitle>{t("Your Notifications")}</DialogTitle>
         {notifications.length > 0 ? (
           <div className="flex flex-col">
             {notifications.map((item, index) => (
@@ -36,7 +39,7 @@ const Notifications: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             ))}
           </div>
         ) : (
-          <p className="my-8">You don't have any notifications.</p>
+          <p className="my-8">{t("noNotifications")}</p>
         )}
       </DialogContent>
     </Dialog>

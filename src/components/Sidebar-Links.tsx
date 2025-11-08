@@ -157,13 +157,13 @@ export default function SidebarLinks({
         <div className="flex flex-col flex-1 mt-3 min-h-0">
           <div className="flex items-center justify-between mb-2 px-3">
             <span className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">
-              Conversations
+              {t("Conversations")}
             </span>
             <Link
               href="/dashboard/chat?new=true"
               className="text-[10px] px-2 py-1 bg-yellow-200 hover:bg-yellow-300 rounded text-gray-800"
             >
-              New
+              {t("New")}
             </Link>
           </div>
 
@@ -206,7 +206,7 @@ export default function SidebarLinks({
                 <div className="w-4 h-4 flex items-center justify-center">
                   <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
                 </div>
-                <p>{loading ? "Loading..." : "Load more"}</p>
+                <p>{loading ? t("Loading") : t("Load more")}</p>
               </button>
             )}
           </div>

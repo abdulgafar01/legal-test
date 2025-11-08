@@ -19,6 +19,12 @@ import enVerifyPhone from "@/messages/verifyPhone/en.json";
 import arVerifyPhone from "@/messages/verifyPhone/ar.json";
 import enSettingsSeeker from "@/messages/dashboard/settings-seeker/en.json";
 import arSettingsSeeker from "@/messages/dashboard/settings-seeker/ar.json";
+import enDashboard from "@/messages/dashboard/en.json";
+import arDashboard from "@/messages/dashboard/ar.json";
+import enChat from "@/messages/dashboard/chat/en.json";
+import arChat from "@/messages/dashboard/chat/ar.json";
+import enProfile from "@/messages/dashboard/profile/en.json";
+import arProfile from "@/messages/dashboard/profile/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -26,6 +32,9 @@ const enMessages = {
   ...enLogin,
   ...enVerifyPhone,
   ...enSettingsSeeker,
+  ...enDashboard,
+  ...enChat,
+  ...enProfile
 };
 
 const arMessages = {
@@ -34,6 +43,9 @@ const arMessages = {
   ...arLogin,
   ...arVerifyPhone,
   ...arSettingsSeeker,
+  ...arDashboard,
+  ...arChat,
+  ...arProfile
 };
 
 const messagesMap = {
