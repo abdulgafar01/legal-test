@@ -1,0 +1,99 @@
+{
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last Updated: November 3, 2025",
+
+    "section1": {
+      "title": "1. Introduction",
+      "p1": "TheYAS Law (“we”, “our”, “us”) is committed to protecting your privacy and ensuring the safe handling of your personal data.",
+      "p2": "This Privacy Policy explains how we collect, use, share, store, and protect your personal information when using our website, platform, and services (collectively, the “Platform”)."
+    },
+
+    "section2": {
+      "title": "2. Information We Collect",
+      "p1": "We collect personal data that you provide directly, such as name, email, phone number, and legal inquiry details.",
+      "p2": "We also collect automatic data such as device info, IP address, cookies, usage patterns, and analytics.",
+      "p3": "Additionally, we may receive optional data such as uploaded documents or lawyer profile details."
+    },
+
+    "section3": {
+      "title": "3. How We Use Your Information",
+      "p1": "We use your information to deliver legal guidance, match you with legal practitioners, provide AI-assisted insights, and improve the Platform.",
+      "p2": "We also use your data for verification, analytics, communication, compliance, and security monitoring.",
+      "p3": "Your information may also help us personalize user experience and improve accuracy of AI responses."
+    },
+
+    "section4": {
+      "title": "4. Legal Basis for Processing",
+      "p1": "We process your personal data based on: (1) your consent, (2) the need to deliver legal services, (3) compliance with legal obligations, and (4) legitimate business interests such as fraud prevention and product improvement."
+    },
+
+    "section5": {
+      "title": "5. How We Share Your Information",
+      "p1": "We do not sell your data.",
+      "p2": "We may share information with vetted legal practitioners, trusted service providers, analytics partners, cloud hosting, and relevant authorities when legally required.",
+      "p3": "All third parties are bound by confidentiality and data-protection obligations."
+    },
+
+    "section6": {
+      "title": "6. AI Usage & Data Handling",
+      "p1": "AI interactions on the Platform follow our Responsible AI Principles.",
+      "p2": "Your legal queries may be processed by AI models to provide preliminary guidance before a human lawyer reviews the matter.",
+      "p3": "We do not train AI models on your identifiable personal data."
+    },
+
+    "section7": {
+      "title": "7. Cookies & Tracking Technologies",
+      "p1": "We use cookies to enhance functionality, remember preferences, and analyze usage.",
+      "p2": "You may disable cookies in browser settings, but some features may stop working."
+    },
+
+    "section8": {
+      "title": "8. Data Storage & Retention",
+      "p1": "We store data securely using encryption and industry-grade protection.",
+      "p2": "Personal data is retained only as long as necessary to fulfill the purposes described or as required by law."
+    },
+
+    "section9": {
+      "title": "9. Your Rights",
+      "p1": "Depending on your jurisdiction, you may have the right to: access your data, correct it, delete it, restrict processing, or request a copy.",
+      "p2": "You may also object to automated decision-making or withdraw consent at any time."
+    },
+
+    "section10": {
+      "title": "10. Children’s Privacy",
+      "p1": "Our Platform is not intended for individuals under 18.",
+      "p2": "We do not knowingly collect data from minors."
+    },
+
+    "section11": {
+      "title": "11. Data Security",
+      "p1": "We implement strict security controls including encryption, access restrictions, monitoring, and secure development practices.",
+      "p2": "While we work hard to protect your data, no system is 100% secure."
+    },
+
+    "section12": {
+      "title": "12. International Data Transfers",
+      "p1": "Your data may be stored or processed in countries with different data-protection laws.",
+      "p2": "We ensure adequate safeguards are in place, such as Standard Contractual Clauses or equivalent measures."
+    },
+
+    "section13": {
+      "title": "13. Third-Party Links",
+      "p1": "Our Platform may contain links to external websites.",
+      "p2": "We are not responsible for the privacy practices of third-party sites."
+    },
+
+    "section14": {
+      "title": "14. Changes to This Policy",
+      "p1": "We may update this Privacy Policy periodically.",
+      "p2": "We will notify users of material updates through the Platform or email."
+    },
+
+    "section15": {
+      "title": "15. Contact Us",
+      "p1": "If you have questions about this Privacy Policy, contact our support team at:",
+      "p2": "support@theyaslaw.com"
+    }
+  }
+}
