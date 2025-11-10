@@ -1,0 +1,15 @@
+{
+  "chat": {
+    "helpText": "How can I be of help today?",
+    "chatDisclaimer": "Legal Ai can make mistakes, kindly check important information",
+    "promptPlaceholder": "Ask me...",
+    "Upload file": "Upload file",
+    "Click to upload": "Click to upload",
+    "or drag and drop": "or drag and drop",
+    "Browse Files": "Browse Files",
+    "Uploading Document": "Uploading Document...",
+    "Document Attached": "Document Attached",
+    "Clear Upload": "Clear Upload",
+    "Close": "Close"
+  }
+}

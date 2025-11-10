@@ -1,3 +1,6 @@
 {
-    "github.copilot.nextEditSuggestions.enabled": false
+    "github.copilot.nextEditSuggestions.enabled": false,
+    "i18n-ally.localesPaths": [
+        "src/messages"
+    ]
 }

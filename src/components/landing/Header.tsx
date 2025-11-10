@@ -6,20 +6,23 @@ import { useRouter } from "next/navigation";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import LanguageSwitcher from "../../provider/LanguageSwitcher";
-
-const navItems = [
-  { href: "#home", label: "Home" },
-  { href: "#services", label: "Services" },
-  { href: "#features", label: "Features" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#contact", label: "Contact" },
-];
+import { useTranslations } from "next-intl";
 
 type HeaderProps = {
   baseHref?: string;
 };
 
 export default function Header({ baseHref = "" }: HeaderProps) {
+  const t = useTranslations("header");
+
+  const navItems = [
+    { href: "/", label: t("home") },
+    { href: "#services", label: t("services") },
+    { href: "#features", label: t("features") },
+    { href: "#pricing", label: t("pricing") },
+    { href: "#contact", label: t("contact") },
+  ];
+
   const [open, setOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
@@ -31,9 +34,12 @@ export default function Header({ baseHref = "" }: HeaderProps) {
   };
   return (
     <header className="w-full bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-40 font-nunito">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8">
+      <div
+        className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8"
+        dir="ltr"
+      >
         <Link
-          href={`${baseHref}#home`}
+          href={`${baseHref}/`}
           className="text-2xl font-extrabold tracking-tight text-black"
         >
           TheYAS<span className="text-gradient-gold">Law</span>
@@ -57,13 +63,16 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                 href="/login"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                Login
+                {t("login")}
               </Link>
               <Link href="/signup/seeker" className="btn-primary text-sm">
-                Get Started
+                {t("getStarted")}
               </Link>
-              <Link href="/signup/practitioner" className="btn-secondary text-sm">
-                For Lawyers
+              <Link
+                href="/signup/practitioner"
+                className="btn-secondary text-sm"
+              >
+                {t("forLawyers")}
               </Link>
             </>
           ) : (
@@ -72,10 +81,10 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                 href="/dashboard"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                Go to Dashboard
+                {t("dashboard")}
               </Link>
               <button onClick={handleLogout} className="btn-secondary text-sm">
-                Logout
+                {t("logout")}
               </button>
             </>
           )}
@@ -92,8 +101,8 @@ export default function Header({ baseHref = "" }: HeaderProps) {
           )}
         </button>
       </div>
-        {/* Mobile menu */}
-      <AnimatePresence >
+      {/* Mobile menu */}
+      <AnimatePresence>
         {open && (
           <motion.div
             key="mobile-menu"
@@ -136,21 +145,21 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition-all font-medium"
                   >
-                    Login
+                    {t("login")}
                   </Link>
                   <Link
                     href="/signup/seeker"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-primary text-sm transition-all"
                   >
-                    Get Started
+                    {t("getStarted")}
                   </Link>
                   <Link
                     href="/signup/practitioner"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                    For Lawyers
+                    {t("forLawyers")}
                   </Link>
                 </>
               ) : (
@@ -160,7 +169,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all font-medium"
                   >
-                    Go to Dashboard
+                    {t("dashboard")}
                   </Link>
                   <button
                     onClick={() => {
@@ -169,7 +178,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     }}
                     className="w-full py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                    Logout
+                    {t("logout")}
                   </button>
                 </>
               )}

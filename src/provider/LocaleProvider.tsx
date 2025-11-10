@@ -1,10 +1,68 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { IntlProvider } from "next-intl";
 import { Locale, detectLocale } from "@/i18n";
-import enMessages from "@/messages/en.json";
-import arMessages from "@/messages/ar.json";
+import enMessagesLanding from "@/messages/en.json";
+import arMessagesLanding from "@/messages/ar.json";
+import enMessagesSignup from "@/messages/signup/en.json";
+import arMessagesSignup from "@/messages/signup/ar.json";
+import enLogin from "@/messages/login/en.json";
+import arLogin from "@/messages/login/ar.json";
+import enVerifyPhone from "@/messages/verifyPhone/en.json";
+import arVerifyPhone from "@/messages/verifyPhone/ar.json";
+import enSettingsSeeker from "@/messages/dashboard/settings-seeker/en.json";
+import arSettingsSeeker from "@/messages/dashboard/settings-seeker/ar.json";
+import enDashboard from "@/messages/dashboard/en.json";
+import arDashboard from "@/messages/dashboard/ar.json";
+import enChat from "@/messages/dashboard/chat/en.json";
+import arChat from "@/messages/dashboard/chat/ar.json";
+import enProfile from "@/messages/dashboard/profile/en.json";
+import arProfile from "@/messages/dashboard/profile/ar.json";
+import enPrivacy from "@/messages/privacy/en.json";
+import arPrivacy from "@/messages/privacy/ar.json";
+import enTerms from "@/messages/terms/en.json";
+import arTerms from "@/messages/terms/ar.json";
+import enMeetings from "@/messages/meeting/en.json";
+import arMeetings from "@/messages/meeting/ar.json";
+import enSubscriptions from "@/messages/dashboard/subscription/en.json";
+import arSubscriptions from "@/messages/dashboard/subscription/ar.json";
+
+const enMessages = {
+  ...enMessagesLanding,
+  ...enMessagesSignup,
+  ...enLogin,
+  ...enVerifyPhone,
+  ...enSettingsSeeker,
+  ...enDashboard,
+  ...enChat,
+  ...enProfile,
+  ...enPrivacy,
+  ...enTerms,
+  ...enMeetings,
+  ...enSubscriptions
+};
+
+const arMessages = {
+  ...arMessagesLanding,
+  ...arMessagesSignup,
+  ...arLogin,
+  ...arVerifyPhone,
+  ...arSettingsSeeker,
+  ...arDashboard,
+  ...arChat,
+  ...arProfile,
+  ...arPrivacy,
+  ...arTerms,
+  ...arMeetings,
+  ...arSubscriptions
+};
 
 const messagesMap = {
   en: enMessages,
@@ -52,7 +110,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
-      <IntlProvider locale={locale} messages={messagesMap[locale]}  timeZone="UTC">
+      <IntlProvider
+        locale={locale}
+        messages={messagesMap[locale]}
+        timeZone="UTC"
+      >
         {children}
       </IntlProvider>
     </LocaleContext.Provider>

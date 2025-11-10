@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 import { exploreApi, ArticleSearchRequest, Article } from "@/lib/api/explore";
 import { Input } from "./ui/input";
+import { useTranslations } from "next-intl";
 
 interface SearchBarProps {
   onSearchResults?: (results: Article[], searchQuery: string) => void;
@@ -21,6 +22,7 @@ export default function SearchBar({
   const [searchQuery, setSearchQuery] = useState(initialSearchTerm || "");
   const [isSearching, setIsSearching] = useState(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const t = useTranslations("dashboard");
 
   // Update searchQuery when initialSearchTerm changes
   useEffect(() => {
@@ -100,7 +102,7 @@ export default function SearchBar({
         <Input
           type="text"
           placeholder={
-            selectedCategory ? "Search articles..." : "Search all articles..."
+            selectedCategory ? t("searchArticles") : t("searchAllArticles")
           }
           value={searchQuery}
           onChange={handleInputChange}
@@ -120,7 +122,7 @@ export default function SearchBar({
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-sm p-3 z-10">
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>
-            <span className="text-sm text-gray-600">Searching...</span>
+            <span className="text-sm text-gray-600">{t("Searching")}</span>
           </div>
         </div>
       )}

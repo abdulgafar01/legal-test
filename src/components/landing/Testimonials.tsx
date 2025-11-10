@@ -1,19 +1,40 @@
+"use client";
+import { useTranslations } from 'next-intl';
 import MotionSection from './MotionSection';
+interface Testimonial {
+  name: string;
+  country: string;
+  quote: string;
+}
 
-const testimonials = [
-  { name: 'Startup Founder', country: 'Estonia', quote: 'We validated a funding term sheet in hours, not days. AI clarified the basics, the lawyer polished the final edits.' },
-  { name: 'Operations Lead', country: 'Portugal', quote: 'Contract review flow is brilliant. The hybrid model saves both budget and internal time.' },
-  { name: 'Immigration Client', country: 'UAE', quote: 'Clear AI guidance first, then a specialist lawyer who handled everything seamlessly.' },
-];
 
 export default function Testimonials(){
+  const t = useTranslations('testimonials');
+ const testimonials: Testimonial[] = [
+    {
+      quote: t('testimonial1.quote'),
+      name: t('testimonial1.name'),
+      country: t('testimonial1.country')
+    },
+    {
+      quote: t('testimonial2.quote'),
+      name: t('testimonial2.name'),
+      country: t('testimonial2.country')
+    },
+    {
+      quote: t('testimonial3.quote'),
+      name: t('testimonial3.name'),
+      country: t('testimonial3.country')
+    }
+  ];
   return (
-  <section className="py-28 bg-white font-jost relative overflow-hidden" id="reviews">
+  <section className="py-28 bg-white font-jost relative overflow-hidden" id="reviews"
+  dir='ltr'>
       <div className="absolute inset-0 bg-gradient-to-b from-white via-[#FEF7D4]/30 to-white" />
       <div className="relative max-w-6xl mx-auto px-6">
         <MotionSection className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">What clients say</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">Trusted by founders, operators and remote professionals solving real legal matters daily.</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">{t('heading')}</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">{t("subheading")}</p>
         </MotionSection>
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((t,i) => (

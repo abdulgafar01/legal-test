@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { Icon } from "@iconify/react";
 import { useCountries } from "@/hooks/useCountries";
+import { useTranslations } from "next-intl";
 
 const Page = () => {
   const router = useRouter();
@@ -24,6 +25,7 @@ const Page = () => {
   const country = countries.find(
     (c) => c.name === user?.data?.country // match by name
   );
+  const t = useTranslations("profile");
 
   useEffect(() => {
     if (!user) {
@@ -128,7 +130,7 @@ const Page = () => {
       ? [
           {
             icon: Wallet,
-            title: "Wallet",
+            title: t("Wallet"),
             href: "/dashboard/wallet",
             showArrow: true,
           },
@@ -136,44 +138,44 @@ const Page = () => {
       : []),
     {
       icon: Shield,
-      title: "Subscription Plans",
+      title: t("Subscription Plans"),
       description: "View",
       href: "/dashboard/subscription",
       showArrow: false,
     },
     {
       icon: Shield,
-      title: "Manage Subscription",
+      title: t("Manage Subscription"),
       href: "/dashboard/subscription/manage",
       showArrow: true,
     },
     {
       icon: Shield,
-      title: "Subscription Payments",
+      title: t("Subscription Payments"),
       href: "/dashboard/subscription/payments",
       showArrow: true,
     },
     {
       icon: Shield,
-      title: "Privacy Policy",
+      title: t("Privacy Policy"),
       href: "/privacy",
       showArrow: true,
     },
     {
       icon: FileText,
-      title: "Terms & Conditions",
+      title: t("termsConditions"),
       href: "/terms",
       showArrow: true,
     },
     {
       icon: Settings,
-      title: "Settings",
+      title: t("Settings"),
       href: settingsHref,
       showArrow: true,
     },
     {
       icon: HelpCircle,
-      title: "Help",
+      title: t("Help"),
       href: "/dashboard/help",
       showArrow: true,
     },
@@ -185,11 +187,11 @@ const Page = () => {
         <div className="max-w-4xl mx-auto p-6">
           {/* Header */}
           <div className="flex items-center gap-4 mb-3">
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-bold text-greed-500">
               Profile Account
             </h1>
           </div>
-    <div className="flex flex-col gap-4 p-3">
+          <div className="flex flex-col gap-4 p-3">
             {/* Profile Info */}
 
             <div className="max-w-md rounded-2xl border border-gray-200 bg-[#F6F6F6]">
@@ -312,36 +314,32 @@ const Page = () => {
             </div>
 
             {/* Menu Items */}
-            <div className="">
-              <div className="">
-                <div className="space-y-1">
-                  {menuItems.map((item, index) => (
-                    <Link key={index} href={item.href} passHref>
-                      <div className="flex items-center justify-between border-b border-[#E8E7E7] max-w-xl p-3 cursor-pointer transition-colors">
-                        <div className="flex items-center gap-3">
-                          <item.icon className="w-5 h-5 text-muted-foreground" />
-                          <span className="font-medium text-foreground">
-                            {item.title}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {item.description && (
-                            <Badge
-                              variant="outline"
-                              className="text-muted-foreground"
-                            >
-                              {item.description}
-                            </Badge>
-                          )}
-                          {item.showArrow && (
-                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-1">
+              {menuItems.map((item, index) => (
+                <Link key={index} href={item.href} passHref>
+                  <div className="flex items-center justify-between border-b border-[#E8E7E7] max-w-xl p-3 cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-5 h-5 text-muted-foreground" />
+                      <span className="font-medium text-foreground">
+                        {item.title}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {item.description && (
+                        <Badge
+                          variant="outline"
+                          className="text-muted-foreground"
+                        >
+                          {item.description}
+                        </Badge>
+                      )}
+                      {item.showArrow && (
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -349,10 +347,10 @@ const Page = () => {
         <div className="max-w-4xl mx-auto p-6">
           {/* Header */}
           <div className="flex items-center gap-4 mb-3">
-            {/* <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button> */}
-            <h1 className="text-2xl font-bold text-foreground">Profile</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              {/* {t("Profile")} */}
+              Profile
+            </h1>
           </div>
 
           <div className="flex flex-col gap-4 p-3">
@@ -370,6 +368,7 @@ const Page = () => {
                 <p className="text-xs text-muted-foreground"></p>
                 <Link href="/dashboard/edit-profile" passHref>
                   <button className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline">
+                    {/* {t("Edit Profile")} */}
                     Edit Profile
                   </button>
                 </Link>
@@ -377,36 +376,32 @@ const Page = () => {
             </div>
 
             {/* Menu Items */}
-            <div className="">
-              <div className="">
-                <div className="space-y-1">
-                  {menuItems.map((item, index) => (
-                    <Link key={index} href={item.href} passHref>
-                      <div className="flex items-center justify-between border-b border-[#E8E7E7] max-w-xl p-3 cursor-pointer transition-colors">
-                        <div className="flex items-center gap-3">
-                          <item.icon className="w-5 h-5 text-muted-foreground" />
-                          <span className="font-medium text-foreground">
-                            {item.title}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {item.description && (
-                            <Badge
-                              variant="outline"
-                              className="text-muted-foreground"
-                            >
-                              {item.description}
-                            </Badge>
-                          )}
-                          {item.showArrow && (
-                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-1">
+              {menuItems.map((item, index) => (
+                <Link key={index} href={item.href} passHref>
+                  <div className="flex items-center justify-between border-b border-[#E8E7E7] max-w-xl p-3 cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3">
+                      <item.icon className="w-5 h-5 text-muted-foreground" />
+                      <span className="font-medium text-foreground">
+                        {item.title}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {item.description && (
+                        <Badge
+                          variant="outline"
+                          className="text-muted-foreground"
+                        >
+                          {item.description}
+                        </Badge>
+                      )}
+                      {item.showArrow && (
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         </div>

@@ -3,11 +3,15 @@ import { ArrowRight } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export function ResponsibleAISection() {
+  const  t  = useTranslations();
     const router = useRouter();
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
+    dir="rtl"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image */}
@@ -24,14 +28,14 @@ export function ResponsibleAISection() {
           {/* Content */}
           <div className="order-1 lg:order-2">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">
-              Responsibly developed AI, shaped by legal professionals to uphold fairness and accountability
+             {t("responsibleAI.heading")}
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">
-              At TheYas Law, we adhere to globally recognized Responsible AI Principles — ensuring every AI solution is developed with human and legal oversight, transparency, and accountability, while actively mitigating bias and safeguarding integrity.
+              {t("responsibleAI.description")}
             </p>
             <Button className="bg-[var(--primary)] hover:opacity-80 text-white px-6 py-6 group" onClick={() => router.push("/signup/seeker")}>
-              Explore our AI assistant
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {t("responsibleAI.button")}
             </Button>
           </div>
         </div>

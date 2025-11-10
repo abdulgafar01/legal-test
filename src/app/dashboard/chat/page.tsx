@@ -12,8 +12,7 @@ import { buildWsUrl } from "@/config/ws";
 import { useSearchParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
-
+import { useTranslations } from "next-intl";
 
 type Msg = ChatbotMessageDTO & { temp_id?: string };
 
@@ -22,6 +21,7 @@ const Page = () => {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [creatingThread, setCreatingThread] = useState(false);
+  const t = useTranslations("chat");
 
   const wsRef = useRef<WebSocket | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -216,8 +216,8 @@ const Page = () => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 text-black h-[calc(100vh-60px)] mt-2 overflow-hidden">
       {messages.length === 0 ? (
-        <div className="flex items-center gap-3 mb-3">
-          <p className="text-2xl font-medium">How can i be of help today?</p>
+        <div className="flex items-center gap-3 mb-10">
+          <p className="text-2xl font-medium">{t("helpText")}</p>
         </div>
       ) : (
         <div className="w-full max-w-2xl flex-1 overflow-auto mt-6 space-y-4">
@@ -235,12 +235,12 @@ const Page = () => {
                     : "bg-gray-100 text-black"
                 }`}
               >
-                 <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                className="prose prose-sm max-w-none text-inherit"
-              >
-                {m.content}
-              </ReactMarkdown>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  className="prose prose-sm max-w-none text-inherit"
+                >
+                  {m.content}
+                </ReactMarkdown>
               </div>
             </div>
           ))}
@@ -248,11 +248,9 @@ const Page = () => {
         </div>
       )}
 
-      <PromptBox onSubmit={handleSubmit} />
+      <PromptBox onSubmit={handleSubmit} placeholder={t("promptPlaceholder")} />
 
-      <p className="text-xs mb-2 py-2 text-gray-500">
-        Legal Ai can make mistakes, kindly check important information
-      </p>
+      <p className="text-xs mb-2 py-2 text-gray-500">{t("chatDisclaimer")}</p>
     </div>
   );
 };

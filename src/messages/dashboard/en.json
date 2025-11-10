@@ -1,0 +1,37 @@
+{
+  "dashboard": {
+    "heading": "Explore",
+    "searchArticles": "Search articles...",
+    "searchAllArticles": "Search all articles...",
+    "Searching": "Searching...",
+    "searchResults": "Search Results",
+    "found": "found",
+    "articlesIn": "Articles in",
+    "noCategorySelected": "No Category Selected",
+    "frequentlyVisitedArticles": "Frequently Visited Articles",
+    "Trending": "Trending",
+    "No Search Results": "No Search Results",
+    "No Articles Found": "No Articles Found",
+    "No Category Selected": "No Category Selected",
+    "No Frequently Visited Articles": "No Frequently Visited Articles",
+    "Try adjusting your search terms or browse by category": "Try adjusting your search terms or browse by category",
+    "noPublishedArticles": "There are no published articles in {selectedCategory} category yet",
+    "selectACategory": "Please select a category above to view articles, or use the search bar to find specific content",
+    "noArticlesViewed": "No articles have been viewed yet. Explore categories above to discover great content!",
+    "wallet": {
+      "Wallet": "Wallet",
+      "p1": "Manage your earnings and withdrawals",
+      "Retry": "Retry",
+      "Wallet Balance": "Wallet Balance",
+      "Available for withdrawal": "Available for withdrawal",
+      "Request Withdraw": "Request Withdraw",
+      "Transaction History": "Transaction History",
+      "No transactions yet": "No transactions yet.",
+      "Consultation": "Consultation",
+      "Successful": "Successful",
+      "Processed": "Processed",
+      "Load More": "Load More",
+      "Consultation with": "Consultation with"
+    }
+  }
+}
