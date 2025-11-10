@@ -42,7 +42,9 @@ export default function Footer() {
             <a href="#pricing" className="hover:text-black">
               Pricing
             </a>
-            {/* <a href="#contact" className="hover:text-black">Contact</a> */}
+            <a href="/contact" className="hover:text-black">
+              Contact
+            </a>
           </div>
         </MotionSection>
         <MotionSection delay={0.1}>

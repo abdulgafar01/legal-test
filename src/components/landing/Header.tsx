@@ -20,7 +20,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
     { href: "#services", label: t("services") },
     { href: "#features", label: t("features") },
     { href: "#pricing", label: t("pricing") },
-    { href: "#contact", label: t("contact") },
+    { href: "/contact", label: t("contact") },
   ];
 
   const [open, setOpen] = useState(false);
