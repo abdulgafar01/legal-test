@@ -12,7 +12,7 @@ export default function Header() {
   const t = useTranslations("header");
 
   const navItems = [
-    { href: "#home", label: t("home") },
+    { href: "/", label: t("home") },
     { href: "#services", label: t("services") },
     { href: "#features", label: t("features") },
     { href: "#pricing", label: t("pricing") },

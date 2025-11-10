@@ -385,7 +385,7 @@ export default function TermsAndConditions() {
           </section>
         </div>
       </div>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Footer />
     </main>
   );
