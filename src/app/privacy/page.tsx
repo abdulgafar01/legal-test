@@ -161,7 +161,7 @@ export default function PrivacyPolicy() {
 
               <div>
                 <h4 className="font-semibold text-black mb-1">
-                  {t("Security and Compliance")}
+                  {t("section3.Security and Compliance")}
                 </h4>
                 <ul className="list-disc pl-6 space-y-1 text-gray-700">
                   <li>{t("section3.list4.item1")}</li>
@@ -210,7 +210,7 @@ export default function PrivacyPolicy() {
                 </p>
                 <ul className="list-disc pl-6 space-y-1 text-gray-700">
                   <li>{t("section5.list1.item1")}</li>
-                  <li>{t("section5.list1,item2")}</li>
+                  <li>{t("section5.list1.item2")}</li>
                   <li>{t("section5.list1.item3")}</li>
                   <li>{t("section5.list1.item4")}</li>
                   <li>{t("section5.list1.item5")}</li>

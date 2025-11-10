@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit2, Save, Loader2, Image } from "lucide-react";
 import { ApiService } from "@/config/apiService";
 import { UploadPhotoModal } from "@/components/UploadPhotoModal";
+import { useTranslations } from "next-intl";
 
 interface ProfileSettingsFormProps {
   profile: any;
@@ -60,6 +61,7 @@ export const ProfileSettingsForm = ({
   });
   const [errors, setErrors] = useState<any>({});
   const [open, setOpen] = useState<boolean>(false);
+  const t = useTranslations("settingsSeeker");
 
   useEffect(() => {
     if (profile) {
@@ -122,9 +124,9 @@ export const ProfileSettingsForm = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Profile Information</CardTitle>
+            <CardTitle>{t("settings.Profile Information")}</CardTitle>
             <CardDescription>
-              Update your personal information and rates
+              {t("settings.Update your personal information and rates")}
             </CardDescription>
           </div>
           {!isEditing && (
@@ -136,7 +138,7 @@ export const ProfileSettingsForm = ({
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Edit2 className="h-4 w-4" />
-                Edit
+                {t("settings.Edit")}
               </Button>
               <Button
                 variant="outline"
@@ -148,7 +150,7 @@ export const ProfileSettingsForm = ({
                   // eslint-disable-next-line jsx-a11y/alt-text
                   <Image className="h-4 w-4" />
                 }
-                Update Profile Photo
+                {t("settings.Update Profile Photo")}
               </Button>
             </>
           )}
@@ -158,22 +160,22 @@ export const ProfileSettingsForm = ({
             {/* Personal Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CustomInput
-                label="First Name"
+                label={t("settings.First Name")}
                 value={formData.first_name}
                 onChange={(e: any) =>
                   setFormData({ ...formData, first_name: e.target.value })
                 }
-                placeholder="Enter first name"
+                placeholder={t("settings.Enter first name")}
                 error={errors.first_name}
                 disabled={!isEditing}
               />
               <CustomInput
-                label="Last Name"
+                label={t("settings.Last Name")}
                 value={formData.last_name}
                 onChange={(e: any) =>
                   setFormData({ ...formData, last_name: e.target.value })
                 }
-                placeholder="Enter last name"
+                placeholder={t("settings.Enter last name")}
                 error={errors.last_name}
                 disabled={!isEditing}
               />
@@ -181,23 +183,23 @@ export const ProfileSettingsForm = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CustomInput
-                label="Email"
+                label={t("Email")}
                 type="email"
                 value={formData.email}
                 onChange={(e: any) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                placeholder="Enter email address"
+                placeholder={t("settings.Enter email address")}
                 error={errors.email}
                 disabled={!isEditing}
               />
               <CustomInput
-                label="Phone Number"
+                label={t("settings.Phone Number")}
                 value={formData.phone_number}
                 onChange={(e: any) =>
                   setFormData({ ...formData, phone_number: e.target.value })
                 }
-                placeholder="Enter phone number"
+                placeholder={t("settings.Enter phone number")}
                 error={errors.phone_number}
                 disabled={!isEditing}
               />
@@ -205,13 +207,13 @@ export const ProfileSettingsForm = ({
 
             {/* Bio */}
             <div className="space-y-1">
-              <Label className="text-sm font-medium">Bio</Label>
+              <Label className="text-sm font-medium">{t("settings.Bio")}</Label>
               <Textarea
                 value={formData.bio}
                 onChange={(e) =>
                   setFormData({ ...formData, bio: e.target.value })
                 }
-                placeholder="Tell us about yourself and your expertise..."
+                placeholder={t("settings.bioPlaceholder")}
                 rows={4}
                 disabled={!isEditing}
                 className={errors.bio ? "border-red-500" : ""}
@@ -224,7 +226,7 @@ export const ProfileSettingsForm = ({
             {/* Rates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CustomInput
-                label="Consultation Rate ($/hour)"
+                label={t("settings.consultingLabel")}
                 type="number"
                 value={formData.consultation_rate}
                 onChange={(e: any) =>
@@ -233,18 +235,18 @@ export const ProfileSettingsForm = ({
                     consultation_rate: e.target.value,
                   })
                 }
-                placeholder="Enter consultation rate"
+                placeholder={t("settings.Enter consultation rate")}
                 error={errors.consultation_rate}
                 disabled={!isEditing}
               />
               <CustomInput
-                label="Hire Rate ($/hour)"
+                label={t("settings.hireRateLabel")}
                 type="number"
                 value={formData.hire_rate}
                 onChange={(e: any) =>
                   setFormData({ ...formData, hire_rate: e.target.value })
                 }
-                placeholder="Enter hire rate"
+                placeholder={t("settings.Enter hire rate")}
                 error={errors.hire_rate}
                 disabled={!isEditing}
               />
@@ -263,7 +265,7 @@ export const ProfileSettingsForm = ({
                   ) : (
                     <Save className="h-4 w-4" />
                   )}
-                  Save Changes
+                  {t("settings.Save Changes")}
                 </Button>
                 <Button
                   type="button"
@@ -272,7 +274,7 @@ export const ProfileSettingsForm = ({
                   disabled={loading}
                   className="cursor-pointer"
                 >
-                  Cancel
+                  {t("settings.Cancel")}
                 </Button>
               </div>
             )}
