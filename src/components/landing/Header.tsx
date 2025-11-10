@@ -35,7 +35,7 @@ export default function Header() {
         dir="ltr"
       >
         <Link
-          href="#home"
+          href="/"
           className="text-2xl font-extrabold tracking-tight text-black"
         >
           TheYAS<span className="text-gradient-gold">Law</span>

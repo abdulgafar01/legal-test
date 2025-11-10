@@ -11,16 +11,78 @@
 
     "section2": {
       "title": "2. Information We Collect",
+      "title2": "2.1 Personal Information You Provide",
       "p1": "We collect personal data that you provide directly, such as name, email, phone number, and legal inquiry details.",
       "p2": "We also collect automatic data such as device info, IP address, cookies, usage patterns, and analytics.",
-      "p3": "Additionally, we may receive optional data such as uploaded documents or lawyer profile details."
+      "p3": "Additionally, we may receive optional data such as uploaded documents or lawyer profile details.",
+      "list1Strong": "Account Information",
+      "list1": "Name, email address, phone number, password, profile photo, and date of birth",
+      "list2Strong": "Professional Information (for practitioners)",
+      "list2": "Legal credentials, bar association membership, practice areas, education, experience, certifications, and professional biography",
+      "list3Strong": "Payment Information",
+      "list3": "Billing address, payment method details (processed securely through third-party payment processors)",
+      "list4Strong": "Legal Matter Information",
+      "list4": "Case details, legal questions, documents, communications, and consultation records",
+      "list5Strong": "Communications",
+      "list5": "Messages exchanged through our Platform, customer support inquiries, and feedback"
+    },
+
+    "section22": {
+      "heading": "2.2 Information Collected Automatically",
+      "list1Strong": "Device Information",
+      "list1": "IP address, browser type and version, operating system, device identifiers, and hardware model",
+      "list2Strong": "Usage Data",
+      "list2": "Pages visited, features used, time spent on pages, links clicked, search queries, and interaction patterns",
+      "list3Strong": "Location Data",
+      "list3": "General geographic location based on IP address (with your consent, precise location for certain features)",
+      "list4Strong": "Cookies and Tracking",
+      "list4": "We use cookies, web beacons, and similar technologies to enhance user experience and analyze Platform usage"
+    },
+
+    "section23": {
+      "heading": "2.3 Information from Third Parties",
+      "list1": "Social media platforms when you connect your account",
+      "list2": "Professional verification services for practitioner credentials",
+      "list3": "Payment processors for transaction information",
+      "list4": "Analytics providers for usage statistics",
+      "list5": "Public databases for legal practitioner verification"
     },
 
     "section3": {
       "title": "3. How We Use Your Information",
       "p1": "We use your information to deliver legal guidance, match you with legal practitioners, provide AI-assisted insights, and improve the Platform.",
       "p2": "We also use your data for verification, analytics, communication, compliance, and security monitoring.",
-      "p3": "Your information may also help us personalize user experience and improve accuracy of AI responses."
+      "p3": "Your information may also help us personalize user experience and improve accuracy of AI responses.",
+      "heading4": "Service Delivery",
+      "list1": {
+        "item1": "Create and manage user accounts",
+        "item2": "Facilitate connections between legal seekers and practitioners",
+        "item3": "Process payments and manage subscriptions",
+        "item4": "Provide AI-powered legal guidance and research tools",
+        "item5": "Enable secure communication and document sharing"
+      },
+      "Platform Improvement": "Platform Improvement",
+      "list2": {
+        "item1": "Analyze usage patterns to enhance user experience",
+        "item2": "Train and improve AI models (using anonymized data)",
+        "item3": "Develop new features and services",
+        "item4": "Conduct research and analytics"
+      },
+      "Communication": "Communication",
+      "list3": {
+        "item1": "Send transactional emails and notifications",
+        "item2": "Provide customer support",
+        "item3": "Send marketing communications (with your consent)",
+        "item4": "Notify you of Platform updates and changes"
+      },
+      "Security and Compliance": "Security and Compliance",
+      "list4": {
+        "item1": "Verify practitioner credentials and qualifications",
+        "item2": "Detect and prevent fraud, abuse, and illegal activities",
+        "item3": "Ensure Platform security and integrity",
+        "item4": "Comply with legal obligations and regulations",
+        "item5": "Enforce our Terms and Conditions"
+      }
     },
 
     "section4": {
@@ -32,32 +94,82 @@
       "title": "5. How We Share Your Information",
       "p1": "We do not sell your data.",
       "p2": "We may share information with vetted legal practitioners, trusted service providers, analytics partners, cloud hosting, and relevant authorities when legally required.",
-      "p3": "All third parties are bound by confidentiality and data-protection obligations."
+      "p3": "All third parties are bound by confidentiality and data-protection obligations.",
+      "heading2": "5.1 With Legal Practitioners",
+      "heading3": "5.2 Service Providers",
+      "list1": {
+        "item1": "Cloud hosting and storage providers",
+        "item2": "Payment processors and financial institutions",
+        "item3": "Email and communication service providers",
+        "item4": "Analytics and performance monitoring services",
+        "item5": "Customer support tools",
+        "item6": "Security and fraud prevention services"
+      },
+      "heading4": "5.3 Legal Requirements",
+      "list2": {
+        "item1": "Comply with legal processes, court orders, or government requests",
+        "item2": "Enforce our Terms and Conditions",
+        "item3": "Protect our rights, privacy, safety, or property",
+        "item4": "Investigate potential violations or fraud"
+      },
+      "heading5": "5.4 Business Transfers",
+      "heading6": "5.5 With Your Consent"
     },
 
     "section6": {
       "title": "6. AI Usage & Data Handling",
       "p1": "AI interactions on the Platform follow our Responsible AI Principles.",
       "p2": "Your legal queries may be processed by AI models to provide preliminary guidance before a human lawyer reviews the matter.",
-      "p3": "We do not train AI models on your identifiable personal data."
+      "p3": "We do not train AI models on your identifiable personal data.",
+      "heading2": "6.1 Training Data",
+      "heading3": "6.2 Data Protection"
     },
 
     "section7": {
       "title": "7. Cookies & Tracking Technologies",
       "p1": "We use cookies to enhance functionality, remember preferences, and analyze usage.",
-      "p2": "You may disable cookies in browser settings, but some features may stop working."
+      "p2": "You may disable cookies in browser settings, but some features may stop working.",
+      "list": {
+        "item1": "Remember your preferences and settings",
+        "item2": "Authenticate users and prevent fraud",
+        "item3": "Analyze Platform usage and performance",
+        "item4": "Personalize content and advertisements",
+        "item5": "Measure marketing campaign effectiveness"
+      }
     },
 
     "section8": {
       "title": "8. Data Storage & Retention",
       "p1": "We store data securely using encryption and industry-grade protection.",
-      "p2": "Personal data is retained only as long as necessary to fulfill the purposes described or as required by law."
+      "p2": "Personal data is retained only as long as necessary to fulfill the purposes described or as required by law.",
+      "list": {
+        "item1": "Provide our Services and maintain your account",
+        "item2": "Comply with legal, regulatory, and tax obligations",
+        "item3": "Resolve disputes and enforce our agreements",
+        "item4": "Maintain business records and archives"
+      }
     },
 
     "section9": {
       "title": "9. Your Rights",
       "p1": "Depending on your jurisdiction, you may have the right to: access your data, correct it, delete it, restrict processing, or request a copy.",
-      "p2": "You may also object to automated decision-making or withdraw consent at any time."
+      "p2": "You may also object to automated decision-making or withdraw consent at any time.",
+      "heading2": "Access and Portability",
+      "heading3": "Correction",
+      "Deletion": "Deletion",
+      "Restriction and Objection": "Restriction and Objection",
+      "Withdraw Consent": "Withdraw Consent",
+      "OptOut": "Opt-Out"
+    },
+
+    "section9_2": {
+      "title": "9. Regional Privacy Rights",
+      "subTitle1": "9.1 GDPR (European Union)",
+      "p1": "For users in the EU/EEA, we comply with the General Data Protection Regulation (GDPR). You have enhanced rights including the right to lodge a complaint with your local supervisory authority.",
+      "subTitle2": "9.2 CCPA (California)",
+      "p2": "California residents have specific rights under the California Consumer Privacy Act (CCPA), including the right to know what personal information is collected, sold, or disclosed, and the right to opt-out of sales.",
+      "subTitle3": "9.3 Other Jurisdictions",
+      "p3": "We respect privacy rights under other applicable laws and regulations, including those in Australia, Canada, and other regions with privacy legislation."
     },
 
     "section10": {
@@ -69,7 +181,21 @@
     "section11": {
       "title": "11. Data Security",
       "p1": "We implement strict security controls including encryption, access restrictions, monitoring, and secure development practices.",
-      "p2": "While we work hard to protect your data, no system is 100% secure."
+      "p2": "While we work hard to protect your data, no system is 100% secure.",
+      "list": {
+        "item1Strong": "Encryption",
+        "item1": "End-to-end encryption for sensitive communications and data transmission using industry-standard protocols (TLS/SSL)",
+        "item2Strong": "Access Controls",
+        "item2": "Strict internal access policies ensuring only authorized personnel can access personal information",
+        "item3Strong": "Security Monitoring",
+        "item3": "Continuous monitoring for suspicious activities and potential security threats",
+        "item4Strong": "Data Minimization",
+        "item4": "Collecting only necessary information and retaining it only as long as required",
+        "item5Strong": "Regular Audits",
+        "item5": "Periodic security assessments and vulnerability testing",
+        "item6Strong": "Employee Training",
+        "item6": "Regular privacy and security training for all team members"
+      }
     },
 
     "section12": {
@@ -94,6 +220,12 @@
       "title": "15. Contact Us",
       "p1": "If you have questions about this Privacy Policy, contact our support team at:",
       "p2": "support@theyaslaw.com"
+    },
+
+    "consent": {
+      "heading": "Your Consent",
+      "paragraph": "By using TheYAS Law, you acknowledge that you have read and understood this Privacy Policy and consent to the collection, use, and disclosure of your information as described herein. For questions about our Terms & Conditions,",
+      "link": "please visit our terms page."
     }
   }
 }
