@@ -17,6 +17,21 @@
     "Try adjusting your search terms or browse by category": "حاول تعديل مصطلحات البحث أو التصفح حسب الفئة",
     "noPublishedArticles": "لا توجد مقالات منشورة بعد في فئة {selectedCategory}",
     "selectACategory": "يرجى اختيار فئة أعلاه لعرض المقالات أو استخدام شريط البحث للعثور على محتوى محدد",
-    "noArticlesViewed": "لم يتم عرض أي مقالات بعد. استكشف الفئات أعلاه لاكتشاف محتوى رائع!"
+    "noArticlesViewed": "لم يتم عرض أي مقالات بعد. استكشف الفئات أعلاه لاكتشاف محتوى رائع!",
+    "wallet": {
+      "Wallet": "المحفظة",
+      "p1": "إدارة أرباحك وسحوباتك",
+      "Retry": "إعادة المحاولة",
+      "Wallet Balance": "رصيد المحفظة",
+      "Available for withdrawal": "متاح للسحب",
+      "Request Withdraw": "طلب سحب",
+      "Transaction History": "سجل المعاملات",
+      "No transactions yet": "لا توجد معاملات بعد.",
+      "Consultation": "استشارة",
+      "Successful": "ناجح",
+      "Processed": "تمت المعالجة",
+      "Load More": "تحميل المزيد",
+      "Consultation with": "استشارة مع"
+    }
   }
 }
