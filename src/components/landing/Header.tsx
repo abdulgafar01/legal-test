@@ -12,7 +12,7 @@ export default function Header() {
   const t = useTranslations("header");
 
   const navItems = [
-    { href: "#home", label: t("home") },
+    { href: "/", label: t("home") },
     { href: "#services", label: t("services") },
     { href: "#features", label: t("features") },
     { href: "#pricing", label: t("pricing") },
@@ -35,7 +35,7 @@ export default function Header() {
         dir="ltr"
       >
         <Link
-          href="#home"
+          href="/"
           className="text-2xl font-extrabold tracking-tight text-black"
         >
           TheYAS<span className="text-gradient-gold">Law</span>

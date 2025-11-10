@@ -1,0 +1,149 @@
+{
+  "terms": {
+    "title": "Terms & Conditions",
+    "date": "Last Updated: November 3, 2025",
+    "section1": {
+      "heading": "1. Introduction and Acceptance",
+      "p1": "Welcome to TheYAS Law (\"Platform\", \"Service\", \"we\", \"us\", or \"our\"). These Terms and Conditions (\"Terms\") constitute a legally binding agreement between you (\"User\", \"you\", or \"your\") and TheYAS Law governing your access to and use of our hybrid AI-powered legal guidance platform and human legal practitioner network.",
+      "p2": "By accessing, browsing, or using our Platform, you acknowledge that you have read, understood, and agree to be bound by these Terms, our Privacy Policy, and all applicable laws and regulations. If you do not agree with these Terms, you must immediately discontinue use of the Platform."
+    },
+    "section2": {
+      "heading": "2. Description of Services",
+      "p1": "TheYAS Law provides a comprehensive legal technology platform that combines:",
+      "list": {
+        "item1": "AI-powered legal research and guidance tools",
+        "item2": "Access to verified legal practitioners across multiple jurisdictions",
+        "item3": "Secure communication channels for legal consultations",
+        "item4": "Document review and analysis services",
+        "item5": "Legal resource libraries and educational content",
+        "item6": "Case management and tracking functionalities"
+      },
+      "p2": "Our Services are designed to facilitate legal information access and professional legal services, but do not constitute legal advice unless explicitly provided by a licensed legal practitioner through our Platform."
+    },
+    "section3": {
+      "heading": "3. User Eligibility and Account Requirements",
+      "heading2": "3.1 Age Requirements",
+      "p1": "You must be at least 18 years of age or the age of legal majority in your jurisdiction to use this Platform. By using our Services, you represent and warrant that you meet these age requirements.",
+      "heading3": "3.2 Account Registration",
+      "p2": "To access certain features, you must create an account providing accurate, current, and complete information. You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account. You must immediately notify us of any unauthorized access or security breach.",
+      "heading4": "3.3 Practitioner Verification",
+      "p3": "Legal practitioners using our Platform must provide valid credentials, licensing information, and professional qualifications. We reserve the right to verify and continuously monitor practitioner credentials."
+    },
+    "section4": {
+      "heading1": "4. AI Services and Limitations",
+      "heading2": "4.1 Nature of AI Guidance",
+      "p1": "Our AI-powered tools provide information and guidance based on machine learning models trained on legal data. This technology:",
+      "ul": {
+        "li1": "Does NOT constitute legal advice",
+        "li2": "Should NOT be relied upon as a substitute for professional legal counsel",
+        "li3": "May contain errors, omissions, or outdated information",
+        "li4": "Cannot account for all nuances of your specific legal situation"
+      },
+      "heading3": "4.2 No Attorney-Client Relationship",
+      "p2": "Use of AI services does not create an attorney-client relationship. Such relationships are only formed when you engage a licensed practitioner through our Platform and both parties explicitly agree to representation."
+    },
+    "section5": {
+      "heading": "5. Professional Legal Services",
+      "heading1": "5.1 Independent Practitioners",
+      "p1": "Legal practitioners on our Platform are independent professionals. TheYAS Law serves as a technology platform facilitating connections and does not provide legal services directly. We are not responsible for the quality, timeliness, or outcomes of services provided by practitioners.",
+      "heading2": "5.2 Practitioner-Client Relationship",
+      "p2": "Any legal services agreement is formed directly between you and the practitioner. You are responsible for evaluating practitioner qualifications, negotiating terms, and ensuring compliance with applicable professional conduct rules."
+    },
+    "section6": {
+      "heading": "6. Payment Terms and Subscription",
+      "heading2": "6.1 Fees and Billing",
+      "p1": "Access to certain Platform features requires payment of subscription fees or consultation charges. All fees are stated in USD unless otherwise specified. You agree to pay all applicable fees as described at the time of purchase.",
+      "heading3": "6.2 Automatic Renewal",
+      "p2": "Subscription plans automatically renew unless canceled before the renewal date. You authorize us to charge your payment method for renewal fees.",
+      "heading4": "6.3 Refund Policy",
+      "p3": "Subscription fees are generally non-refundable except as required by law or as explicitly stated in our refund policy. Consultation fees paid to practitioners are subject to the individual practitioner's policies."
+    },
+    "section7": {
+      "heading": "7. User Conduct and Prohibited Activities",
+      "p1": "You agree not to:",
+      "ul": {
+        "li1": "Violate any applicable laws, regulations, or third-party rights",
+        "li2": "Impersonate any person or entity or misrepresent your affiliation",
+        "li3": "Engage in fraudulent, deceptive, or misleading activities",
+        "li4": "Upload malicious code, viruses, or harmful content",
+        "li5": "Attempt to gain unauthorized access to Platform systems or data",
+        "li6": "Scrape, data mine, or extract data without authorization",
+        "li7": "Interfere with Platform operations or other users' experience",
+        "li8": "Use the Platform for any illegal or unauthorized purpose",
+        "li9": "Share confidential information without proper authorization"
+      }
+    },
+    "section8": {
+      "heading": "8. Intellectual Property Rights",
+      "heading2": "8.1 Platform Content",
+      "p1": "All Platform content, including software, text, graphics, logos, designs, and AI models, is owned by TheYAS Law or licensed to us and protected by copyright, trademark, and other intellectual property laws.",
+      "heading3": "8.2 User Content License",
+      "p2": "By uploading content to the Platform, you grant us a worldwide, non-exclusive, royalty-free license to use, store, and process such content solely for providing and improving our Services."
+    },
+    "section9": {
+      "heading": "9. Privacy and Data Protection",
+      "heading2": "Your use of the Platform is subject to our",
+      "link": "Privacy Policy",
+      "p1": "which describes how we collect, use, and protect your personal information. We implement industry-standard security measures to protect user data, including end-to-end encryption for sensitive communications.",
+      "p2": "However, no system is completely secure. You acknowledge that you provide information at your own risk."
+    },
+    "section10": {
+      "heading": "10. Disclaimers and Limitations of Liability",
+      "heading2": "10.1 \"As Is\" Provision",
+      "p1": "THE PLATFORM IS PROVIDED \"AS IS\" AND \"AS AVAILABLE\" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.",
+      "heading3": "10.2 Limitation of Liability",
+      "p2": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, THEYAS LAW SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS, DATA LOSS, OR BUSINESS INTERRUPTION ARISING FROM YOUR USE OF THE PLATFORM."
+    },
+    "section11": {
+      "heading": "11. Indemnification",
+      "p1": "You agree to indemnify, defend, and hold harmless TheYAS Law, its affiliates, officers, directors, employees, and agents from any claims, liabilities, damages, losses, costs, or expenses (including reasonable attorneys' fees) arising from:",
+      "ul": {
+        "li1": "Your use or misuse of the Platform",
+        "li2": "Your violation of these Terms",
+        "li3": "Your violation of any third-party rights",
+        "li4": "Content you submit to the Platform"
+      }
+    },
+    "section12": {
+      "heading": "12. Dispute Resolution and Governing Law",
+      "subHeading1": "12.1 Governing Law",
+      "p1": "These Terms shall be governed by and construed in accordance with the laws of the jurisdiction where TheYAS Law is registered, without regard to conflict of law principles.",
+      "subHeading2": "12.2 Arbitration",
+      "p2": "Any dispute arising from these Terms shall be resolved through binding arbitration in accordance with the rules of the designated arbitration organization, except where prohibited by law."
+    },
+    "section13": {
+      "heading": "13. Termination",
+      "p1": "We reserve the right to suspend or terminate your access to the Platform at any time, with or without notice, for any reason, including violation of these Terms. Upon termination:",
+      "ul": {
+        "li1": "Your right to access and use the Platform immediately ceases",
+        "li2": "Any outstanding fees become immediately due and payable",
+        "li3": "We may delete your account and associated data after a reasonable period",
+        "li4": "Provisions that by their nature should survive termination shall remain in effect"
+      }
+    },
+    "section14": {
+      "heading": "14. Modifications to Terms",
+      "p1": "We reserve the right to modify these Terms at any time. We will notify users of material changes via email or Platform notification. Your continued use of the Platform after such modifications constitutes acceptance of the updated Terms. We encourage you to review these Terms periodically."
+    },
+    "section15": {
+      "heading": "15. General Provisions",
+      "subHeading1": "15.1 Severability",
+      "p1": "If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.",
+      "subHeading2": "15.2 Waiver",
+      "p2": "Our failure to enforce any right or provision of these Terms shall not constitute a waiver of such right or provision.",
+      "subHeading3": "15.3 Entire Agreement",
+      "p3": "These Terms, together with our Privacy Policy and any other legal notices published on the Platform, constitute the entire agreement between you and TheYAS Law regarding the use of the Platform."
+    },
+    "section16": {
+      "heading": "16. Contact Information",
+      "p1": "For questions, concerns, or notices regarding these Terms, please contact us at:",
+      "companyName": "TheYAS Law",
+      "email": "Email: admin@theyas.co",
+      "address": "Address: [Company Address]"
+    },
+    "section17": {
+      "heading": "Acknowledgment of Understanding",
+      "p1": "BY USING THE THEYAS LAW PLATFORM, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS AND CONDITIONS. IF YOU DO NOT AGREE TO THESE TERMS, YOU MUST NOT ACCESS OR USE OUR SERVICES."
+    }
+  }
+}

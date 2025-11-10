@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Progress } from "./Progress";
 import { DocumentUploadInterface, uploadDocument } from "@/hooks/useFile";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 interface UploadFileModalProps {
   open: boolean;
@@ -28,6 +29,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
   const [fileName, setFileName] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const t = useTranslations("settingsSeeker");
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -180,7 +182,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            Upload photo
+            {t("settings.Upload photo")}
           </DialogTitle>
         </DialogHeader>
 
@@ -199,8 +201,10 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 <Upload className="h-6 w-6 text-gray-400" />
               </div>
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-medium">Click to upload</span> or drag and
-                drop
+                <span className="font-medium">
+                  {t("settings.Click to upload")}
+                </span>{" "}
+                {t("settings.or drag and drop")}
               </p>
               <p className="text-xs text-gray-400 mb-4">
                 JPG, JPEG, PNG (max. 5MB)
@@ -211,7 +215,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 onClick={() => document.getElementById("file-input")?.click()}
                 type="button"
               >
-                Browse Files
+                {t("settings.Browse Files")}
               </Button>
               <input
                 id="file-input"
@@ -235,7 +239,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 <Progress value={uploadProgress} className="w-full mt-2" />
               </div>
               <p className="text-sm font-medium text-gray-700">
-                Uploading Document...
+                {t("settings.Uploading Document")}
               </p>
               <p className="text-xs text-gray-400">({fileName})</p>
             </div>
@@ -247,7 +251,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 <CheckCircle className="h-6 w-6 text-green-600" />
               </div>
               <p className="text-sm font-medium text-gray-700 mb-1">
-                Document Attached
+                {t("settings.Document Attached")}
               </p>
               <p className="text-xs text-gray-400 mb-4">({fileName})</p>
               <Button
@@ -258,7 +262,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 type="button"
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                Clear Upload
+                {t("settings.Clear Upload")}
               </Button>
             </div>
           )}
@@ -274,7 +278,9 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
                 disabled={uploadMutation.isPending}
                 type="submit"
               >
-                {uploadMutation.isPending ? "Uploading..." : "+ Upload File"}
+                {uploadMutation.isPending
+                  ? t("settings.Uploading...")
+                  : `+ ${t("settings.Upload File")}`}
               </Button>
             </div>
           )}

@@ -13,6 +13,7 @@ import {
 } from "@/hooks/useSubscriptions";
 import { Plan } from "@/types/subscription";
 import { formatDistanceToNow } from "date-fns";
+import { useTranslations } from "next-intl";
 
 const features = [
   "Everything in free",
@@ -33,6 +34,7 @@ export default function Subscription() {
   const [showPaymentSummary, setShowPaymentSummary] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [charges, setCharges] = useState<string>("0.00");
+  const t = useTranslations("subscription");
 
   // Debug logging
   console.log("Subscription page debug:", { plans, loadingPlans, plansError });
@@ -92,7 +94,7 @@ export default function Subscription() {
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">Subscription</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("heading")}</h1>
         </div>
 
         {/* Current subscription (if any) */}
@@ -101,12 +103,14 @@ export default function Subscription() {
             <div className="p-4 bg-white rounded-2xl shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-muted-foreground">Active</div>
+                  <div className="text-sm text-muted-foreground">
+                    {t("Active")}
+                  </div>
                   <div className="text-lg font-semibold">
                     {currentSub.plan.name}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Renews / Ends{" "}
+                    {t("RenewsEnds")}{" "}
                     {currentSub.current_period_end
                       ? formatDistanceToNow(
                           new Date(currentSub.current_period_end),
@@ -123,7 +127,7 @@ export default function Subscription() {
                     (window.location.href = "/dashboard/subscription/manage")
                   }
                 >
-                  Manage
+                  {t("Manage")}
                 </Button>
               </div>
             </div>
@@ -135,10 +139,8 @@ export default function Subscription() {
           <div className="p-6 bg-black text-white min-h-2/5">
             <div className="max-w-xl mx-auto text-center ">
               <Crown className="w-12 h-12 mx-auto mb-4 text-gray-200" />
-              <h2 className="text-3xl font-bold mb-2">Go premium</h2>
-              <p className="text-gray-300">
-                Level up productivity and creativity with expanded access
-              </p>
+              <h2 className="text-3xl font-bold mb-2">{t("Go premium")}</h2>
+              <p className="text-gray-300">{t("p1")}</p>
             </div>
           </div>
 
@@ -147,11 +149,11 @@ export default function Subscription() {
             <div className="flex justify-center  absolute left-1/2 -translate-x-1/2 -top-10">
               <div className="flex gap-4 p-2 bg-white rounded-lg text-black">
                 {loadingPlans && (
-                  <div className="text-sm px-4 py-2">Loading...</div>
+                  <div className="text-sm px-4 py-2">{t("Loading")}</div>
                 )}
                 {plansError && (
                   <div className="text-sm px-4 py-2 text-red-300">
-                    Error loading plans: {plansError.message}
+                    {t("Error")} {plansError.message}
                   </div>
                 )}
                 {!loadingPlans &&
@@ -184,7 +186,7 @@ export default function Subscription() {
                         >
                           {recommended && (
                             <Badge className="absolute top-0 left-1/2 -translate-x-1/2 bg-legal-gold text-legal-dark text-[10px] tracking-wide">
-                              RECOMMENDED
+                              {t("RECOMMENDED")}
                             </Badge>
                           )}
                           <div className="text-center">
@@ -202,11 +204,13 @@ export default function Subscription() {
                   !plansError &&
                   Array.isArray(plans) &&
                   plans.length === 0 && (
-                    <div className="text-sm px-4 py-2">No plans available</div>
+                    <div className="text-sm px-4 py-2">
+                      {t("No plans available")}
+                    </div>
                   )}
                 {!loadingPlans && !plansError && !Array.isArray(plans) && (
                   <div className="text-sm px-4 py-2 text-red-300">
-                    Invalid plans data format
+                    {t("Invalid plans data format")}
                   </div>
                 )}
               </div>
@@ -226,7 +230,7 @@ export default function Subscription() {
               </div>
               {currentSub && (
                 <div className="text-xs text-muted-foreground">
-                  Active: {currentSub.plan.name} • Renews / Ends{" "}
+                  {t("Active")}: {currentSub.plan.name} • {t("RenewsEnds")}{" "}
                   {currentSub.current_period_end
                     ? formatDistanceToNow(
                         new Date(currentSub.current_period_end),
@@ -246,7 +250,7 @@ export default function Subscription() {
                       (window.location.href = "/dashboard/subscription/manage")
                     }
                   >
-                    Manage
+                    {t("Manage")}
                   </Button>
                 ) : (
                   <Button
@@ -256,8 +260,8 @@ export default function Subscription() {
                     disabled={!selectedPlan || checkoutMutation.isPending}
                   >
                     {checkoutMutation.isPending
-                      ? "Processing..."
-                      : "Go premium"}
+                      ? t("Processing")
+                      : t("Go premium")}
                   </Button>
                 )}
               </div>
@@ -269,10 +273,10 @@ export default function Subscription() {
       {/* Payment Summary Modal */}
       <Dialog open={showPaymentSummary} onOpenChange={setShowPaymentSummary}>
         <DialogContent className="max-w-sm no-close">
-          <DialogTitle className="sr-only">Payment Summary</DialogTitle>
+          <DialogTitle className="sr-only">{t("Payment Summary")}</DialogTitle>
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold">Payment Summary</h3>
+              <h3 className="text-xl font-bold">{t("Payment Summary")}</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -290,11 +294,11 @@ export default function Subscription() {
                 <div>
                   <h4 className="font-semibold">{selectedPlan.name}</h4>
                   <p className="text-sm text-muted-foreground">
-                    Interval: {selectedPlan.interval_count}{" "}
+                    {t("Interval")}: {selectedPlan.interval_count}{" "}
                     {selectedPlan.interval_unit}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Price: {priceDisplay(selectedPlan)}
+                    {t("Price")}: {priceDisplay(selectedPlan)}
                   </p>
                 </div>
               </div>
@@ -302,17 +306,17 @@ export default function Subscription() {
             {selectedPlan && (
               <div className="space-y-3 mb-6 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t("Subtotal")}</span>
                   <span className="text-muted-foreground">
                     {priceDisplay(selectedPlan)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Charges</span>
+                  <span className="text-muted-foreground">{t("Charges")}</span>
                   <span className="text-muted-foreground">${charges}</span>
                 </div>
                 <div className="flex justify-between font-semibold text-base">
-                  <span>Total</span>
+                  <span>{t("Total")}</span>
                   <span>${totalWithCharges}</span>
                 </div>
               </div>
@@ -324,8 +328,8 @@ export default function Subscription() {
               disabled={checkoutMutation.isPending}
             >
               {checkoutMutation.isPending
-                ? "Processing..."
-                : `Pay $${totalWithCharges}`}
+                ? t("Processing")
+                : `${t("Pay")} $${totalWithCharges}`}
             </Button>
           </div>
         </DialogContent>
@@ -334,7 +338,9 @@ export default function Subscription() {
       {/* Success Modal */}
       <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
         <DialogContent className="max-w-md no-close">
-          <DialogTitle className="sr-only">Payment Successful</DialogTitle>
+          <DialogTitle className="sr-only">
+            {t("Payment Successful")}
+          </DialogTitle>
           <div className="p-6 text-center">
             <Button
               variant="ghost"
@@ -348,11 +354,11 @@ export default function Subscription() {
               <Check className="w-8 h-8 text-green-600" />
             </div>
             <h3 className="text-xl font-bold mb-4">
-              Your payment was successful
+              {t("Your payment was successful")}
             </h3>
             {selectedPlan && (
               <p className="text-muted-foreground">
-                You have successfully subscribed to{" "}
+                {t("You have successfully subscribed to")}{" "}
                 <strong>{selectedPlan.name}</strong>.
               </p>
             )}

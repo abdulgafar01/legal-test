@@ -5,8 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ApiService } from "@/config/apiService";
-import { ChevronLeft, ChevronRight, Clock, RefreshCcw, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  RefreshCcw,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface TimeSlot {
   id?: number;
@@ -49,6 +56,7 @@ const AvailabilityCalendar: React.FC = () => {
   const [showAddSlot, setShowAddSlot] = useState(false);
   const [showAddRecurring, setShowAddRecurring] = useState(false);
   const [newSlotTime, setNewSlotTime] = useState({ start: "", end: "" });
+  const t = useTranslations("settingsSeeker");
 
   // For managing multiple recurring slots for a selected day in the modal
   const [recurringModalSlots, setRecurringModalSlots] = useState<
@@ -56,30 +64,28 @@ const AvailabilityCalendar: React.FC = () => {
   >([]);
 
   const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
+    t("settings.Sunday"),
+    t("settings.Monday"),
+    t("settings.Tuesday"),
+    t("settings.Wednesday"),
+    t("settings.Thursday"),
+    t("settings.Friday"),
+    t("settings.Saturday"),
   ];
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    t("settings.January"),
+    t("settings.February"),
+    t("settings.March"),
+    t("settings.April"),
+    t("settings.May"),
+    t("settings.June"),
+    t("settings.July"),
+    t("settings.August"),
+    t("settings.September"),
+    t("settings.October"),
+    t("settings.November"),
+    t("settings.December"),
   ];
-
-  
 
   const fetchAvailability = useCallback(async () => {
     try {
@@ -100,15 +106,17 @@ const AvailabilityCalendar: React.FC = () => {
     } catch (error) {
       console.error("Error fetching availability:", error);
       toast.error("Error fetching availability");
-      setFetchError(String(getErrorMessage("Error: Failed to load availability.")));
+      setFetchError(
+        String(getErrorMessage("Error: Failed to load availability."))
+      );
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchAvailability()
-  }, [fetchAvailability])
+    fetchAvailability();
+  }, [fetchAvailability]);
 
   const getCalendarDays = () => {
     const year = currentDate.getFullYear();
@@ -222,7 +230,9 @@ const AvailabilityCalendar: React.FC = () => {
 
   const handleDateClick = (date: Date) => {
     if (fetchError) {
-      toast.warning("Cannot open editor until availability is loaded. Please retry.");
+      toast.warning(
+        "Cannot open editor until availability is loaded. Please retry."
+      );
       return;
     }
 
@@ -275,7 +285,9 @@ const AvailabilityCalendar: React.FC = () => {
     // Open the recurring modal for the day to allow managing multiple slots
     try {
       if (fetchError) {
-        toast.warning("Cannot open recurring editor until availability is loaded. Please retry.");
+        toast.warning(
+          "Cannot open recurring editor until availability is loaded. Please retry."
+        );
         return;
       }
       setSelectedDay(day);
@@ -399,9 +411,13 @@ const AvailabilityCalendar: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="text-sm text-red-700">{fetchError}</div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => fetchAvailability()}>
-                  Retry
-                  <RefreshCcw/>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchAvailability()}
+                >
+                  {t("settings.Retry")}
+                  <RefreshCcw />
                 </Button>
               </div>
             </div>
@@ -415,7 +431,7 @@ const AvailabilityCalendar: React.FC = () => {
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
-              Availability Calendar
+              {t("settings.Availability Calendar")}
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -498,11 +514,11 @@ const AvailabilityCalendar: React.FC = () => {
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-green-50 border border-green-200 rounded"></div>
-              <span>Available</span>
+              <span>{t("settings.Available")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-blue-50 border border-blue-500 rounded"></div>
-              <span>Today</span>
+              <span>{t("settings.Today")}</span>
             </div>
           </div>
         </CardContent>
@@ -511,7 +527,7 @@ const AvailabilityCalendar: React.FC = () => {
       {/* Weekly Recurring Availability */}
       <Card>
         <CardHeader>
-          <CardTitle>Weekly Recurring Availability</CardTitle>
+          <CardTitle>{t("settings.Weekly Recurring Availability")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -544,7 +560,7 @@ const AvailabilityCalendar: React.FC = () => {
                         ))
                       ) : (
                         <span className="text-sm text-gray-500">
-                          No availability
+                          {t("settings.No availability")}
                         </span>
                       )}
                     </div>
@@ -559,8 +575,8 @@ const AvailabilityCalendar: React.FC = () => {
                     onClick={() => toggleRecurringAvailability(djangoDayIndex)}
                   >
                     {recurringSlotsForDay.length > 0
-                      ? "Manage"
-                      : "Add Availability"}
+                      ? t("settings.Manage")
+                      : t("settings.Add Availability")}
                   </Button>
                 </div>
               );
@@ -574,13 +590,14 @@ const AvailabilityCalendar: React.FC = () => {
         <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 border border-black">
           <CardContent className="bg-white p-6 rounded-lg w-96">
             <h3 className="text-lg font-semibold mb-4">
-              Add Time Slot for {new Date(selectedDate).toLocaleDateString()}
+              {t("settings.Add Time Slot for")}{" "}
+              {new Date(selectedDate).toLocaleDateString()}
             </h3>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Start Time
+                  {t("settings.Start Time")}
                 </label>
                 <input
                   type="time"
@@ -597,7 +614,7 @@ const AvailabilityCalendar: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  End Time
+                  {t("settings.End Time")}
                 </label>
                 <input
                   type="time"
@@ -618,9 +635,9 @@ const AvailabilityCalendar: React.FC = () => {
                     setNewSlotTime({ start: "", end: "" });
                   }}
                 >
-                  Cancel
+                  {t("settings.Cancel")}
                 </Button>
-                <Button onClick={addTimeSlot}>Add Slot</Button>
+                <Button onClick={addTimeSlot}>{t("settings.Add Slot")}</Button>
               </div>
             </div>
           </CardContent>
@@ -632,7 +649,7 @@ const AvailabilityCalendar: React.FC = () => {
         <Card className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <CardContent className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">
-              Manage Weekly Availability for{" "}
+              {t("settings.Manage Weekly Availability for")}{" "}
               {daysOfWeek[djangoToJsDayOfWeek(selectedDay)]}
             </h3>
 
@@ -642,7 +659,7 @@ const AvailabilityCalendar: React.FC = () => {
                   <div key={idx} className="flex items-center gap-2">
                     <div className="flex-1">
                       <label className="block text-sm font-medium mb-1">
-                        Start Time
+                        {t("settings.Start Time")}
                       </label>
                       <input
                         type="time"
@@ -660,7 +677,7 @@ const AvailabilityCalendar: React.FC = () => {
 
                     <div className="flex-1">
                       <label className="block text-sm font-medium mb-1">
-                        End Time
+                        {t("settings.End Time")}
                       </label>
                       <input
                         type="time"
@@ -695,7 +712,7 @@ const AvailabilityCalendar: React.FC = () => {
                   size="sm"
                   onClick={addLocalRecurringSlot}
                 >
-                  Add Another Slot
+                  {t("settings.Add Another Slot")}
                 </Button>
               </div>
 
@@ -708,10 +725,12 @@ const AvailabilityCalendar: React.FC = () => {
                     setRecurringModalSlots([]);
                   }}
                 >
-                  Cancel
+                  {t("settings.Cancel")}
                 </Button>
                 <Button onClick={addRecurringAvailability} disabled={loading}>
-                  {loading ? "Saving..." : "Save Weekly Availability"}
+                  {loading
+                    ? t("settings.Saving")
+                    : t("settings.Save Weekly Availability")}
                 </Button>
               </div>
             </div>
@@ -724,7 +743,7 @@ const AvailabilityCalendar: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>
-              Specific Availability for{" "}
+              {t("settings.Specific Availability for")}{" "}
               {new Date(selectedDate).toLocaleDateString()}
             </CardTitle>
           </CardHeader>
