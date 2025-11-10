@@ -15,7 +15,11 @@ const navItems = [
   { href: "#contact", label: "Contact" },
 ];
 
-export default function Header() {
+type HeaderProps = {
+  baseHref?: string;
+};
+
+export default function Header({ baseHref = "" }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
@@ -29,7 +33,7 @@ export default function Header() {
     <header className="w-full bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-40 font-nunito">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-8">
         <Link
-          href="#home"
+          href={`${baseHref}#home`}
           className="text-2xl font-extrabold tracking-tight text-black"
         >
           TheYAS<span className="text-gradient-gold">Law</span>
@@ -39,7 +43,7 @@ export default function Header() {
           {navItems.map((item) => (
             <a
               key={item.href}
-              href={item.href}
+              href={`${baseHref}${item.href}`}
               className="hover:text-black transition-colors"
             >
               {item.label}
@@ -107,7 +111,7 @@ export default function Header() {
               {navItems.map((item, i) => (
                 <motion.a
                   key={item.href}
-                  href={item.href}
+                  href={`${baseHref}${item.href}`}
                   onClick={() => setOpen(false)}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
