@@ -27,6 +27,8 @@ import enProfile from "@/messages/dashboard/profile/en.json";
 import arProfile from "@/messages/dashboard/profile/ar.json";
 import enPrivacy from "@/messages/privacy/en.json";
 import arPrivacy from "@/messages/privacy/ar.json";
+import enTerms from "@/messages/terms/en.json";
+import arTerms from "@/messages/terms/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -37,7 +39,8 @@ const enMessages = {
   ...enDashboard,
   ...enChat,
   ...enProfile,
-  ...enPrivacy
+  ...enPrivacy,
+  ...enTerms
 };
 
 const arMessages = {
@@ -49,7 +52,8 @@ const arMessages = {
   ...arDashboard,
   ...arChat,
   ...arProfile,
-  ...arPrivacy
+  ...arPrivacy,
+  ...arTerms
 };
 
 const messagesMap = {
