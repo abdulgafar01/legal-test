@@ -1,0 +1,21 @@
+{
+  "pending": {
+    "title": "Application Submitted Successfully! 🎉",
+    "description": "Thank you for submitting your practitioner application. Your profile is now under review by our admin team.",
+    "status": {
+      "submitted": "Application Submitted",
+      "underReview": "Under Review",
+      "approved": "Profile Approved"
+    },
+    "nextSteps": {
+      "title": "What happens next?",
+      "description": "We'll review your application within 2-3 business days and send you an email with the status update."
+    },
+    "actions": {
+      "logout": "Logout & Check Later"
+    },
+    "contact": {
+      "prefix": "Questions? Contact our support team at"
+    }
+  }
+}
