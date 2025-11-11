@@ -35,6 +35,8 @@ import enSubscriptions from "@/messages/dashboard/subscription/en.json";
 import arSubscriptions from "@/messages/dashboard/subscription/ar.json";
 import enContact from "@/messages/enContact.json";
 import arContact from "@/messages/arContact.json";
+import enConsultation from "@/messages/dashboard/consultation/en.json";
+import arConsultation from "@/messages/dashboard/consultation/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -49,7 +51,8 @@ const enMessages = {
   ...enTerms,
   ...enMeetings,
   ...enSubscriptions,
-  ...enContact
+  ...enContact,
+  ...enConsultation
 };
 
 const arMessages = {
@@ -65,7 +68,8 @@ const arMessages = {
   ...arTerms,
   ...arMeetings,
   ...arSubscriptions,
-  ...arContact
+  ...arContact,
+  ...arConsultation
 };
 
 const messagesMap = {

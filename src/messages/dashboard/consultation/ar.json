@@ -1,0 +1,30 @@
+{
+  "consultation": {
+    "selectConversation": "اختر محادثة",
+    "chooseConsultation": "اختر استشارة من القائمة لبدء المراسلة",
+    "consultations": "الاستشارات",
+    "searchPlaceholder": "ابحث عن الاستشارات...",
+    "today": "اليوم",
+    "upcoming": "القادمة",
+    "previous": "الاستشارات السابقة",
+    "noConsultationsFound": "لم يتم العثور على استشارات",
+    "tryAdjustingSearch": "حاول تعديل البحث",
+    "bookConsultationToStart": "احجز استشارة للبدء",
+    "loadingConsultations": "جارٍ تحميل الاستشارات...",
+    "consultationCompleted": "تمت الاستشارة",
+    "consultationCancelled": "تم إلغاء الاستشارة",
+    "readyToStart": "جاهز للبدء",
+    "inDays": "بعد {count} يوم",
+    "inHours": "بعد {count} ساعة",
+    "inMinutes": "بعد {count} دقيقة",
+    "status": {
+      "confirmed": "مؤكد",
+      "pending": "قيد الانتظار",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "joinVideo": "انضم للفيديو",
+    "opening": "جارٍ الفتح…"
+  }
+}
