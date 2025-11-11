@@ -94,3 +94,13 @@ export const listThreads = async (guestId?: string, limit = 10, cursor?: string)
   
   return { items, nextCursor }
 }
+
+export const deleteThread = async (threadId: string, guestId?: string) => {
+  const url = buildApiUrl(`${API_ENDPOINTS.chatbot!.threads}${threadId}/`)
+  const headers: Record<string, string> = {}
+  const token = typeof window !== 'undefined' ? (localStorage.getItem('accessToken') || localStorage.getItem('authToken')) : null
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  if (!token && guestId) headers['X-Guest-Id'] = guestId
+  await axios.delete(url, { headers })
+  return { id: threadId }
+}

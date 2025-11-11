@@ -138,6 +138,10 @@ const Page = () => {
           setMessages([]);
           connectWS(t, guestId);
           router.replace(`/dashboard/chat?thread=${t.id}`);
+          // Notify sidebar and any thread lists to update without a page refresh
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("chatbot:threadCreated", { detail: t }));
+          }
           // slight delay to allow ws to open; fallback send once open
           setTimeout(() => {
             if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -149,6 +153,17 @@ const Page = () => {
               );
             }
           }, 150);
+
+          // Optimistically set the thread title to the first user message and notify sidebar
+          const now = new Date().toISOString();
+          setThread((prev) => (prev ? { ...prev, title: prev.title || trimmed, updated_at: now } : prev));
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(
+              new CustomEvent("chatbot:threadUpdated", {
+                detail: { id: t.id, title: trimmed, updated_at: now },
+              })
+            );
+          }
         } catch (e) {
           console.error(
             "Failed to auto-create thread before sending message",
@@ -167,6 +182,19 @@ const Page = () => {
       wsRef.current.send(
         JSON.stringify({ type: "message:new", payload: { content: trimmed } })
       );
+
+      // If this is the first message and the title is still empty, optimistically set it and broadcast update
+      if (thread && !thread.title) {
+        const now = new Date().toISOString();
+        setThread({ ...thread, title: trimmed, updated_at: now });
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("chatbot:threadUpdated", {
+              detail: { id: thread.id, title: trimmed, updated_at: now },
+            })
+          );
+        }
+      }
     },
     [thread, guestId, creatingThread, connectWS, router]
   );
@@ -183,6 +211,10 @@ const Page = () => {
       setMessages([]);
       connectWS(t, guestId);
       router.replace(`/dashboard/chat?thread=${t.id}`);
+      // Notify sidebar and any thread lists to update without a page refresh
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("chatbot:threadCreated", { detail: t }));
+      }
     } catch (error) {
       console.error("Failed to create new chat:", error);
     }

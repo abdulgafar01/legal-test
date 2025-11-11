@@ -41,6 +41,30 @@ const ThreadList: React.FC<Props> = ({ guestId, selectedId, onSelect, hrefBuilde
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guestId])
 
+  // Live-update when a new thread is created elsewhere
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const custom = e as CustomEvent<ChatbotThreadListItem>
+      const newThread = custom.detail
+      if (!newThread) return
+      setItems((prev) => (prev.find((t) => t.id === newThread.id) ? prev : [newThread, ...prev]))
+    }
+    window.addEventListener('chatbot:threadCreated', handler as EventListener)
+    return () => window.removeEventListener('chatbot:threadCreated', handler as EventListener)
+  }, [])
+
+  // Live-update when a thread's title/updated_at changes (e.g., first message becomes title)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const custom = e as CustomEvent<Partial<ChatbotThreadListItem> & { id: string }>
+      const upd = custom.detail
+      if (!upd?.id) return
+      setItems((prev) => prev.map((t) => (t.id === upd.id ? { ...t, ...upd } : t)))
+    }
+    window.addEventListener('chatbot:threadUpdated', handler as EventListener)
+    return () => window.removeEventListener('chatbot:threadUpdated', handler as EventListener)
+  }, [])
+
   return (
     <div className='flex flex-col h-full'>
       <div className='flex-1 overflow-y-auto pr-2 space-y-1'>
