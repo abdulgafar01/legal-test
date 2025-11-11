@@ -8,9 +8,8 @@ import ExperienceStep, { Experience } from './ExperienceStep';
 import PricingStep from './PricingStep';
 import SuccessModal from './SuccessModal';
 import { Scale } from 'lucide-react';
-
-// Step-specific types
-// interface ProfileDetails extends ProfileFormData {}
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/provider/LanguageSwitcher';
 
 interface PricingFormData {
   consultationRate: string;
@@ -55,6 +54,7 @@ const Page: React.FC = () => {
       unavailableDates: [],
     },
   });
+  const t = useTranslations("account");
 
   const handleStepComplete = <K extends keyof FormData>(
     stepData: FormData[K],
@@ -94,11 +94,10 @@ const Page: React.FC = () => {
         );
       case 3:
         return (
-         <ExperienceStep
-         onNext={(data:Experience[]) => handleStepComplete(data, 'experiences')}
-         initialData={formData.experiences}
-       />
-
+          <ExperienceStep
+            onNext={(data:Experience[]) => handleStepComplete(data, 'experiences')}
+            initialData={formData.experiences}
+          />
         );
       case 4:
         return (
@@ -113,30 +112,33 @@ const Page: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-orange-50 mx-auto ">
+    <div className="min-h-screen bg-orange-50 mx-auto">
       {/* Header */}
       <div className="text-center py-8">
         <div className="flex items-center justify-center mb-6">
           <div className="text-2xl text-yellow-600">
             <Scale />
           </div>
-          <h1 className="text-xl font-semibold ml-2">Legal AI</h1>
+          <h1 className="text-xl font-semibold ml-2">{t('header.title')}</h1>
         </div>
         <p className="text-gray-600 max-w-md mx-auto text-xs">
-          To make your profile visible as a professional, please complete your account setup.
+          {t('header.description')}
         </p>
       </div>
 
-
       {/* Step Content */}
       <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto bg-white rounded-lg shadow-md">
-      {/* Step Indicator */}
-      <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
+        {/* Step Indicator */}
+        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
         {renderCurrentStep()}
       </div>
 
       {/* Success Modal */}
-      <SuccessModal isOpen={showSuccess} onClose={() => setShowSuccess(false)} />
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
+      <LanguageSwitcher isAbsolute={true}/>
     </div>
   );
 };

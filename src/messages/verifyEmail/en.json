@@ -1,0 +1,18 @@
+{
+  "verifyEmail": {
+    "title": "We sent you a mail.",
+    "instruction": "Enter the 6-digit verification code sent to",
+    "digit": "Digit {index}",
+    "verify": "Verify",
+    "verifying": "Verifying...",
+    "resendCode": "Resend code",
+    "resending": "Resending...",
+    "noEmailFound": "No email found. Please register again.",
+    "emailVerified": "Email verified successfully!",
+    "serverError": "Server did not return a specific error message.",
+    "unexpectedError": "An unexpected error occurred.",
+    "resendSuccess": "Verification code resent successfully.",
+    "resendError": "Failed to resend verification code.",
+    "invalidCode": "Please enter a valid 6-digit code"
+  }
+}

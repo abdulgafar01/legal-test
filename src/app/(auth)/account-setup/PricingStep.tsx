@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,8 +13,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
+import { useTranslations } from 'next-intl';
 
-interface PricingFormData {
+export interface PricingFormData {
   consultationRate: string;
   consultationCurrency: 'USD' | 'EUR' | 'GBP';
   hireRate: string;
@@ -31,6 +32,7 @@ interface PricingStepProps {
 
 const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) => {
   const router = useRouter();
+  const t = useTranslations('account');
 
   const [formData, setFormData] = useState<PricingFormData>({
     consultationRate: initialData.consultationRate || '',
@@ -64,15 +66,13 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
 
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-semibold text-center mb-2">Setup your pricing</h2>
-      <p className="text-gray-600 text-center mb-8">
-        These details will be displayed on your profile for service seekers to see.
-      </p>
+      <h2 className="text-2xl font-semibold text-center mb-2">{t('pricing.title')}</h2>
+      <p className="text-gray-600 text-center mb-8">{t('pricing.description')}</p>
 
       <div className="space-y-6">
         {/* Consultation Rate */}
         <div>
-          <Label htmlFor="consultationRate">Consultation rate</Label>
+          <Label htmlFor="consultationRate">{t('pricing.consultationRate')}</Label>
           <div className="flex mt-1">
             <div className="flex items-center bg-gray-50 px-3 rounded-l-md border border-r-0">
               <span className="text-gray-500">$</span>
@@ -82,7 +82,7 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               value={formData.consultationRate}
               onChange={(e) => handleInputChange('consultationRate', e.target.value)}
               className="rounded-l-none flex-1"
-              placeholder="1,000.00"
+              placeholder={t('pricing.placeholder')}
             />
             <Select
               value={formData.consultationCurrency}
@@ -100,14 +100,12 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               </SelectContent>
             </Select>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            A fee of 10% will be deducted on each consultation.
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{t('pricing.consultationFee')}</p>
         </div>
 
         {/* Hire Rate */}
         <div>
-          <Label htmlFor="hireRate">Hire rate</Label>
+          <Label htmlFor="hireRate">{t('pricing.hireRate')}</Label>
           <div className="flex mt-1">
             <div className="flex items-center bg-gray-50 px-3 rounded-l-md border border-r-0">
               <span className="text-gray-500">$</span>
@@ -117,7 +115,7 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               value={formData.hireRate}
               onChange={(e) => handleInputChange('hireRate', e.target.value)}
               className="rounded-l-none flex-1"
-              placeholder="1,000.00"
+              placeholder={t('pricing.placeholder')}
             />
             <Select
               value={formData.hireCurrency}
@@ -135,15 +133,13 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               </SelectContent>
             </Select>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            A fee of 10% will be deducted on each hire.
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{t('pricing.hireFee')}</p>
         </div>
 
         {/* Min and Max Consultation */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="minConsultation">Min Consultation</Label>
+            <Label htmlFor="minConsultation">{t('pricing.minConsultation')}</Label>
             <Input
               id="minConsultation"
               value={formData.minConsultation}
@@ -151,10 +147,10 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="mt-1"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500 mt-1">Minimum consultations at once</p>
+            <p className="text-xs text-gray-500 mt-1">{t('pricing.minConsultationInfo')}</p>
           </div>
           <div>
-            <Label htmlFor="maxConsultation">Max Consultation</Label>
+            <Label htmlFor="maxConsultation">{t('pricing.maxConsultation')}</Label>
             <Input
               id="maxConsultation"
               value={formData.maxConsultation}
@@ -162,13 +158,13 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
               className="mt-1"
               placeholder="0"
             />
-            <p className="text-xs text-gray-500 mt-1">Maximum consultations (up to 30)</p>
+            <p className="text-xs text-gray-500 mt-1">{t('pricing.maxConsultationInfo')}</p>
           </div>
         </div>
 
         {/* Calendar */}
         <div>
-          <Label>Select your unavailable dates</Label>
+          <Label>{t('pricing.unavailableDates')}</Label>
           <div className="mt-2 bg-gray-50 p-4 rounded-lg">
             <Calendar
               mode="multiple"
@@ -187,7 +183,7 @@ const PricingStep: React.FC<PricingStepProps> = ({ onNext, initialData = {} }) =
           isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
         }`}
       >
-        Submit
+        {t('pricing.submitButton')}
       </Button>
     </div>
   );

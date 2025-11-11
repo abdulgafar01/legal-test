@@ -32,6 +32,42 @@
       "Processed": "Processed",
       "Load More": "Load More",
       "Consultation with": "Consultation with"
+    },
+    "help": {
+      "title": "Help & Support",
+      "sections": {
+        "gettingStarted": {
+          "title": "Getting started",
+          "content": "If you are a legal practitioner, complete your profile and add your specializations so clients can find you. Ensure your qualifications and licenses are up to date."
+        },
+        "bookingConsultations": {
+          "title": "Booking & Consultations",
+          "content": "Clients can book consultations through your profile. Ensure your availability is accurate. Payments are processed securely; consult our support for disputes."
+        },
+        "legalGuidance": {
+          "title": "Legal guidance",
+          "content": "We provide a platform to connect clients with licensed practitioners. Our content is for informational purposes and not a substitute for professional legal advice. Always confirm advice with a qualified attorney in your jurisdiction."
+        },
+        "contactSupport": {
+          "title": "Contact support",
+          "content": "For further help, email {email} or use the in-app chat."
+        }
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "q1": {
+          "question": "How do I update my specializations?",
+          "answer": "Go to Settings → Specializations. If you need additional specializations added, contact support with your credentials."
+        },
+        "q2": {
+          "question": "How are practitioners verified?",
+          "answer": "Practitioner documents are verified by our moderation team. Verification may take several business days."
+        },
+        "q3": {
+          "question": "Can I cancel a booking?",
+          "answer": "Cancellations depend on the practitioner's policy. Check the consultation terms when booking and contact support for disputes."
+        }
+      }
     }
   }
 }

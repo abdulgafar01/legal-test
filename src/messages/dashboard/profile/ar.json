@@ -7,6 +7,20 @@
     "Privacy Policy": "سياسة الخصوصية",
     "termsConditions": "الشروط والأحكام",
     "Settings": "الإعدادات",
-    "Help": "المساعدة"
+    "Help": "المساعدة",
+    "Edit Profile": "تعديل الملف الشخصي",
+    "Profile": "الملف الشخصي",
+     "edit": {
+    "Edit photo": "تعديل الصورة",
+    "First Name": "الاسم الأول",
+    "Last Name": "اسم العائلة",
+    "Email Address": "عنوان البريد الإلكتروني",
+    "Phone number": "رقم الهاتف",
+    "Country": "البلد",
+    "State": "الولاية",
+    "City": "المدينة",
+    "Updating": "جارٍ التحديث...",
+    "Update": "تحديث"
+  }
   }
 }

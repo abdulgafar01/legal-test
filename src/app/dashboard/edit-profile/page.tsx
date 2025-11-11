@@ -21,6 +21,7 @@ import { useUpdateUserProfile } from "@/hooks/useUpdateUserProfile";
 import { useCountries } from "@/hooks/useCountries";
 import { UploadPhotoModal } from "@/components/UploadPhotoModal";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslations } from "next-intl";
 
 interface EditProfileForm {
   first_name: string;
@@ -41,7 +42,7 @@ const EditProfile = () => {
   const { data: countries = [] } = useCountries();
   const [open, setOpen] = useState<boolean>(false);
   const { data: profileImage } = useProfileImage();
-  console.log("image: ", profileImage);
+  const t = useTranslations("profile");
 
   const { register, setValue, watch, handleSubmit, reset } =
     useForm<EditProfileForm>({
@@ -107,7 +108,9 @@ const EditProfile = () => {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold text-foreground">Edit Profile</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              {t("Edit Profile")}
+            </h1>
           </div>
 
           <form
@@ -139,38 +142,38 @@ const EditProfile = () => {
                   className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
                   onClick={() => setOpen(true)}
                 >
-                  Edit photo
+                  {t("edit.Edit photo")}
                 </button>
               </div>
             </div>
 
             {/* Name inputs */}
             <div>
-              <Label htmlFor="first_name">First Name</Label>
+              <Label htmlFor="first_name">{t("edit.First Name")}</Label>
               <Input id="first_name" {...register("first_name")} />
             </div>
 
             <div>
-              <Label htmlFor="last_name">Last Name</Label>
+              <Label htmlFor="last_name">{t("edit.Last Name")}</Label>
               <Input id="last_name" {...register("last_name")} />
             </div>
 
             {/* Email */}
             <div>
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t("edit.Email Address")}</Label>
               <Input id="email" type="email" {...register("email")} />
             </div>
 
             {/* Phone + Dial code */}
             <div>
-              <Label htmlFor="phone_number">Phone number</Label>
+              <Label htmlFor="phone_number">{t("edit.Phone number")}</Label>
               <div className="flex gap-2">
                 <Select
                   value={selectedCountry}
                   onValueChange={(value) => setValue("country", value)}
                 >
                   <SelectTrigger className="w-fit">
-                    <SelectValue placeholder="Country" />
+                    <SelectValue placeholder={t("edit.Country")} />
                   </SelectTrigger>
                   <SelectContent>
                     {countries
@@ -207,11 +210,11 @@ const EditProfile = () => {
             {/* State and City */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">{t("edit.State")}</Label>
                 <Input id="state" {...register("state")} />
               </div>
               <div>
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">{t("edit.City")}</Label>
                 <Input id="city" {...register("city")} />
               </div>
             </div>
@@ -225,7 +228,7 @@ const EditProfile = () => {
                 className="w-full rounded-3xl cursor-pointer"
                 disabled={isPending}
               >
-                {isPending ? "Updating..." : "Update"}
+                {isPending ? t("edit.Updating") : t("edit.Update")}
               </Button>
             </div>
           </form>
