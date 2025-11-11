@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { useTranslations } from 'next-intl';
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -7,9 +8,10 @@ interface SuccessModalProps {
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
+  const t = useTranslations('account');
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      
       <DialogContent className="max-w-sm mx-auto text-center border-0 shadow-lg">
         <div className="py-6">
           <div className="w-20 h-20 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
@@ -19,13 +21,9 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
               </svg>
             </div>
           </div>
-          <DialogTitle>
-            
-          </DialogTitle>
-          <h2 className="text-2xl font-semibold mb-4">Congratulations</h2>
-          <p className="text-gray-600">
-            Your profile is ready. Service seekers can see your profile details now.
-          </p>
+          <DialogTitle>{t('success.title')}</DialogTitle>
+          <h2 className="text-2xl font-semibold mb-4">{t('success.congratulations')}</h2>
+          <p className="text-gray-600">{t('success.description')}</p>
         </div>
       </DialogContent>
     </Dialog>

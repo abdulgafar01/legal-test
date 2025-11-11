@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from 'next-intl';
 
 export interface Experience {
   id: string;
@@ -27,6 +28,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
   initialData = [],
 }) => {
   const [experiences, setExperiences] = useState<Experience[]>(initialData);
+  const t = useTranslations("account");
 
   const handleAddExperience = () => {
     setExperiences((prev) => [
@@ -76,11 +78,10 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
   return (
     <div className="max-w-md mx-auto space-y-3 px-1.5">
       <h2 className="text-3xl font-semibold text-center mb-1">
-        Setup your experience
+        {t("experience.title")}
       </h2>
       <p className="text-gray-600 text-sm text-center mb-2">
-        These details will be displayed on your profile for service seekers to
-        see.
+        {t("experience.description")}
       </p>
 
       {experiences.map((exp, index) => (
@@ -88,7 +89,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
             <div>
               <Label className="mb-1" htmlFor="jobTitle">
-                Job Title/position held
+                {t("experience.fields.jobTitle")}
               </Label>
               <Input
                 value={exp.jobTitle}
@@ -100,7 +101,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
             </div>
             <div>
               <Label className="mb-1" htmlFor="employmentType">
-                Employment Type
+                {t("experience.fields.employmentType")}
               </Label>
               <Input
                 value={exp.employmentType}
@@ -111,7 +112,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label className="mb-1" htmlFor='industry'>Industry</Label>
+              <Label className="mb-1" htmlFor='industry'>
+                {t("experience.fields.industry")}
+              </Label>
               <Input
                 value={exp.industry}
                 id='industry'
@@ -121,7 +124,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label className="mb-1" htmlFor='company'>Company</Label>
+              <Label className="mb-1" htmlFor='company'>
+                {t("experience.fields.company")}
+              </Label>
               <Input
                 value={exp.company}
                  id='company'
@@ -129,7 +134,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label className="mb-1" htmlFor='startDate'>Start Date</Label>
+              <Label className="mb-1" htmlFor='startDate'>
+                {t("experience.fields.startDate")}
+              </Label>
               <Input
                 type="date"
                  id='startDate'
@@ -140,7 +147,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div>
-              <Label className="mb-1" htmlFor='endDate'>End Date</Label>
+              <Label className="mb-1" htmlFor='endDate'>
+                {t("experience.fields.endDate")}
+              </Label>
               <Input
                 type="date"
                 value={exp.endDate}
@@ -149,7 +158,9 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               />
             </div>
             <div className="col-span-full">
-              <Label className="mb-1" htmlFor='keyDuties'>List Key Duties Performed</Label>
+              <Label className="mb-1" htmlFor='keyDuties'>
+                {t("experience.fields.duties")}
+              </Label>
               <Textarea
                 value={exp.duties}
                 id='keyDuties'
@@ -163,7 +174,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
             className="absolute top-1 right-1 rounded-lg cursor-pointer"
             onClick={() => handleRemove(index)}
           >
-            Remove
+            {t("experience.removeButton")}
           </Button>
         </div>
       ))}
@@ -174,7 +185,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
           variant="outline"
           className="cursor-pointer"
         >
-          Add Experience
+          {t("experience.addButton")}
         </Button>
         <Button
           onClick={handleSubmit}
@@ -185,7 +196,7 @@ const ExperienceStep: React.FC<ExperienceStepProps> = ({
               : "bg-gray-300 cursor-not-allowed"
           }`}
         >
-          Submit
+          {t("experience.submitButton")}
         </Button>
       </div>
     </div>

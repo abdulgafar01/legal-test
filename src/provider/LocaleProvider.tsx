@@ -41,6 +41,8 @@ import enVerifyEmail from "@/messages/verifyEmail/en.json";
 import arVerifyEmail from "@/messages/verifyEmail/ar.json";
 import enPending from "@/messages/enPending.json";
 import arPending from "@/messages/arPending.json";
+import enAccount from "@/messages/dashboard/profile/account-setup/en.json";
+import arAccount from "@/messages/dashboard/profile/account-setup/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -58,7 +60,8 @@ const enMessages = {
   ...enContact,
   ...enConsultation,
   ...enVerifyEmail,
-  ...enPending
+  ...enPending,
+  ...enAccount
 };
 
 const arMessages = {
@@ -77,7 +80,8 @@ const arMessages = {
   ...arContact,
   ...arConsultation,
   ...arVerifyEmail,
-  ...arPending
+  ...arPending,
+  ...arAccount
 };
 
 const messagesMap = {

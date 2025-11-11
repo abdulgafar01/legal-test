@@ -1,18 +1,19 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import Image from 'next/image';
-import { UserCog } from 'lucide-react';
+} from "@/components/ui/select";
+import Image from "next/image";
+import { UserCog } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export interface ProfileFormData {
   fullName: string;
@@ -33,29 +34,30 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
   initialData = {},
 }) => {
   const [formData, setFormData] = useState<ProfileFormData>({
-    fullName: initialData.fullName || '',
-    phoneNumber: initialData.phoneNumber || '',
-    address: initialData.address || '',
-    state: initialData.state || '',
-    city: initialData.city || '',
+    fullName: initialData.fullName || "",
+    phoneNumber: initialData.phoneNumber || "",
+    address: initialData.address || "",
+    state: initialData.state || "",
+    city: initialData.city || "",
     profilePhoto: initialData.profilePhoto || null,
   });
 
+  const t = useTranslations("account");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFormValid = Boolean(
     formData.fullName &&
-    formData.phoneNumber &&
-    formData.address &&
-    formData.state &&
-    formData.city
+      formData.phoneNumber &&
+      formData.address &&
+      formData.state &&
+      formData.city
   );
 
   const handleInputChange = <K extends keyof ProfileFormData>(
     field: K,
     value: ProfileFormData[K]
   ) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +65,7 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           profilePhoto: e.target?.result as string,
         }));
@@ -84,9 +86,11 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
 
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-semibold text-center mb-2">Setup your profile details</h2>
+      <h2 className="text-2xl font-semibold text-center mb-2">
+        {t("profileDetails.title")}
+      </h2>
       <p className="text-gray-600 text-center mb-8">
-        These details will be displayed on your profile for service seekers to see.
+        {t("profileDetails.description")}
       </p>
 
       <div className="space-y-6">
@@ -98,20 +102,26 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
                 src={formData.profilePhoto}
                 width={64}
                 height={64}
-                alt="Profile"
+                alt={t("profileDetails.profilePhotoAlt")}
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (
-              <div><UserCog/></div>
+              <div>
+                <UserCog />
+              </div>
             )}
           </div>
           <div>
-            <Label className="text-sm font-medium mb-0.5">Profile photo</Label>
+            <Label className="text-sm font-medium mb-0.5">
+              {t("profileDetails.profilePhotoLabel")}
+            </Label>
             <p
               className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline"
               onClick={handlePhotoClick}
             >
-              {formData.profilePhoto ? 'Edit photo' : 'Upload photo'}
+              {formData.profilePhoto
+                ? t("profileDetails.editPhoto")
+                : t("profileDetails.uploadPhoto")}
             </p>
             <input
               ref={fileInputRef}
@@ -125,23 +135,27 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
 
         {/* Full Name */}
         <div>
-          <Label htmlFor="fullName" className="text-sm font-medium">Full Name</Label>
+          <Label htmlFor="fullName" className="text-sm font-medium">
+            {t("profileDetails.fullNameLabel")}
+          </Label>
           <Input
             id="fullName"
             value={formData.fullName}
-            onChange={(e) => handleInputChange('fullName', e.target.value)}
+            onChange={(e) => handleInputChange("fullName", e.target.value)}
             className="mt-1"
-            placeholder="Enter your full name"
+            placeholder={t("profileDetails.fullNamePlaceholder")}
           />
         </div>
 
         {/* Phone Number */}
         <div>
-          <Label htmlFor="phoneNumber" className="text-sm font-medium">Phone number</Label>
+          <Label htmlFor="phoneNumber" className="text-sm font-medium">
+            {t("profileDetails.phoneLabel")}
+          </Label>
           <div className="flex mt-1">
             <Select defaultValue="US">
               <SelectTrigger className="w-20">
-                <SelectValue placeholder="Code" />
+                <SelectValue placeholder={t("profileDetails.codePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="US">US</SelectItem>
@@ -152,45 +166,51 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
             <Input
               id="phoneNumber"
               value={formData.phoneNumber}
-              onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+              onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
               className="ml-2 flex-1"
-              placeholder="+1 (555) 000-0000"
+              placeholder={t("profileDetails.phonePlaceholder")}
             />
           </div>
         </div>
 
         {/* Address */}
         <div>
-          <Label htmlFor="address" className="text-sm font-medium">Address (Current/Residential)</Label>
+          <Label htmlFor="address" className="text-sm font-medium">
+            {t("profileDetails.addressLabel")}
+          </Label>
           <Input
             id="address"
             value={formData.address}
-            onChange={(e) => handleInputChange('address', e.target.value)}
+            onChange={(e) => handleInputChange("address", e.target.value)}
             className="mt-1"
-            placeholder="Enter your address"
+            placeholder={t("profileDetails.addressPlaceholder")}
           />
         </div>
 
         {/* State and City */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="state" className="text-sm font-medium">State</Label>
+            <Label htmlFor="state" className="text-sm font-medium">
+              {t("profileDetails.stateLabel")}
+            </Label>
             <Input
               id="state"
               value={formData.state}
-              onChange={(e) => handleInputChange('state', e.target.value)}
+              onChange={(e) => handleInputChange("state", e.target.value)}
               className="mt-1"
-              placeholder="State"
+              placeholder={t("profileDetails.statePlaceholder")}
             />
           </div>
           <div>
-            <Label htmlFor="city" className="text-sm font-medium">City</Label>
+            <Label htmlFor="city" className="text-sm font-medium">
+              {t("profileDetails.cityLabel")}
+            </Label>
             <Input
               id="city"
               value={formData.city}
-              onChange={(e) => handleInputChange('city', e.target.value)}
+              onChange={(e) => handleInputChange("city", e.target.value)}
               className="mt-1"
-              placeholder="City"
+              placeholder={t("profileDetails.cityPlaceholder")}
             />
           </div>
         </div>
@@ -200,10 +220,10 @@ const ProfileDetailsStep: React.FC<ProfileDetailsStepProps> = ({
         onClick={handleContinue}
         disabled={!isFormValid}
         className={`w-full mt-8 ${
-          isFormValid ? 'bg-black hover:bg-gray-800' : 'bg-gray-300 cursor-not-allowed'
+          isFormValid ? "bg-black hover:bg-gray-800" : "bg-gray-300 cursor-not-allowed"
         }`}
       >
-        Continue
+        {t("profileDetails.continueButton")}
       </Button>
     </div>
   );
