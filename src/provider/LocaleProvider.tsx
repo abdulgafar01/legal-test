@@ -37,6 +37,8 @@ import enContact from "@/messages/enContact.json";
 import arContact from "@/messages/arContact.json";
 import enConsultation from "@/messages/dashboard/consultation/en.json";
 import arConsultation from "@/messages/dashboard/consultation/ar.json";
+import enVerifyEmail from "@/messages/verifyEmail/en.json";
+import arVerifyEmail from "@/messages/verifyEmail/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -52,7 +54,8 @@ const enMessages = {
   ...enMeetings,
   ...enSubscriptions,
   ...enContact,
-  ...enConsultation
+  ...enConsultation,
+  ...enVerifyEmail
 };
 
 const arMessages = {
@@ -69,7 +72,8 @@ const arMessages = {
   ...arMeetings,
   ...arSubscriptions,
   ...arContact,
-  ...arConsultation
+  ...arConsultation,
+  ...arVerifyEmail
 };
 
 const messagesMap = {
