@@ -114,7 +114,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 mb-1">{t('emailUs.title')}</h3>
-                    <a href="mailto:support@legalai.com" className="text-blue-600 hover:underline text-sm">
+                    <a href="mailto:admin@theyas.co" className="text-blue-600 hover:underline text-sm">
                       {t('emailUs.address')}
                     </a>
                   </div>

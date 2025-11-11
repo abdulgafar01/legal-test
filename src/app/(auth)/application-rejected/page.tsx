@@ -108,8 +108,8 @@ const ApplicationRejectedPage: React.FC = () => {
         <div className="mt-8 pt-6 border-t border-gray-200">
           <p className="text-xs text-gray-500">
             Questions about your application? Contact us at{' '}
-            <a href="mailto:support@legalai.com" className="text-blue-600 hover:underline">
-              support@legalai.com
+            <a href="mailto:admin@theyas.co" className="text-blue-600 hover:underline">
+              admin@theyas.co
             </a>
           </p>
         </div>
