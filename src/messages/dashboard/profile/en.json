@@ -1,14 +1,26 @@
 {
-    "profile": {
-        "Wallet": "Wallet",
-        "Subscription Plans": "Subscription Plans",
-        "Manage Subscription": "Manage Subscription",
-        "Subscription Payments": "Subscription Payments",
-        "Privacy Policy": "Privacy Policy",
-        "termsConditions": "Terms & Conditions",
-        "Settings": "Settings",
-        "Help": "Help",
-        "Edit Profile": "Edit Profile",
-        "Profile": "Profile"
+  "profile": {
+    "Wallet": "Wallet",
+    "Subscription Plans": "Subscription Plans",
+    "Manage Subscription": "Manage Subscription",
+    "Subscription Payments": "Subscription Payments",
+    "Privacy Policy": "Privacy Policy",
+    "termsConditions": "Terms & Conditions",
+    "Settings": "Settings",
+    "Help": "Help",
+    "Edit Profile": "Edit Profile",
+    "Profile": "Profile",
+    "edit": {
+       "Edit photo": "Edit photo",
+       "First Name": "First Name",
+       "Last Name": "Last Name",
+       "Email Address": "Email Address",
+       "Phone number": "Phone number",
+       "Country": "Country",
+       "State": "State",
+       "City": "City",
+       "Updating": "Updating...",
+       "Update": "Update" 
     }
+  }
 }
