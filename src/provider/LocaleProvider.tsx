@@ -95,7 +95,7 @@ interface LocaleContextType {
 }
 
 const LocaleContext = createContext<LocaleContextType>({
-  locale: "en",
+  locale: "ar",
   setLocale: () => {},
 });
 
