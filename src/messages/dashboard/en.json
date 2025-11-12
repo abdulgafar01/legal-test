@@ -68,6 +68,10 @@
           "answer": "Cancellations depend on the practitioner's policy. Check the consultation terms when booking and contact support for disputes."
         }
       }
+    },
+    "topLawyers": {
+      "heading": "Top Lawyers in the Region",
+      "p1": "Connect with expert legal professionals across the Middle East"
     }
   }
 }
