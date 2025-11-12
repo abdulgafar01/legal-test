@@ -16,7 +16,7 @@ export function ResponsibleAISection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image */}
           <div className="order-2 lg:order-1">
-            <div className="aspect-[4/3] md:aspect-[3/3] overflow-hidden rounded-lg">
+            <div className="aspect-[4/3] md:aspect-[4/3] overflow-hidden rounded-lg">
               <ImageWithFallback
                 src="images/confident-lady.png"
                 alt="Professional legal consultation"
