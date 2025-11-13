@@ -43,6 +43,8 @@ import enPending from "@/messages/enPending.json";
 import arPending from "@/messages/arPending.json";
 import enAccount from "@/messages/dashboard/profile/account-setup/en.json";
 import arAccount from "@/messages/dashboard/profile/account-setup/ar.json";
+import enSEO from "@/messages/seo/en.json";
+import arSEO from "@/messages/seo/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -61,7 +63,8 @@ const enMessages = {
   ...enConsultation,
   ...enVerifyEmail,
   ...enPending,
-  ...enAccount
+  ...enAccount,
+  ...enSEO
 };
 
 const arMessages = {
@@ -81,7 +84,8 @@ const arMessages = {
   ...arConsultation,
   ...arVerifyEmail,
   ...arPending,
-  ...arAccount
+  ...arAccount,
+  ...arSEO
 };
 
 const messagesMap = {
