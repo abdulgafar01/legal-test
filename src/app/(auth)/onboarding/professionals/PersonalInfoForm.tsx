@@ -90,6 +90,7 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
     first_name: formData.first_name || '',
     last_name: formData.last_name || '',
     middle_name: formData.middle_name || '',
+    email:formData.email || '',
     qualification: formData.qualification || '',
     state: formData.state || '',
     city: formData.city || '',
@@ -176,6 +177,13 @@ const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ onNext }) => {
         name="middle_name"
         placeholder="e.g. Sam"
         value={localFormData.middle_name}
+        onChange={handleInputChange}
+      />
+      <InputField
+        label="Email"
+        name="email"
+        placeholder="sam@example.com"
+        value={localFormData.email}
         onChange={handleInputChange}
       />
 
