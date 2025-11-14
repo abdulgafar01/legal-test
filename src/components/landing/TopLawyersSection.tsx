@@ -38,7 +38,7 @@ const topLawyers: Lawyer[] = [
     rating: 4.9,
     reviews: 127,
     image:
-      "https://images.unsplash.com/photo-1736939763234-f176517e95ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtaWRkbGUlMjBlYXN0ZXJuJTIwYnVzaW5lc3NtYW58ZW58MXx8fHwxNzYyOTU3ODE4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "images/lawyerAhmad.jpg",
   },
   {
     id: 2,
@@ -49,7 +49,7 @@ const topLawyers: Lawyer[] = [
     rating: 4.8,
     reviews: 94,
     image:
-      "https://images.unsplash.com/photo-1740153204804-200310378f2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaWRkbGUlMjBlYXN0ZXJuJTIwcHJvZmVzc2lvbmFsJTIwd29tYW58ZW58MXx8fHwxNzYyOTU3ODIwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "images/lawyerFatima.jpg",
   },
   {
     id: 3,
