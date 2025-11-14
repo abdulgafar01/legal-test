@@ -53,14 +53,14 @@ const topLawyers: Lawyer[] = [
   },
   {
     id: 3,
-    name: "Khalid Al-Salem",
+    name: "Fariha Al-balushi",
     specialization: "Commercial Litigation",
     location: "Kuwait City, Kuwait",
     experience: "18+ years",
     rating: 5.0,
     reviews: 156,
     image:
-      "https://images.unsplash.com/photo-1734456615628-2e4742f94872?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcmFiJTIwcHJvZmVzc2lvbmFsJTIwbGF3eWVyfGVufDF8fHx8MTc2Mjk1NzgxOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "images/lawyerFariha.jpg",
   },
   {
     id: 4,
@@ -93,7 +93,7 @@ const topLawyers: Lawyer[] = [
     rating: 4.9,
     reviews: 145,
     image:
-      "https://images.unsplash.com/photo-1756412066323-a336d2becc10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYXVkaSUyMGJ1c2luZXNzJTIwcHJvZmVzc2lvbmFsfGVufDF8fHx8MTc2Mjk1NzgxOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "images/lawyerNoor.jpg",
   },
 ];
 
