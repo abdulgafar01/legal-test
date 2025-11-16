@@ -1,11 +1,18 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
-export default function JoinVideoButton({ consultationId }: { consultationId: number }) {
+interface JoinVideoButtonProps {
+  consultationId: number;
+}
+
+export default function JoinVideoButton({ consultationId }: JoinVideoButtonProps) {
+  const t = useTranslations("consultation");
   const href = useMemo(() => `/meeting/${consultationId}`, [consultationId]);
   const [pending, setPending] = useState(false);
   const router = useRouter();
+
   return (
     <button
       type="button"
@@ -16,9 +23,11 @@ export default function JoinVideoButton({ consultationId }: { consultationId: nu
         setTimeout(() => setPending(false), 3000);
       }}
       disabled={pending}
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-md ${pending ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+      className={`inline-flex items-center gap-2 px-3 py-2 rounded-md ${
+        pending ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+      } text-white`}
     >
-      {pending ? 'Opening…' : 'Join Video'}
+      {pending ? t("opening") : t("joinVideo")}
     </button>
   );
 }

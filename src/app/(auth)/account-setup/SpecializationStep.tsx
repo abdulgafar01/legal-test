@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from 'next-intl';
 
 interface SpecializationStepProps {
   onNext: (data: string[]) => void;
@@ -33,6 +34,7 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({
   initialData = [],
 }) => {
   const [selected, setSelected] = useState<string[]>(initialData);
+  const t = useTranslations('account');
 
   const toggle = (item: string) => {
     setSelected(prev =>
@@ -48,20 +50,23 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({
 
   return (
     <div className="max-w-md mx-auto">
-      <h2 className="text-2xl font-semibold text-center mb-2">Select your area of specialization</h2>
+      <h2 className="text-2xl font-semibold text-center mb-2">
+        {t('specializations.title')}
+      </h2>
       <p className="text-gray-600 text-center mb-8">
-        These details will be displayed on your profile for service seekers to see.
+        {t('specializations.description')}
       </p>
 
       <div className="space-y-4 mb-8">
-        <Label className="text-sm font-medium">Select your specialization(s)</Label>
+        <Label className="text-sm font-medium">
+          {t('specializations.label')}
+        </Label>
         <div className="flex flex-wrap gap-3">
           {SPECIALIZATIONS.map(specialization => {
             const checked = selected.includes(specialization);
             return (
               <div
                 key={specialization}
-          
                 onClick={() => toggle(specialization)}
                 aria-pressed={checked}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-full border transition-colors ${
@@ -80,7 +85,7 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({
                   htmlFor={specialization}
                   className="text-sm font-medium leading-none cursor-pointer"
                 >
-                  {specialization}
+                  {t(`specializations.options.${specialization}`)}
                 </label>
               </div>
             );
@@ -93,7 +98,7 @@ const SpecializationStep: React.FC<SpecializationStepProps> = ({
         disabled={selected.length === 0}
         className="w-full disabled:bg-gray-300 disabled:cursor-not-allowed bg-black hover:bg-gray-800"
       >
-        Continue
+        {t('specializations.continueButton')}
       </Button>
     </div>
   );

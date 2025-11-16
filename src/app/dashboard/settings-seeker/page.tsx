@@ -6,6 +6,7 @@ import {
   BriefcaseBusiness,
   ChevronRight,
   Gem,
+  Languages,
   Trash2,
   User,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { useLocale } from "@/provider/LocaleProvider";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 const Page = () => {
   const [responsesPush, setResponsesPush] = useState(true);
@@ -33,6 +35,7 @@ const Page = () => {
 
   const toggleLocale = () => {
     setLocale(locale === "en" ? "ar" : "en");
+    toast.success(`Language changed to ${locale === "en" ? "English" : "Arabic"}`)
   };
   return (
     <div className="max-w-4xl  p-6 md:ml-6 mx-auto">
@@ -61,7 +64,7 @@ const Page = () => {
         {/* Row 2 */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#E8E7E7]">
           <div className="flex items-center gap-2">
-            <BriefcaseBusiness size={20} />
+            <Languages size={20} />
             <span className="text-sm font-medium">{t("Language")}</span>
           </div>
           <button

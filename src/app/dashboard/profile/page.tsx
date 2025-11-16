@@ -348,8 +348,7 @@ const Page = () => {
           {/* Header */}
           <div className="flex items-center gap-4 mb-3">
             <h1 className="text-2xl font-bold text-foreground">
-              {/* {t("Profile")} */}
-              Profile
+              {t("Profile")}
             </h1>
           </div>
 
@@ -368,8 +367,7 @@ const Page = () => {
                 <p className="text-xs text-muted-foreground"></p>
                 <Link href="/dashboard/edit-profile" passHref>
                   <button className="text-sm text-[#8E8E93] bg-[#FFF9E7] cursor-pointer px-2.5 py-0.5 rounded-4xl hover:underline">
-                    {/* {t("Edit Profile")} */}
-                    Edit Profile
+                    {t("Edit Profile")}
                   </button>
                 </Link>
               </div>

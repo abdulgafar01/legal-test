@@ -1,0 +1,30 @@
+{
+  "consultation": {
+    "selectConversation": "Select a conversation",
+    "chooseConsultation": "Choose a consultation from the list to start messaging",
+    "consultations": "Consultations",
+    "searchPlaceholder": "Search consultations...",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "previous": "Previous Consultations",
+    "noConsultationsFound": "No consultations found",
+    "tryAdjustingSearch": "Try adjusting your search",
+    "bookConsultationToStart": "Book a consultation to get started",
+    "loadingConsultations": "Loading consultations...",
+    "consultationCompleted": "Consultation completed",
+    "consultationCancelled": "Consultation cancelled",
+    "readyToStart": "Ready to start",
+    "inDays": "In {count} day(s)",
+    "inHours": "In {count} hour(s)",
+    "inMinutes": "In {count} minute(s)",
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "joinVideo": "Join Video",
+    "opening": "Opening…"
+  }
+}

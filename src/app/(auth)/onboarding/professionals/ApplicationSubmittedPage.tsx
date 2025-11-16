@@ -61,9 +61,11 @@ const ApplicationSubmittedPage: React.FC<ApplicationSubmittedPageProps> = ({ onS
       const submissionData = new FormData();
       
       // Add personal information
-      submissionData.append('email', localStorage.getItem('userEmail') || '');
+      // commented email to take from form data as phone number replaces email for signup
+      // submissionData.append('email', localStorage.getItem('userEmail') || '');
       submissionData.append('first_name', formData.first_name);
       submissionData.append('last_name', formData.last_name);
+      submissionData.append('email', formData.email);
       if (formData.middle_name) submissionData.append('middle_name', formData.middle_name);
       submissionData.append('date_of_birth', formData.date_of_birth);
       submissionData.append('phone_number', formData.phone_number);

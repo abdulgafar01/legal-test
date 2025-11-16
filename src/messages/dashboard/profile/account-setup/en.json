@@ -1,0 +1,91 @@
+{
+  "account": {
+    "header": {
+      "title": "Legal AI",
+      "description": "To make your profile visible as a professional, please complete your account setup."
+    },
+    "successModal": {
+      "title": "Account Setup Completed!",
+      "description": "Your account setup is complete. You can now use all professional features."
+    },
+    "profileDetails": {
+      "title": "Setup your profile details",
+      "description": "These details will be displayed on your profile for service seekers to see.",
+      "profilePhotoLabel": "Profile photo",
+      "profilePhotoAlt": "Profile photo",
+      "uploadPhoto": "Upload photo",
+      "editPhoto": "Edit photo",
+      "fullNameLabel": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "phoneLabel": "Phone number",
+      "codePlaceholder": "Code",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "addressLabel": "Address (Current/Residential)",
+      "addressPlaceholder": "Enter your address",
+      "stateLabel": "State",
+      "statePlaceholder": "State",
+      "cityLabel": "City",
+      "cityPlaceholder": "City",
+      "continueButton": "Continue"
+    },
+    "specializations": {
+      "title": "Select your area of specialization",
+      "description": "These details will be displayed on your profile for service seekers to see.",
+      "label": "Select your specialization(s)",
+      "continueButton": "Continue",
+      "options": {
+        "Criminal Law": "Criminal Law",
+        "Civil Law": "Civil Law",
+        "Constitutional Law": "Constitutional Law",
+        "Administrative Law": "Administrative Law",
+        "International Law": "International Law",
+        "Labour & Employment Law": "Labour & Employment Law",
+        "Corporate (or Company) Law": "Corporate (or Company) Law",
+        "Tax Law": "Tax Law",
+        "Commercial Law": "Commercial Law",
+        "Family Law": "Family Law",
+        "Property Law": "Property Law",
+        "Environmental Law": "Environmental Law",
+        "Intellectual Property Law": "Intellectual Property Law",
+        "Human Rights Law": "Human Rights Law",
+        "Immigration Law": "Immigration Law"
+      }
+    },
+    "experience": {
+      "title": "Setup your experience",
+      "description": "These details will be displayed on your profile for service seekers to see.",
+      "fields": {
+        "jobTitle": "Job Title / Position Held",
+        "employmentType": "Employment Type",
+        "industry": "Industry",
+        "company": "Company",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "duties": "List Key Duties Performed"
+      },
+      "removeButton": "Remove",
+      "addButton": "Add Experience",
+      "submitButton": "Submit"
+    },
+    "pricing": {
+      "title": "Setup your pricing",
+      "description": "These details will be displayed on your profile for service seekers to see.",
+      "consultationRate": "Consultation Rate",
+      "hireRate": "Hire Rate",
+      "consultationFee": "A fee of 10% will be deducted on each consultation.",
+      "hireFee": "A fee of 10% will be deducted on each hire.",
+      "minConsultation": "Min Consultation",
+      "minConsultationInfo": "Minimum consultations at once",
+      "maxConsultation": "Max Consultation",
+      "maxConsultationInfo": "Maximum consultations (up to 30)",
+      "unavailableDates": "Select your unavailable dates",
+      "placeholder": "1,000.00",
+      "submitButton": "Submit"
+    },
+    "success": {
+      "title": "Profile Completed",
+      "congratulations": "Congratulations",
+      "description": "Your profile is ready. Service seekers can see your profile details now."
+    }
+  }
+}

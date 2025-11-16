@@ -25,38 +25,30 @@ export function FeaturesAccordion() {
     {
       id: "conversational",
       title: t("title"),
-      description:
-        t("description"),
+      description: t("description"),
       icon: MessageSquare,
-      image:
-        "https://images.unsplash.com/photo-1743865318581-2e0e59e7292e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMHdvcmtpbmclMjBsYXB0b3B8ZW58MXx8fHwxNzYxMjE3NTYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "images/lady_hijab.png",
     },
     {
       id: "draft",
       title: t("title2"),
-      description:
-        t("description2"),
+      description: t("description2"),
       icon: FileEdit,
-      image:
-        "https://images.unsplash.com/photo-1758518727077-ffb66ffccced?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHBlb3BsZSUyMG1lZXRpbmclMjBkaXNjdXNzaW9ufGVufDF8fHx8MTc2MTIxNzU2MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "images/people-group.png",
     },
     {
       id: "summarization",
       title: t("title3"),
-      description:
-        t("description3"),
+      description: t("description3"),
       icon: FileSearch,
-      image:
-        "https://images.unsplash.com/photo-1713947503486-0e3916611517?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjByZWFkaW5nJTIwZG9jdW1lbnRzJTIwb2ZmaWNlfGVufDF8fHx8MTc2MTIxNzU2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "images/business-man.png",
     },
     {
       id: "upload",
       title: t("title4"),
-      description:
-        t("description4"),
+      description: t("description4"),
       icon: Upload,
-      image:
-        "https://images.unsplash.com/photo-1728302732935-421062dcd60f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkb2N1bWVudCUyMHVwbG9hZCUyMHRlY2hub2xvZ3l8ZW58MXx8fHwxNzYxMjE3NTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "/images/tech business.png",
     },
   ];
 

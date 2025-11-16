@@ -6,6 +6,7 @@ export interface PractitionerFormData {
   first_name: string;
   last_name: string;
   middle_name?: string;
+  email: string;
   date_of_birth: string;
   phone_number: string;
   country: string;
@@ -80,6 +81,7 @@ const initialFormData: PractitionerFormData = {
   first_name: '',
   last_name: '',
   middle_name: '',
+  email:'',
   date_of_birth: '',
   phone_number: '',
   country: '',

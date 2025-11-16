@@ -1,0 +1,91 @@
+{
+  "account": {
+    "header": {
+      "title": "الذكاء الاصطناعي القانوني",
+      "description": "لجعل ملفك الشخصي مرئيًا كمحترف، يرجى إكمال إعداد حسابك."
+    },
+    "successModal": {
+      "title": "تم إكمال إعداد الحساب!",
+      "description": "تم إكمال إعداد حسابك. يمكنك الآن استخدام جميع ميزات المحترف."
+    },
+    "profileDetails": {
+      "title": "قم بإعداد تفاصيل ملفك الشخصي",
+      "description": "ستظهر هذه التفاصيل في ملفك الشخصي ليتمكن الباحثون عن الخدمة من رؤيتها.",
+      "profilePhotoLabel": "صورة الملف الشخصي",
+      "profilePhotoAlt": "صورة الملف الشخصي",
+      "uploadPhoto": "تحميل الصورة",
+      "editPhoto": "تعديل الصورة",
+      "fullNameLabel": "الاسم الكامل",
+      "fullNamePlaceholder": "أدخل اسمك الكامل",
+      "phoneLabel": "رقم الهاتف",
+      "codePlaceholder": "الرمز",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "addressLabel": "العنوان (الحالي/السكني)",
+      "addressPlaceholder": "أدخل عنوانك",
+      "stateLabel": "الولاية",
+      "statePlaceholder": "الولاية",
+      "cityLabel": "المدينة",
+      "cityPlaceholder": "المدينة",
+      "continueButton": "متابعة"
+    },
+    "specializations": {
+      "title": "اختر مجال تخصصك",
+      "description": "ستظهر هذه التفاصيل في ملفك الشخصي ليتمكن الباحثون عن الخدمة من رؤيتها.",
+      "label": "اختر تخصصك/تخصصاتك",
+      "continueButton": "متابعة",
+      "options": {
+        "Criminal Law": "القانون الجنائي",
+        "Civil Law": "القانون المدني",
+        "Constitutional Law": "القانون الدستوري",
+        "Administrative Law": "القانون الإداري",
+        "International Law": "القانون الدولي",
+        "Labour & Employment Law": "قانون العمل والتوظيف",
+        "Corporate (or Company) Law": "قانون الشركات",
+        "Tax Law": "قانون الضرائب",
+        "Commercial Law": "القانون التجاري",
+        "Family Law": "القانون الأسري",
+        "Property Law": "قانون الملكية",
+        "Environmental Law": "القانون البيئي",
+        "Intellectual Property Law": "قانون الملكية الفكرية",
+        "Human Rights Law": "قانون حقوق الإنسان",
+        "Immigration Law": "قانون الهجرة"
+      }
+    },
+    "experience": {
+      "title": "قم بإعداد خبرتك",
+      "description": "ستظهر هذه التفاصيل في ملفك الشخصي ليتمكن الباحثون عن الخدمة من رؤيتها.",
+      "fields": {
+        "jobTitle": "المسمى الوظيفي / المنصب",
+        "employmentType": "نوع التوظيف",
+        "industry": "الصناعة",
+        "company": "الشركة",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "duties": "قائمة المهام الرئيسية المنفذة"
+      },
+      "removeButton": "حذف",
+      "addButton": "إضافة خبرة",
+      "submitButton": "إرسال"
+    },
+    "pricing": {
+      "title": "قم بإعداد أسعارك",
+      "description": "ستظهر هذه التفاصيل في ملفك الشخصي ليتمكن الباحثون عن الخدمة من رؤيتها.",
+      "consultationRate": "سعر الاستشارة",
+      "hireRate": "سعر التعيين",
+      "consultationFee": "سيتم خصم 10٪ على كل استشارة.",
+      "hireFee": "سيتم خصم 10٪ على كل توظيف.",
+      "minConsultation": "الحد الأدنى للاستشارات",
+      "minConsultationInfo": "الحد الأدنى من الاستشارات في المرة الواحدة",
+      "maxConsultation": "الحد الأقصى للاستشارات",
+      "maxConsultationInfo": "الحد الأقصى من الاستشارات (حتى 30)",
+      "unavailableDates": "اختر التواريخ التي لا تتوفر فيها",
+      "placeholder": "1,000.00",
+      "submitButton": "إرسال"
+    },
+    "success": {
+      "title": "اكتمل الملف الشخصي",
+      "congratulations": "تهانينا",
+      "description": "ملفك الشخصي جاهز. يمكن للباحثين عن الخدمة الآن رؤية تفاصيل ملفك الشخصي."
+    }
+  }
+}

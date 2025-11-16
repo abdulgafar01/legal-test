@@ -10,6 +10,7 @@ import { FeaturesAccordion } from "@/components/landing/FeaturesAccordion";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ResponsibleAISection } from "@/components/landing/ResponsibleAISection";
 import { BlogCarouselSection } from "@/components/landing/BlogCarouselSection";
+import { TopLawyersSection } from "@/components/landing/TopLawyersSection";
 
 export default function LandingPage() {
 
@@ -23,6 +24,7 @@ export default function LandingPage() {
       <Pricing />
       <CTAForLawyers />
       <ResponsibleAISection/>
+      <TopLawyersSection/>
       <BlogCarouselSection/>
       <Testimonials />
       <Footer />

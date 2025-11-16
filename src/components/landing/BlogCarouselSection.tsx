@@ -110,12 +110,12 @@ export function BlogCarouselSection() {
   };
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white"
-     dir="ltr"
-    >
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">{t("heading")}</h2>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">
+            {t("heading")}
+          </h2>
           <div className="flex gap-2" dir="ltr">
             <button
               onClick={() => {
@@ -174,10 +174,10 @@ export function BlogCarouselSection() {
                     </div>
                     <div className="pt-6">
                       <h3 className="text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                       {t(`posts.${index}.title`)}
+                        {t(`posts.${index}.title`)}
                       </h3>
                       <p className="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded">
-                       {t(`posts.${index}.readTime`)}
+                        {t(`posts.${index}.readTime`)}
                       </p>
                     </div>
                   </div>

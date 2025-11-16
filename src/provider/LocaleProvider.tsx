@@ -33,6 +33,18 @@ import enMeetings from "@/messages/meeting/en.json";
 import arMeetings from "@/messages/meeting/ar.json";
 import enSubscriptions from "@/messages/dashboard/subscription/en.json";
 import arSubscriptions from "@/messages/dashboard/subscription/ar.json";
+import enContact from "@/messages/enContact.json";
+import arContact from "@/messages/arContact.json";
+import enConsultation from "@/messages/dashboard/consultation/en.json";
+import arConsultation from "@/messages/dashboard/consultation/ar.json";
+import enVerifyEmail from "@/messages/verifyEmail/en.json";
+import arVerifyEmail from "@/messages/verifyEmail/ar.json";
+import enPending from "@/messages/enPending.json";
+import arPending from "@/messages/arPending.json";
+import enAccount from "@/messages/dashboard/profile/account-setup/en.json";
+import arAccount from "@/messages/dashboard/profile/account-setup/ar.json";
+import enSEO from "@/messages/seo/en.json";
+import arSEO from "@/messages/seo/ar.json";
 
 const enMessages = {
   ...enMessagesLanding,
@@ -46,7 +58,13 @@ const enMessages = {
   ...enPrivacy,
   ...enTerms,
   ...enMeetings,
-  ...enSubscriptions
+  ...enSubscriptions,
+  ...enContact,
+  ...enConsultation,
+  ...enVerifyEmail,
+  ...enPending,
+  ...enAccount,
+  ...enSEO
 };
 
 const arMessages = {
@@ -61,7 +79,13 @@ const arMessages = {
   ...arPrivacy,
   ...arTerms,
   ...arMeetings,
-  ...arSubscriptions
+  ...arSubscriptions,
+  ...arContact,
+  ...arConsultation,
+  ...arVerifyEmail,
+  ...arPending,
+  ...arAccount,
+  ...arSEO
 };
 
 const messagesMap = {
@@ -75,7 +99,7 @@ interface LocaleContextType {
 }
 
 const LocaleContext = createContext<LocaleContextType>({
-  locale: "en",
+  locale: "ar",
   setLocale: () => {},
 });
 

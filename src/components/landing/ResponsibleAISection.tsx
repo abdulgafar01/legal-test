@@ -16,11 +16,11 @@ export function ResponsibleAISection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image */}
           <div className="order-2 lg:order-1">
-            <div className="aspect-[4/3] md:aspect-[3/3] overflow-hidden rounded-lg">
+            <div className="aspect-[4/3] md:aspect-[4/3] overflow-hidden rounded-lg">
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1736939678218-bd648b5ef3bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMGxhd3llcnxlbnwxfHx8fDE3NjIwNzUzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                src="images/confident-lady.png"
                 alt="Professional legal consultation"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
