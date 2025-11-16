@@ -1,9 +1,21 @@
 "use client";
 import { useTranslations } from "next-intl";
 import MotionSection from "./MotionSection";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Footer() {
   const t = useTranslations();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  const handleExploreClick = () => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    } else {
+      router.push("/explore");
+    }
+  };
   return (
     <footer
       className="relative bg-[#FEF7D4] border-t border-gray-200 font-jost overflow-hidden"
@@ -45,6 +57,13 @@ export default function Footer() {
             <a href="/contact" className="hover:text-black">
               Contact
             </a>
+            <button
+              type="button"
+              onClick={handleExploreClick}
+              className="text-left hover:text-black"
+            >
+              Explore
+            </button>
           </div>
         </MotionSection>
         <MotionSection delay={0.1}>

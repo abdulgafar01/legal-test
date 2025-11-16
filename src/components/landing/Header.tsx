@@ -32,6 +32,14 @@ export default function Header({ baseHref = "" }: HeaderProps) {
     // Ensure we return to homepage after logout
     router.push("/");
   };
+
+  const handleExploreClick = () => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    } else {
+      router.push("/explore");
+    }
+  };
   return (
     <header className="w-full bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-40 font-nunito">
       <div
@@ -55,6 +63,13 @@ export default function Header({ baseHref = "" }: HeaderProps) {
               {item.label}
             </a>
           ))}
+          <button
+            type="button"
+            onClick={handleExploreClick}
+            className="text-sm font-semibold text-gray-700 hover:text-black"
+          >
+            Explore
+          </button>
         </nav>
         <div className="ml-auto hidden md:flex items-center gap-4">
           {!isAuthenticated ? (
@@ -130,6 +145,19 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                   {item.label}
                 </motion.a>
               ))}
+              <motion.button
+                type="button"
+                onClick={() => {
+                  handleExploreClick();
+                  setOpen(false);
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * navItems.length }}
+                className="text-2xl font-semibold text-gray-800 transition-all duration-300"
+              >
+                Explore
+              </motion.button>
             </div>
 
             <motion.div

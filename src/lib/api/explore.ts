@@ -43,6 +43,7 @@ export interface Article {
   updated_at?: string;
   has_user_viewed?: boolean;
   has_user_liked?: boolean;
+  is_public?: boolean;
 }
 
 export interface ArticleSearchRequest {
