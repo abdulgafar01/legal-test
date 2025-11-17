@@ -180,7 +180,7 @@ export function UploadPhotoModal({ open, onOpenChange }: UploadFileModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader dir="ltr">
+        <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             {t("settings.Upload photo")}
           </DialogTitle>

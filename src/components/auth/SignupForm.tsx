@@ -287,7 +287,6 @@ export default function SignupForm({ accountType }: SignupFormProps) {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
-      dir="ltr"
       style={{
         backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
