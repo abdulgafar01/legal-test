@@ -66,7 +66,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
           <button
             type="button"
             onClick={handleExploreClick}
-            className="text-sm font-semibold text-gray-700 hover:text-black"
+            className="text-sm font-semibold text-gray-700 hover:text-black cursor-pointer"
           >
             {t("settingsSeeker.Explore")}
           </button>
