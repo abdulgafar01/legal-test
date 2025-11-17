@@ -72,6 +72,14 @@
     "topLawyers": {
       "heading": "Top Lawyers in the Region",
       "p1": "Connect with expert legal professionals across the Middle East"
+    },
+    "explore": {
+      "heading": "Explore Articles",
+      "searchArticles": "Search articles...",
+      "submitBtn": "Search",
+      "All categories": "All categories",
+      "No public articles found": "No public articles found",
+      "Try adjusting your search or selecting a different category": "Try adjusting your search or selecting a different category."
     }
   }
 }

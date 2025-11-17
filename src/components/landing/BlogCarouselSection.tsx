@@ -6,48 +6,14 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "../ui/carousel";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { useTranslations } from "next-intl";
-
-interface BlogPost {
-  id: number;
-  title: string;
-  image: string;
-  readTime: string;
-}
-
-const blogPosts: BlogPost[] = [
-  {
-    id: 1,
-    title: "Top 8 Legal Areas Impacted by Generative AI",
-    image:
-      "https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXd5ZXJzJTIwbWVldGluZyUyMGNvbnN1bHRhdGlvbnxlbnwxfHx8fDE3NjIxMzYyMTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    readTime: "4 min read",
-  },
-  {
-    id: 2,
-    title: "Emergence of AI-Related Legislation",
-    image:
-      "https://images.unsplash.com/photo-1718734799011-eeac7cc634f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnb3Zlcm5tZW50JTIwbGVnaXNsYXR1cmUlMjBjaGFtYmVyfGVufDF8fHx8MTc2MjEzNjIxM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-    readTime: "3 min read",
-  },
-  {
-    id: 3,
-    title:
-      "LexisNexis Introduces Lexis+ AI Protégé, Personal Legal Assistant with AI",
-    image:
-      "https://images.unsplash.com/photo-1758518727821-442e0ba373f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMHRlY2hub2xvZ3l8ZW58MXx8fHwxNzYyMTM2MjEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-    readTime: "4 min read",
-  },
-  {
-    id: 4,
-    title: "The Future of Legal Research with AI Technology",
-    image:
-      "https://images.unsplash.com/photo-1736939678218-bd648b5ef3bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB3b21hbiUyMGxhd3llcnxlbnwxfHx8fDE3NjIwNzUzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    readTime: "5 min read",
-  },
-];
+import { Article, exploreApi } from "@/lib/api/explore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { assets } from "@/assets/assets";
 
 export function BlogCarouselSection() {
   const [api, setApi] = useState<CarouselApi>();
@@ -55,7 +21,40 @@ export function BlogCarouselSection() {
   const [count, setCount] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
-  const t = useTranslations("blogCarousel");
+  const t = useTranslations("");
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [articlesLoading, setArticlesLoading] = useState(false);
+  const router = useRouter();
+
+  const filterPublic = useCallback(
+    (items: Article[]): Article[] =>
+      items.filter((item) => (item as Article).is_public === true),
+    []
+  );
+
+  const fetchArticles = useCallback(
+    async () => {
+      try {
+        setArticlesLoading(true);
+
+        const data = await exploreApi.getArticles({
+          page_size: 20,
+        });
+        setArticles(filterPublic(data.results));
+      } catch (e) {
+        console.error("Error fetching public articles", e);
+        toast.error("Error fetching public articles");
+        setArticles([]);
+      } finally {
+        setArticlesLoading(false);
+      }
+    },
+    [filterPublic]
+  );
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
 
   useEffect(() => {
     if (!api) {
@@ -109,12 +108,16 @@ export function BlogCarouselSection() {
     setUserInteracted(true);
   };
 
+  const handleArticleClick = (article: Article) => {
+    router.push(`/explore/${article.id}`);
+  };
+
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-12">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl mb-6">
-            {t("heading")}
+            {t("blogCarousel.heading")}
           </h2>
           <div className="flex gap-2" dir="ltr">
             <button
@@ -142,50 +145,85 @@ export function BlogCarouselSection() {
           </div>
         </div>
 
-        <div
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          dir="ltr"
-        >
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
+        {articlesLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {[...Array(2)].map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-300 border border-gray-300 rounded-lg p-6 animate-pulse h-[50vh]"
+              >
+                <div className="h-5 bg-gray-200 rounded mb-2 w-3/4" />
+                <div className="h-4 bg-gray-200 rounded mb-1 w-full" />
+                <div className="h-4 bg-gray-200 rounded mb-1 w-2/3" />
+              </div>
+            ))}
+          </div>
+        ) : articles.length > 0 ? (
+          <div
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            dir="ltr"
           >
-            <CarouselContent>
-              {blogPosts.map((post, index) => (
-                <CarouselItem
-                  key={post.id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <div
-                    className="bg-white overflow-hidden group cursor-pointer"
-                    onClick={handleUserInteraction}
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {articles.map((post) => (
+                  <CarouselItem
+                    key={post.id}
+                    className="md:basis-1/2 lg:basis-1/3"
+                    onClick={() => handleArticleClick(post)}
                   >
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <ImageWithFallback
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                    <div
+                      className="bg-white overflow-hidden group cursor-pointer p-4"
+                      onClick={handleUserInteraction}
+                    >
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <ImageWithFallback
+                          src='/background.jpg'
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="pt-6">
+                        <h3 className="text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                          {post.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded">
+                          {post.reading_time_display}
+                          {/* {post.estimated_read_time} */}
+                        </p>
+                      </div>
                     </div>
-                    <div className="pt-6">
-                      <h3 className="text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                        {t(`posts.${index}.title`)}
-                      </h3>
-                      <p className="text-sm text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded">
-                        {t(`posts.${index}.readTime`)}
-                      </p>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+        ) : (
+          <div className="mt-12 text-center">
+            <div className="mb-4">
+              <Image
+                src={assets.solar_star}
+                alt="No articles"
+                height={48}
+                width={48}
+                className="mx-auto opacity-50"
+              />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {t("dashboard.explore.No public articles found")}
+            </h3>
+            <p className="text-gray-600 text-sm">
+              {t("dashboard.explore.Try adjusting your search or selecting a different category")}
+            </p>
+          </div>
+        )}
 
         {/* Dots indicator */}
         <div className="flex justify-center gap-4 mt-8">

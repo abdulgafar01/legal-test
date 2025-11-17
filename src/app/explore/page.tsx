@@ -2,15 +2,17 @@
 
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
 import { exploreApi, Category, Article } from "@/lib/api/explore";
 import { Calendar, Clock, Eye, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Header from "@/components/landing/Header";
 
 const PublicExploreInner = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("dashboard.explore");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
@@ -138,27 +140,12 @@ const PublicExploreInner = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-lg font-semibold text-black">Legal AI</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-4 text-sm text-gray-600">
-            <Link href="/" className="hover:text-black">
-              Home
-            </Link>
-            <Link href="/dashboard" className="hover:text-black">
-              Dashboard
-            </Link>
-          </nav>
-        </div>
-      </header>
-
+      <Header />
       <main className="max-w-6xl mx-auto px-6 pb-16 pt-10">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-gray-900 mb-1">
-              Explore Articles
+              {t("heading")}
             </h1>
           </div>
           <form
@@ -167,7 +154,7 @@ const PublicExploreInner = () => {
           >
             <input
               type="text"
-              placeholder="Search articles..."
+              placeholder={t("searchArticles")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
@@ -176,7 +163,7 @@ const PublicExploreInner = () => {
               type="submit"
               className="text-xs font-medium px-3 py-1 rounded-full bg-black text-white hover:bg-gray-800"
             >
-              Search
+              {t("submitBtn")}
             </button>
           </form>
         </div>
@@ -191,7 +178,7 @@ const PublicExploreInner = () => {
                 : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
             }`}
           >
-            All categories
+            {t("All categories")}
           </button>
           {categoriesLoading
             ? [...Array(4)].map((_, idx) => (
@@ -299,10 +286,10 @@ const PublicExploreInner = () => {
               />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No public articles found
+              {t("No public articles found")}
             </h3>
             <p className="text-gray-600 text-sm">
-              Try adjusting your search or selecting a different category.
+              {t("Try adjusting your search or selecting a different category")}
             </p>
           </div>
         )}
