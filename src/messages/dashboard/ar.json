@@ -72,6 +72,14 @@
     "topLawyers": {
       "heading": "أفضل المحامين في المنطقة",
       "p1": "تواصل مع خبراء القانون في جميع أنحاء الشرق الأوسط"
+    },
+    "explore": {
+      "heading": "استكشاف المقالات",
+      "searchArticles": "ابحث في المقالات...",
+      "submitBtn": "بحث",
+      "All categories": "جميع الفئات",
+      "No public articles found": "لم يتم العثور على مقالات عامة",
+      "Try adjusting your search or selecting a different category": "جرّب تعديل بحثك أو اختيار فئة مختلفة."
     }
   }
 }
