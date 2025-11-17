@@ -15,7 +15,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import LanguageSwitcher from "@/provider/LanguageSwitcher";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
+
 
 type FormValues = {
   email: string;
@@ -24,6 +26,12 @@ type FormValues = {
 };
 
 const LoginContent = () => {
+
+// change direction alignment with respect to language
+const locale = useLocale();
+const direction = locale === "ar" ? "rtl" : "ltr";
+const isRTL = locale === "ar";
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -319,13 +327,17 @@ const LoginContent = () => {
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
+      dir="ltr"
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex-1 text-center lg:text-left max-w-xl">
+        <div className="flex-1 text-center lg:text-left max-w-xl"
+      
+        >
           <Scale className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
-          <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+          >
             {t("welcomeBack")}
             <br />
             {t("Access Legal Services")}
@@ -335,9 +347,12 @@ const LoginContent = () => {
           <p className="text-xl text-gray-200 max-w-lg">{t("subText")}</p>
         </div>
 
-        <div className="flex-1 max-w-md w-full">
+        <div className="flex-1 max-w-md w-full"
+        dir={direction}
+        >
           <div className="bg-white rounded-2xl py-6 px-8 shadow-2xl">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2"
+            >
               {t("Login to your account")}
             </h2>
             <p className="text-gray-600 mb-4">{t("legalAccessStart")}</p>
