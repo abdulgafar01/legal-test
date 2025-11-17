@@ -312,7 +312,6 @@ const LoginContent = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4 bg-slate-800 relative"
-      dir="ltr"
       style={{
         backgroundImage: "url('/background.jpg')",
         backgroundSize: "cover",
@@ -333,9 +332,7 @@ const LoginContent = () => {
             <br />
             {t("Seamlessly")}.
           </h1>
-          <p className="text-xl text-gray-200 max-w-lg">
-            {t("subText")}
-          </p>
+          <p className="text-xl text-gray-200 max-w-lg">{t("subText")}</p>
         </div>
 
         <div className="flex-1 max-w-md w-full">
@@ -343,9 +340,7 @@ const LoginContent = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               {t("Login to your account")}
             </h2>
-            <p className="text-gray-600 mb-4">
-              {t("legalAccessStart")}
-            </p>
+            <p className="text-gray-600 mb-4">{t("legalAccessStart")}</p>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {!showPasswordField ? (
                 <>

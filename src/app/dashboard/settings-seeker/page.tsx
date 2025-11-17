@@ -107,7 +107,7 @@ const Page = () => {
             </DialogHeader>
 
             {/* Section 1 */}
-            <div className="mt-6" dir="ltr">
+            <div className="mt-6">
               <h3 className="text-sm font-medium mb-4">{t("Responses")}</h3>
               <div className="flex items-start justify-between py-2">
                 <div>
@@ -126,7 +126,7 @@ const Page = () => {
             <hr className="my-6" />
 
             {/* Section 2 */}
-            <div dir="ltr">
+            <div>
               <h3 className="text-sm font-medium mb-4">
                 {t("Notification about tasks")}.
               </h3>

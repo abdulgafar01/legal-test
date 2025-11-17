@@ -40,7 +40,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthGuard>
-      <div className="flex max-h-screen" dir="ltr">
+      <div className="flex max-h-screen">
         <Sidebar
           expand={expand}
           isMobile={isMobile}

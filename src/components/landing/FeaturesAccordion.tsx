@@ -70,7 +70,7 @@ export function FeaturesAccordion() {
         </div>
 
         {/* Interactive Content */}
-        <div className="grid lg:grid-cols-2 gap-12 items-start" dir="ltr">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Features List */}
           <div className="space-y-3">
             {features.map((feature) => {

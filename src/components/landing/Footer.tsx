@@ -52,17 +52,17 @@ export default function Footer() {
               {t("footer.link1_5")}
             </a>
             <a href="#pricing" className="hover:text-black">
-              Pricing
+              {t("header.pricing")}
             </a>
             <a href="/contact" className="hover:text-black">
-              Contact
+              {t("header.contact")}
             </a>
             <button
               type="button"
               onClick={handleExploreClick}
               className="text-left hover:text-black"
             >
-              Explore
+              {t("settingsSeeker.Explore")}
             </button>
           </div>
         </MotionSection>

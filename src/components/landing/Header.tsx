@@ -13,14 +13,14 @@ type HeaderProps = {
 };
 
 export default function Header({ baseHref = "" }: HeaderProps) {
-  const t = useTranslations("header");
+  const t = useTranslations("");
 
   const navItems = [
-    { href: "/", label: t("home") },
-    { href: "#services", label: t("services") },
-    { href: "#features", label: t("features") },
-    { href: "#pricing", label: t("pricing") },
-    { href: "/contact", label: t("contact") },
+    { href: "/", label: t("header.home") },
+    { href: "#services", label: t("header.services") },
+    { href: "#features", label: t("header.features") },
+    { href: "#pricing", label: t("header.pricing") },
+    { href: "/contact", label: t("header.contact") },
   ];
 
   const [open, setOpen] = useState(false);
@@ -68,7 +68,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
             onClick={handleExploreClick}
             className="text-sm font-semibold text-gray-700 hover:text-black"
           >
-            Explore
+            {t("settingsSeeker.Explore")}
           </button>
         </nav>
         <div className="ml-auto hidden md:flex items-center gap-4">
@@ -78,16 +78,16 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                 href="/login"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                {t("login")}
+                {t("header.login")}
               </Link>
               <Link href="/signup/seeker" className="btn-primary text-sm">
-                {t("getStarted")}
+                {t("header.getStarted")}
               </Link>
               <Link
                 href="/signup/practitioner"
                 className="btn-secondary text-sm"
               >
-                {t("forLawyers")}
+                {t("header.forLawyers")}
               </Link>
             </>
           ) : (
@@ -96,10 +96,10 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                 href="/dashboard"
                 className="text-sm font-semibold text-black/80 hover:text-black"
               >
-                {t("dashboard")}
+                {t("header.dashboard")}
               </Link>
               <button onClick={handleLogout} className="btn-secondary text-sm">
-                {t("logout")}
+                {t("header.logout")}
               </button>
             </>
           )}
@@ -156,7 +156,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                 transition={{ delay: 0.1 * navItems.length }}
                 className="text-2xl font-semibold text-gray-800 transition-all duration-300"
               >
-                Explore
+                {t("settingsSeeker.Explore")}
               </motion.button>
             </div>
 
@@ -173,21 +173,21 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition-all font-medium"
                   >
-                    {t("login")}
+                    {t("header.login")}
                   </Link>
                   <Link
                     href="/signup/seeker"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-primary text-sm transition-all"
                   >
-                    {t("getStarted")}
+                    {t("header.getStarted")}
                   </Link>
                   <Link
                     href="/signup/practitioner"
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                    {t("forLawyers")}
+                    {t("header.forLawyers")}
                   </Link>
                 </>
               ) : (
@@ -197,7 +197,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     onClick={() => setOpen(false)}
                     className="w-full text-center py-3 rounded-xl btn-secondary text-sm transition-all font-medium"
                   >
-                    {t("dashboard")}
+                    {t("header.dashboard")}
                   </Link>
                   <button
                     onClick={() => {
@@ -206,7 +206,7 @@ export default function Header({ baseHref = "" }: HeaderProps) {
                     }}
                     className="w-full py-3 rounded-xl btn-secondary text-sm transition-all"
                   >
-                    {t("logout")}
+                    {t("header.logout")}
                   </button>
                 </>
               )}
