@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type FormValues = {
   email: string;
@@ -29,6 +29,12 @@ interface SignupFormProps {
 }
 
 export default function SignupForm({ accountType }: SignupFormProps) {
+
+  // change direction alignment with respect to language
+  const locale = useLocale();
+  const direction = locale === "ar" ? "rtl" : "ltr";
+  const isRTL = locale === "ar";
+
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -47,7 +53,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
         formTitle: t("professionalFormTitle"),
         formSubtitle: t("professionalFormSubTitle"),
         accountLabel: t("professionalAccountLabel"),
-        switchLabel: t("professionalAccountLabel"),
+        switchLabel: t("seekerAccountLabel"),
         switchLink: "/signup/seeker",
       };
     } else {
@@ -59,7 +65,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
         formTitle: t("seekerFormTitle"),
         formSubtitle: t("seekerFormSubTitle"),
         accountLabel: t("seekerAccountLabel"),
-        switchLabel: t("seekerAccountLabel"),
+        switchLabel: t("professionalAccountLabel"),
         switchLink: "/signup/practitioner",
       };
     }
@@ -298,7 +304,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex-1 text-center lg:text-left max-w-xl">
+        <div className={`flex-1 text-center lg:${isRTL ? "text-right" : "text-left"} max-w-xl`}>
           <IconComponent className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
           <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             {content.title}
@@ -307,7 +313,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
             {accountType === "service-seeker" && (
               <>
                 <br />
-                Instantly.
+                {/* Instantly. */}
               </>
             )}
           </h1>
@@ -380,7 +386,7 @@ export default function SignupForm({ accountType }: SignupFormProps) {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("Phone Number")}
                     </label>
-                    <div style={{ width: "100%", position: "relative" }}>
+                    <div style={{ width: "100%", position: "relative" }} dir="ltr">
                       <PhoneInput
                         international
                         defaultCountry="KW"
