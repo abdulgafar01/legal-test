@@ -327,12 +327,12 @@ const isRTL = locale === "ar";
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
-      dir="ltr"
+      dir={direction}
     >
       <div className="absolute inset-0 bg-black/60 backdrop-blur-xs"></div>
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-6xl mx-auto relative z-10">
-        <div className="flex-1 text-center lg:text-left max-w-xl"
+        <div className={`flex-1 text-center lg:${isRTL ? "text-right" : "text-left"} max-w-xl`}
       
         >
           <Scale className="w-20 h-20 text-white mb-8 mx-auto lg:mx-0" />
@@ -409,7 +409,7 @@ const isRTL = locale === "ar";
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {t("Phone Number (optional)")}
                     </label>
-                    <div className="relative">
+                    <div className="relative" dir="ltr">
                       <PhoneInput
                         international
                         defaultCountry="KW"
