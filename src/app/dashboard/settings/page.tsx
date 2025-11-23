@@ -96,13 +96,13 @@ export default function SettingsPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      <div className="container mx-auto px-6 py-8 max-w-6xl flex-1 flex flex-col overflow-hidden">
+      <div className="container mx-auto px-6 py-8 max-w-6xl flex-1 flex flex-col overflow-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <Settings className="h-8 w-8 text-blue-600" />
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {t("settings.Settings")}
+              {t("settings.heading")}
             </h1>
             <p className="text-gray-600">{t("settings.p1")}</p>
           </div>
