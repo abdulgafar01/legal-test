@@ -7,7 +7,7 @@ import { assets } from "@/assets/assets";
 import Image, { StaticImageData } from "next/image";
 import React, { useEffect, useState } from "react";
 import { ChatbotThreadListItem, listThreads, deleteThread } from "@/lib/api/chatbot";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Type for each sidebar link
@@ -37,6 +37,8 @@ export default function SidebarLinks({
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const locale = useLocale();
+  const isRTL = locale === "ar";
   const t = useTranslations("settingsSeeker");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<ChatbotThreadListItem | null>(null);
@@ -157,7 +159,7 @@ export default function SidebarLinks({
                 }
               }}
               className={clsx(
-                "flex mb-2 gap-3 text-xs font-semibold text-gray-700 rounded-lg transition-colors hover:bg-amber-100 hover:text-gray-900",
+                "flex mb-2 gap-3 text-xs font-semibold text-gray-700 rounded-lg text-right transition-colors hover:bg-amber-100 hover:text-gray-900",
                 {
                   "bg-amber-100": isActive,
                   "px-3 py-2": expand,
@@ -168,7 +170,7 @@ export default function SidebarLinks({
               {expand ? (
                 <>
                   <Image src={link.icon} alt={link.title} className="w-4 h-4" />
-                  <p>{link.title}</p>
+                  <p className={`flex-1  ${isRTL ? "text-right" : "text-left"}`}>{link.title}</p>
                 </>
               ) : (
                 <Image
@@ -228,7 +230,7 @@ export default function SidebarLinks({
                 <button
                   aria-label="Delete conversation"
                   onClick={() => { setDeleteTarget(thread); setConfirmOpen(true); }}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] px-2 py-1 rounded hover:bg-red-100 hover:text-red-700 text-gray-400"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] px-2 py-1 rounded hover:bg-red-100 hover:text-red-700 text-gray-400 cursor-pointer"
                 >
                   ×
                 </button>
