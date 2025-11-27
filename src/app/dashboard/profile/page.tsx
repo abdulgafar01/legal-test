@@ -9,6 +9,7 @@ import {
   Star,
   Flag,
   Wallet,
+  Languages,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -17,6 +18,8 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { Icon } from "@iconify/react";
 import { useCountries } from "@/hooks/useCountries";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { useLocale } from "@/provider/LocaleProvider";
 
 const Page = () => {
   const router = useRouter();
@@ -25,6 +28,12 @@ const Page = () => {
   const country = countries.find(
     (c) => c.name === user?.data?.country // match by name
   );
+    const { locale, setLocale } = useLocale();
+  
+    const toggleLocale = () => {
+      setLocale(locale === "en" ? "ar" : "en");
+      toast.success(`Language changed to ${locale === "en" ? "English" : "Arabic"}`)
+    };
   const t = useTranslations("profile");
 
   useEffect(() => {
@@ -258,11 +267,11 @@ const Page = () => {
                 {/* Info Section */}
                 <div className="mt-6 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Level:</span>
+                    <span className="text-gray-500">{t("Level")}:</span>
                     <span className="font-medium">{levelDisplay}</span>
                   </div>
                   <div className="flex justify-between items-start">
-                    <span className="text-gray-500">Expertise:</span>
+                    <span className="text-gray-500">{t("Expertise")}:</span>
                     <div className="font-medium w-3/5">
                       {specializationNames.length ? (
                         <div className="flex flex-wrap gap-2 justify-end">
@@ -282,11 +291,11 @@ const Page = () => {
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Qualification:</span>
+                    <span className="text-gray-500">{t("Qualification")}:</span>
                     <span className="font-medium">{qualification}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Consultations:</span>
+                    <span className="text-gray-500">{t("Consultations")}:</span>
                     <span className="font-medium">
                       {typeof totalConsultations === "number"
                         ? totalConsultations
@@ -294,7 +303,7 @@ const Page = () => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Years of experience:</span>
+                    <span className="text-gray-500">{t("Years of experience")}:</span>
                     <span className="font-medium">
                       {typeof yearsOfExperience === "number"
                         ? `${yearsOfExperience} years`
@@ -305,7 +314,7 @@ const Page = () => {
 
                 {/* Button */}
                 <button className="mt-6 w-full flex items-center justify-between border border-yellow-400 text-gray-700 px-4 py-2 rounded-lg hover:bg-yellow-50 transition">
-                  <span>Consultation</span>
+                  <span>{t("Consultations")}</span>
                   <span className="font-semibold">
                     {hourlyRate ? `$${hourlyRate}` : "$—"}
                   </span>
@@ -340,7 +349,25 @@ const Page = () => {
                   </div>
                 </Link>
               ))}
+              {/* language for professional */} 
+          <div className="flex items-center justify-between px-4 py-4 border-b border-[#E8E7E7] max-w-xl">
+          <div className="flex items-center gap-2">
+            <Languages size={20} />
+            <span className="text-sm font-medium">{t("Language")}</span>
+          </div>
+          <button
+            className="flex items-center gap-2 text-neutral-400 cursor-pointer"
+            title="Click to change"
+            onClick={toggleLocale}
+          >
+            <span className="text-sm font-medium">
+              {locale === "en" ? t("English") : t("Arabic")}
+            </span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
             </div>
+
           </div>
         </div>
       ) : (
@@ -401,6 +428,8 @@ const Page = () => {
                 </Link>
               ))}
             </div>
+       
+
           </div>
         </div>
       )}

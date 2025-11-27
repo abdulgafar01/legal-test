@@ -8,19 +8,27 @@
     "termsConditions": "الشروط والأحكام",
     "Settings": "الإعدادات",
     "Help": "المساعدة",
+    "Language": "اللغة",
+    "English": "الإنجليزية",
+    "Arabic": "العربية",
     "Edit Profile": "تعديل الملف الشخصي",
     "Profile": "الملف الشخصي",
-     "edit": {
-    "Edit photo": "تعديل الصورة",
-    "First Name": "الاسم الأول",
-    "Last Name": "اسم العائلة",
-    "Email Address": "عنوان البريد الإلكتروني",
-    "Phone number": "رقم الهاتف",
-    "Country": "البلد",
-    "State": "الولاية",
-    "City": "المدينة",
-    "Updating": "جارٍ التحديث...",
-    "Update": "تحديث"
-  }
+    "Level": "المستوى",
+    "Expertise": "الخبرة",
+    "Qualification": "المؤهّل",
+    "Consultations": "الاستشارات",
+    "Years of experience": "سنوات الخبرة",
+    "edit": {
+      "Edit photo": "تعديل الصورة",
+      "First Name": "الاسم الأول",
+      "Last Name": "اسم العائلة",
+      "Email Address": "عنوان البريد الإلكتروني",
+      "Phone number": "رقم الهاتف",
+      "Country": "البلد",
+      "State": "الولاية",
+      "City": "المدينة",
+      "Updating": "جارٍ التحديث...",
+      "Update": "تحديث"
+    }
   }
 }
