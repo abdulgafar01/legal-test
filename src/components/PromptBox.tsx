@@ -125,35 +125,70 @@ const PromptBox = ({ onSubmit, placeholder }: Props) => {
     setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
+  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
+
+
   return (
     <form
       onSubmit={handleSubmit}
       className={`w-full ${false ? "max-w-3xl" : "max-w-2xl"}`}
     >
-      <div className=" bg-white shadow-[0_-2px_6px_-1px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.08)]  rounded-3xl px-3 py-2">
-        <textarea
-          className="outline-none w-full resize-none overflow-hidden break-words mt-2 transition-all"
-          rows={2}
-          placeholder={placeholder}
-          required
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={handleKeyDown}
-          value={prompt}
-        />
+      <div className="bg-white shadow-[0_-2px_6px_-1px_rgba(0,0,0,0.08),0_2px_6px_-1px_rgba(0,0,0,0.08)]  rounded-3xl px-3 py-2">
 
-        <div className="flex items-center justify-between text-sm">
-          <button
-            type="button"
-            onClick={() => setUploadOpen(true)}
-            title="Upload files"
-            className="cursor-pointer px-1 py-1.5 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
-          >
-            <Plus className="h-5" />
-          </button>
-          <div className="flex items-center justify-center w-20 h-8">
-            {isRecording && (
+
+        <div className="flex items-end gap-3 text-sm">
+          <div className="flex items-center">
+            <button
+              type="button"
+              onClick={() => setUploadOpen(true)}
+              title="Upload files"
+              className="cursor-pointer px-1.5 py-1.5 hover:opacity-80 rounded-full bg-[var(--primary)] text-white"
+            >
+              <Plus className="h-6" />
+            </button>
+
+          </div>
+
+          {/* attachments list */}
+
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-1">
+              {attachments.map((a) => (
+                <div
+                  key={a.id}
+                  className="flex items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-md px-2 py-1 text-xs max-w-[200px]"
+                >
+                  <span className="text-gray-500">
+                    {a.type === "file" ? (
+                      <Paperclip size={12} />
+                    ) : (
+                      <Mic size={12} />
+                    )}
+                  </span>
+
+                  <span className="truncate text-gray-700">
+                    {a.name}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(a.id)}
+                    className="ml-1 text-gray-400 hover:text-gray-600 cursor-pointer text-sm"
+                    title="Remove"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+
+          {/* Five animated sound bars and text-area */}
+
+          {isRecording ? (
+            <div className="flex items-center justify-center w-full h-8">
               <div className="flex items-end gap-[2px]">
-                {/* Five animated sound bars */}
                 {[0.3, 0.6, 0.9, 0.6, 0.3].map((d, i) => (
                   <motion.div
                     key={i}
@@ -171,8 +206,26 @@ const PromptBox = ({ onSubmit, placeholder }: Props) => {
                   />
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              className="w-full resize-none overflow-y-auto outline-none self-center text-sm break-words max-h-35 transition-all"
+              placeholder={placeholder}
+              value={prompt}
+              onChange={(e) => {
+                setPrompt(e.target.value);
+                e.target.style.height = "auto";
+                e.target.style.height = `${e.target.scrollHeight}px`;
+              }}
+              onKeyDown={handleKeyDown}
+            />
+
+          )
+          }
+
+
 
           <div className="flex items-center gap-2">
             <button
@@ -191,39 +244,20 @@ const PromptBox = ({ onSubmit, placeholder }: Props) => {
               type="button"
               onClick={sendMessage}
               disabled={!prompt.trim() && attachments.length === 0}
-              className={`${
-                prompt.trim() || attachments.length
-                  ? "bg-primary shadow-md cursor-pointer"
-                  : "bg-[#71717a] opacity-60 cursor-not-allowed"
-              } rounded-full p-2 hover:shadow-lg transition-shadow -rotate-45`}
+              className={`${prompt.trim() || attachments.length
+                ? "bg-primary shadow-md cursor-pointer"
+                : "bg-[#71717a] opacity-60 cursor-not-allowed"
+                } rounded-full p-2 hover:shadow-lg transition-shadow -rotate-45`}
             >
               <Send className="text-white w-6" />
             </button>
           </div>
         </div>
+
       </div>
 
-      {/* attachments list */}
-      {attachments.length > 0 && (
-        <div className="mt-3 max-h-32 overflow-auto p-4 flex gap-2 flex-wrap">
-          {attachments.map((a) => (
-            <div
-              key={a.id}
-              className="flex items-center gap-2 bg-gray-400 text-black rounded-full px-3 py-1 text-xs"
-            >
-              <span>{a.type === "file" ? <Paperclip /> : <Mic />}</span>
-              <span className="max-w-[200px] truncate font-bold">{a.name}</span>
-              <button
-                onClick={() => handleRemoveAttachment(a.id)}
-                className="ml-2 text-black cursor-pointer text-lg transition-all hover:scale-[1.1]"
-                title="Remove item"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+
+
 
       <UploadFileModal
         open={uploadOpen}

@@ -14,7 +14,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useTranslations } from "next-intl";
 
-type Msg = ChatbotMessageDTO & { temp_id?: string };
+type Msg = ChatbotMessageDTO & { temp_id?: string; isOptimistic?: boolean };
 
 const Page = () => {
   const [thread, setThread] = useState<ChatbotThread | null>(null);
@@ -50,7 +50,11 @@ const Page = () => {
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
       if (msg.type === "message:created") {
-        setMessages((prev) => [...prev, msg.payload]);
+        // Remove optimistic user message and add the confirmed one
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => !m.isOptimistic);
+          return [...filtered, msg.payload];
+        });
       } else if (msg.type === "assistant:started") {
         const temp_id = msg.payload.temp_id as string;
         setMessages((prev) => [
@@ -129,13 +133,31 @@ const Page = () => {
       const trimmed = text.trim();
       if (!trimmed) return;
 
+      // Immediately add user message to the UI (optimistic update)
+      // const userMessageId = `user-${Date.now()}`;
+      // const userMessage: Msg = {
+      //   id: userMessageId,
+      //   thread: thread?.id || "",
+      //   role: "user",
+      //   content: trimmed,
+      //   status: "completed",
+      //   created_at: new Date().toISOString(),
+      //   isOptimistic: true,
+      // };
+      // setMessages((prev) => [...prev, userMessage]);
+
       // If no thread yet (blank state after user deleted all threads), create one first
       if (!thread && guestId && !creatingThread) {
         try {
           setCreatingThread(true);
           const t = await createThread(guestId);
           setThread(t);
-          setMessages([]);
+          // Update the user message with the correct thread ID
+          // setMessages((prev) =>
+          //   prev.map((m) =>
+          //     m.id === userMessageId ? { ...m, thread: t.id } : m
+          //   )
+          // );
           connectWS(t, guestId);
           router.replace(`/dashboard/chat?thread=${t.id}`);
           // Notify sidebar and any thread lists to update without a page refresh
@@ -169,6 +191,8 @@ const Page = () => {
             "Failed to auto-create thread before sending message",
             e
           );
+          // Remove optimistic message on error
+          // setMessages((prev) => prev.filter((m) => m.id !== userMessageId));
         } finally {
           setCreatingThread(false);
         }
@@ -246,44 +270,79 @@ const Page = () => {
   }, [guestId, thread, search, newChat, creatingThread]);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-4 text-black h-[calc(100vh-60px)] mt-2 overflow-hidden">
-      {messages.length === 0 ? (
-        <div className="flex items-center gap-3 mb-10">
-          <p className="text-2xl font-medium">{t("helpText")}</p>
-        </div>
-      ) : (
-        <div className="w-full max-w-2xl flex-1 overflow-auto mt-6 space-y-4">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`w-full flex ${
-                m.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      `}</style>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 text-black h-[calc(100vh-60px)] mt-2 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        {messages.length === 0 ? (
+          <div className="flex items-center gap-3 mb-10">
+            <p className="text-2xl font-medium text-gray-700">{t("helpText")}</p>
+          </div>
+        ) : (
+          <div className="w-full max-w-2xl flex-1 overflow-y-auto mt-6 space-y-4 pb-4">
+            {messages.map((m) => (
               <div
-                className={`rounded-2xl px-4 py-2 max-w-[80%] ${
-                  m.role === "user"
-                    ? "bg-primary text-white"
-                    : "bg-gray-100 text-black"
+                key={m.id}
+                className={`w-full flex animate-fade-in ${
+                  m.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  className="prose prose-sm max-w-none text-inherit"
+                <div
+                  className={`rounded-2xl px-4 py-2 max-w-[80%] ${
+                    m.role === "user"
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 text-black"
+                  }`}
                 >
-                  {m.content}
-                </ReactMarkdown>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    className="prose prose-sm max-w-none text-inherit"
+                  >
+                    {m.content}
+                  </ReactMarkdown>
+                </div>
               </div>
-            </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
-      )}
+            ))}
+            
+            {/* Loading indicator - show when assistant is streaming */}
+            {messages.length > 0 && messages[messages.length - 1]?.role === "user" && (
+              <div className="w-full flex justify-start animate-fade-in">
+                <div className="rounded-2xl rounded-bl-none px-4 py-3 bg-gray-100 text-gray-900 border border-gray-200 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                    </div>
+                    <span className="text-sm text-gray-600 ml-1">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={bottomRef} />
+          </div>
+        )}
 
-      <PromptBox onSubmit={handleSubmit} placeholder={t("promptPlaceholder")} />
+        <PromptBox onSubmit={handleSubmit} placeholder={t("promptPlaceholder")} />
 
-      <p className="text-xs mb-2 py-2 text-gray-500">{t("chatDisclaimer")}</p>
-    </div>
+        <p className="text-xs mb-2 py-2 text-gray-500 text-center">{t("chatDisclaimer")}</p>
+      </div>
+    </>
   );
 };
 

@@ -603,6 +603,23 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
     if (!consultationId) return;
     const text = message.trim();
     if (!text) return;
+    
+    // Immediately add user message to the UI (optimistic update)
+    const userMessageId = `user-${Date.now()}`;
+    const userMessage: ChatMessage = {
+      id: userMessageId,
+      consultation_id: consultationId,
+      conversation_id: consultationId,
+      sender: {
+        id: getCurrentUserId() || 0,
+        full_name: "You",
+      },
+      content: text,
+      message_type: 'text',
+      created_at: new Date().toISOString(),
+    };
+    
+    chatStore.addMessages(consultationId, [userMessage], 'append');
     socketRef.current?.send(text);
     setMessage("");
   };
@@ -628,10 +645,27 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
 
 
   return (
-    <div
-      className="flex-1 flex flex-col bg-white"
-      style={{ height: "calc(100vh - 60px)" }}
-    >
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-in-out;
+        }
+      `}</style>
+      <div
+        className="flex-1 flex flex-col bg-white"
+        style={{ height: "calc(100vh - 60px)" }}
+      >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
@@ -761,15 +795,32 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
               };
               return (
                 <div key={msg.id} ref={refCb} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`prose prose-sm dark:prose-invert max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isMine ? 'bg-yellow-100 text-gray-900' : 'bg-gray-100 text-gray-900'}`}>
+                  <div className={`prose prose-sm dark:prose-invert max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isMine ? 'bg-blue-600 text-white rounded-br-none' : 'bg-gray-100 text-gray-900 rounded-bl-none border border-gray-200'} shadow-sm`}>
                     <MarkdownMessage content={msg.content} />
                     <div className="flex items-center justify-end mt-1 space-x-1">
-                      <span className="text-xs text-gray-500">{format(parseISO(msg.created_at), 'HH:mm')}</span>
+                      <span className={`text-xs ${isMine ? 'text-blue-100' : 'text-gray-500'}`}>{format(parseISO(msg.created_at), 'HH:mm')}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
+            
+            {/* Loading indicator - show when waiting for assistant response */}
+            {messages.length > 0 && messages[messages.length - 1]?.sender.id === getCurrentUserId() && (
+              <div className="flex justify-start animate-fade-in">
+                <div className="prose prose-sm dark:prose-invert max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-gray-100 text-gray-900">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                    </div>
+                    <span className="text-sm text-gray-600 ml-1 m-0">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div ref={bottomRef} />
           </>
         ) : (
@@ -788,10 +839,10 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
                 {msg.type === "text" && <p className="text-sm">{msg.text}</p>}
 
                 {msg.type === "voice" && (
-                  <div className="flex items-center space-x-2 bg-yellow-200 rounded-lg p-2">
+                  <div className="flex items-center space-x-2 bg-opacity-20 rounded-lg p-2">
                     <Button
                       size="sm"
-                      className="w-8 h-8 rounded-full bg-yellow-600 hover:bg-yellow-700"
+                      className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       <Play className="w-3 h-3 fill-white" />
                     </Button>
@@ -800,26 +851,21 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
                         {Array.from({ length: 30 }).map((_, i) => (
                           <div
                             key={i}
-                            className="w-0.5 bg-yellow-600 rounded-full"
+                            className="w-0.5 bg-gray-400 rounded-full"
                             style={{ height: `${Math.random() * 20 + 4}px` }}
                           />
                         ))}
                       </div>
                     </div>
-                    {/* <span className="text-xs text-gray-600">{msg.duration}</span> */}
                   </div>
                 )}
 
                 {msg.type === "file" && (
-                  <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
-                    <div className="w-12 h-12 bg-red-500 rounded flex items-center justify-center">
+                  <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="w-12 h-12 bg-blue-500 rounded flex items-center justify-center">
                       <FileText className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
-                      {/* <p className="text-sm font-medium">{msg.fileName}</p> */}
-                      <p className="text-xs text-gray-500">
-                        {/* {msg.pages} • {msg.fileSize} • pdf */}
-                      </p>
                     </div>
                   </div>
                 )}
@@ -828,8 +874,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
                   <span className="text-xs text-gray-500">{msg.time}</span>
                   {msg.sent && (
                     <div className="flex space-x-1">
-                      <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
-                      <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                      <CheckCircle2 className="w-3 h-3 text-blue-500" />
+                      <CheckCircle2 className="w-3 h-3 text-blue-500" />
                     </div>
                   )}
                 </div>
@@ -858,45 +904,52 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center space-x-2">
           <div className="flex-1 relative">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Write your message"
-              className="pr-12"
+              placeholder="Write your message..."
+              className="pr-12 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all bg-white"
               disabled={consultation ? readOnly : false}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             />
             <Button
               variant="ghost"
               size="sm"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-gray-200"
+              title="Add emoji"
             >
-              <Smile className="w-4 h-4" />
+              <Smile className="w-4 h-4 text-gray-600" />
             </Button>
           </div>
           <Button
             variant="ghost"
             size="sm"
             disabled={consultation ? readOnly : false}
+            className="hover:bg-gray-200"
+            title="Attach files"
           >
-            <Paperclip className="w-4 h-4" />
+            <Paperclip className="w-4 h-4 text-gray-600" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleRecording}
-            className={isRecording ? "bg-red-100" : ""}
+            disabled={consultation ? readOnly : false}
+            className={`hover:bg-gray-200 ${isRecording ? "bg-red-100" : ""}`}
+            title={isRecording ? "Stop recording" : "Record voice"}
           >
-            <Mic className={`w-4 h-4 ${isRecording ? "text-red-500" : ""}`} />
+            <Mic className={`w-4 h-4 ${isRecording ? "text-red-500 animate-pulse" : "text-gray-600"}`} />
           </Button>
           {message.trim() && (
             <Button
               onClick={handleSendMessage}
               size="sm"
               disabled={consultation ? readOnly : false}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full"
+              title="Send message"
             >
               <Send className="w-4 h-4" />
             </Button>
@@ -964,7 +1017,8 @@ const ChatInterface = ({ selectedChat, onBack }: ChatInterfaceProps) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 

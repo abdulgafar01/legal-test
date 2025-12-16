@@ -8,10 +8,12 @@ interface ChatState {
   readOnlyByConsultation: Record<number, boolean>;
   statusByConsultation: Record<number, SocketStatus>;
   nextCursorByConsultation: Record<number, string | null>;
+  loadingByConsultation: Record<number, boolean>; // track loading state
   addMessages: (consultationId: number, msgs: ChatMessage[], to: 'prepend' | 'append') => void;
   setReadOnly: (consultationId: number, readOnly: boolean) => void;
   setStatus: (consultationId: number, status: SocketStatus) => void;
   setNextCursor: (consultationId: number, cursor: string | null) => void;
+  setLoading: (consultationId: number, loading: boolean) => void;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -19,6 +21,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   readOnlyByConsultation: {},
   statusByConsultation: {},
   nextCursorByConsultation: {},
+  loadingByConsultation: {},
   addMessages: (consultationId, msgs, to) => {
     set((state) => {
       const existing = state.messages[consultationId] || [];
@@ -39,5 +42,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
   })),
   setNextCursor: (consultationId, cursor) => set((s) => ({
     nextCursorByConsultation: { ...s.nextCursorByConsultation, [consultationId]: cursor },
+  })),
+  setLoading: (consultationId, loading) => set((s) => ({
+    loadingByConsultation: { ...s.loadingByConsultation, [consultationId]: loading },
   })),
 }));
