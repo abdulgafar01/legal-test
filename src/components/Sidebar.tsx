@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
@@ -23,6 +23,8 @@ interface SidebarProps {
   toggleSidebar: () => void;
 }
 
+
+
 const Sidebar: React.FC<SidebarProps> = ({
   expand,
   isMobile,
@@ -40,6 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   // Refresh user removed — left handlers for logout and other actions only
+  const userPic = user?.data?.profile_image;
 
   console.log("=== USER DEBUG INFO ===");
   console.log("Raw user data:", user);
@@ -203,16 +206,31 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="p-4 border-t border-gray-200 w-full">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-200 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-orange-800">
+                <div className="w-12 h-12 bg-orange-200 rounded-full flex items-center justify-center">
+
+                  {
+                  userPic ? (
+                    <img
+                      src={userPic}
+                      alt="Profile"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) :
+                    (
+
+                      user?.data?.first_name?.slice(0, 2).toUpperCase() || "?"
+                    )
+                }
+                  {/* <span className="text-sm font-medium text-orange-800">
                     {isLoading
                       ? "..."
                       : error
                       ? "!"
                       : user?.data?.first_name?.slice(0, 2).toUpperCase() ||
                         "U"}
-                  </span>
+                  </span> */}
                 </div>
+                
                 <div>
                   {isLoading ? (
                     <div className="text-xs text-gray-500">Loading...</div>

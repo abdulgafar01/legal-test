@@ -20,6 +20,7 @@ import { useCountries } from "@/hooks/useCountries";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useLocale } from "@/provider/LocaleProvider";
+import Image from "next/image";
 
 const Page = () => {
   const router = useRouter();
@@ -28,12 +29,12 @@ const Page = () => {
   const country = countries.find(
     (c) => c.name === user?.data?.country // match by name
   );
-    const { locale, setLocale } = useLocale();
-  
-    const toggleLocale = () => {
-      setLocale(locale === "en" ? "ar" : "en");
-      toast.success(`Language changed to ${locale === "en" ? "English" : "Arabic"}`)
-    };
+  const { locale, setLocale } = useLocale();
+
+  const toggleLocale = () => {
+    setLocale(locale === "en" ? "ar" : "en");
+    toast.success(`Language changed to ${locale === "en" ? "English" : "Arabic"}`)
+  };
   const t = useTranslations("profile");
 
   useEffect(() => {
@@ -43,6 +44,11 @@ const Page = () => {
   }, [user, router]);
 
   if (!user) return null; // prevent flash
+  console.log("user pic", user?.data?.profile_image
+  );
+
+  const userPic = user?.data?.profile_image
+
 
   // Helpers and normalized values for practitioner data
   const practitioner = user?.data?.practitioner_profile || {};
@@ -70,8 +76,8 @@ const Page = () => {
                   const parsed = JSON.parse(t);
                   return Array.isArray(parsed)
                     ? parsed
-                        .map((v) => (typeof v === "string" ? v : v?.name))
-                        .filter(Boolean)
+                      .map((v) => (typeof v === "string" ? v : v?.name))
+                      .filter(Boolean)
                     : [n];
                 } catch {
                   return [
@@ -137,13 +143,13 @@ const Page = () => {
   const menuItems = [
     ...(user?.data?.user_type === "legal_practitioner"
       ? [
-          {
-            icon: Wallet,
-            title: t("Wallet"),
-            href: "/dashboard/wallet",
-            showArrow: true,
-          },
-        ]
+        {
+          icon: Wallet,
+          title: t("Wallet"),
+          href: "/dashboard/wallet",
+          showArrow: true,
+        },
+      ]
       : []),
     {
       icon: Shield,
@@ -215,7 +221,22 @@ const Page = () => {
                         className="rounded-lg object-cover"
                       /> */}
                   <div className="w-16 h-16 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
-                    {user?.data?.first_name?.charAt(0) || "?"}
+                    {/* {user?.data?.first_name?.charAt(0) || "?"} */}
+                    {
+                      userPic ? (
+                        <Image
+                          width={64}
+                          height={64}
+                          src={userPic}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) :
+                        (
+
+                          user?.data?.first_name?.charAt(0) || "?"
+                        )
+                    }
                   </div>
 
                   <div>
@@ -246,11 +267,10 @@ const Page = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.round(Number(rating) || 0)
+                            className={`w-4 h-4 ${i < Math.round(Number(rating) || 0)
                                 ? "text-yellow-400 fill-yellow-400"
                                 : "text-gray-300"
-                            }`}
+                              }`}
                           />
                         ))}
                         <span className="text-sm text-gray-600 ml-1">
@@ -349,23 +369,23 @@ const Page = () => {
                   </div>
                 </Link>
               ))}
-              {/* language for professional */} 
-          <div className="flex items-center justify-between px-4 py-4 border-b border-[#E8E7E7] max-w-xl">
-          <div className="flex items-center gap-2">
-            <Languages size={20} />
-            <span className="text-sm font-medium">{t("Language")}</span>
-          </div>
-          <button
-            className="flex items-center gap-2 text-neutral-400 cursor-pointer"
-            title="Click to change"
-            onClick={toggleLocale}
-          >
-            <span className="text-sm font-medium">
-              {locale === "en" ? t("English") : t("Arabic")}
-            </span>
-            <ChevronRight size={16} />
-          </button>
-        </div>
+              {/* language for professional */}
+              <div className="flex items-center justify-between px-4 py-4 border-b border-[#E8E7E7] max-w-xl">
+                <div className="flex items-center gap-2">
+                  <Languages size={20} />
+                  <span className="text-sm font-medium">{t("Language")}</span>
+                </div>
+                <button
+                  className="flex items-center gap-2 text-neutral-400 cursor-pointer"
+                  title="Click to change"
+                  onClick={toggleLocale}
+                >
+                  <span className="text-sm font-medium">
+                    {locale === "en" ? t("English") : t("Arabic")}
+                  </span>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
 
           </div>
@@ -384,7 +404,19 @@ const Page = () => {
 
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 rounded-lg flex items-center border border-gray-900 justify-center overflow-hidden">
-                {user?.data?.first_name?.charAt(0) || "?"}
+                {
+                  userPic ? (
+                    <img
+                      src={userPic}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) :
+                    (
+
+                      user?.data?.first_name?.charAt(0) || "?"
+                    )
+                }
               </div>
 
               <div className="">
@@ -428,7 +460,7 @@ const Page = () => {
                 </Link>
               ))}
             </div>
-       
+
 
           </div>
         </div>
